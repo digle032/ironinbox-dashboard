@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+.glass-card {
+  @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-lg shadow-slate-200/50 rounded-2xl;
+}
+
+.glass-panel {
+  @apply bg-white border border-slate-100 shadow-xl shadow-slate-200/40 rounded-2xl;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.hover-trigger .hover-target {
+  @apply opacity-0 translate-y-2 transition-all duration-300;
+}
+
+.hover-trigger:hover .hover-target {
+  @apply opacity-100 translate-y-0;
+}
