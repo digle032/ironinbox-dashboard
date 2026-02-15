@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { RiBellLine, RiSearchLine, RiFileDownloadLine } from 'react-icons/ri';
-import { FlaggedEmail } from '../../types';
 
 interface HeaderProps {
   title: string;

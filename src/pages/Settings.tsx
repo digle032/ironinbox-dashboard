@@ -7,7 +7,6 @@ import {
   RiUserLine,
   RiBellLine,
   RiPaletteLine,
-  RiNotification3Line,
   RiTimeLine,
   RiMailLine,
   RiDownloadLine,
@@ -160,51 +159,6 @@ const Settings: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            {/* Dark Mode */}
-            <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-xl border border-slate-100 hover:border-purple-200 transition-all group">
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${appearance.darkMode ? 'bg-slate-800 text-white' : 'bg-amber-100 text-amber-600'}`}>
-                  {appearance.darkMode ? <RiMoonLine className="w-5 h-5" /> : <RiSunLine className="w-5 h-5" />}
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">Dark Mode</h4>
-                  <p className="text-xs text-slate-600">Toggle dark theme (Coming Soon)</p>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="sr-only peer" 
-                  checked={appearance.darkMode}
-                  onChange={(e) => handleDarkModeToggle(e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-              </label>
-            </div>
-
-            {/* Language */}
-            <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-xl border border-slate-100">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <RiGlobalLine className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">Language</h4>
-                  <p className="text-xs text-slate-600">Choose your language</p>
-                </div>
-              </div>
-              <select 
-                value={appearance.language}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-              </select>
-            </div>
-
             {/* Timezone */}
             <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-xl border border-slate-100">
               <div className="flex items-center space-x-3">
