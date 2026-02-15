@@ -19,8 +19,9 @@ A modern, glassmorphic email phishing detection dashboard built with React, Type
 
 - Node.js (v16 or higher)
 - npm or yarn
+- GitHub account (for deployment)
 
-### Installation
+### Local Development
 
 1. **Clone the repository**
    ```bash
@@ -40,6 +41,17 @@ A modern, glassmorphic email phishing detection dashboard built with React, Type
 
 4. **Open your browser**
    Navigate to `http://localhost:5173`
+
+### 🌐 Deploy to GitHub Pages
+
+Want to host this live online for free? See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the complete guide!
+
+**Quick deploy:**
+1. Create a GitHub repo named `ironinbox-dashboard`
+2. Update your GitHub username in `package.json` (line 6)
+3. Run: `npm run deploy`
+
+Your site will be live at: `https://YOUR_USERNAME.github.io/ironinbox-dashboard`
 
 ## 🔧 Keeping the Server Running
 
