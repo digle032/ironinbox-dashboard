@@ -29,8 +29,8 @@ const Sidebar: React.FC = () => {
     { name: 'Inbox', path: '/inbox', icon: <RiInboxLine className="w-5 h-5" /> },
     { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-5 h-5" /> },
     { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> },
-    { name: 'Privacy & Security', path: '/privacy', icon: <RiLockLine className="w-5 h-5" /> },
-    { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-5 h-5" /> }
+    // { name: 'Privacy & Security', path: '/privacy', icon: <RiLockLine className="w-5 h-5" /> },
+    // { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-5 h-5" /> }
   ];
 
   return (

@@ -24,8 +24,8 @@ function App() {
               <Route path="/inbox" element={<Inbox />} />
               <Route path="/flagged-emails" element={<FlaggedEmails />} />
               <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/settings" element={<Settings />} />
+              {/* <Route path="/privacy" element={<Privacy />} /> */}
+              {/* <Route path="/settings" element={<Settings />} /> */}
             </Routes>
           </div>
         </div>
