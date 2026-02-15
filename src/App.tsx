@@ -6,8 +6,6 @@ import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
 import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
-// import Privacy from './pages/Privacy';
-// import Settings from './pages/Settings';
 
 function App() {
   try {
@@ -24,8 +22,6 @@ function App() {
               <Route path="/inbox" element={<Inbox />} />
               <Route path="/flagged-emails" element={<FlaggedEmails />} />
               <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
-              {/* <Route path="/privacy" element={<Privacy />} /> */}
-              {/* <Route path="/settings" element={<Settings />} /> */}
             </Routes>
           </div>
         </div>

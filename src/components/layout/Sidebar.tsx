@@ -5,9 +5,7 @@ import {
   RiHomeLine, 
   RiInboxLine, 
   RiFlagLine, 
-  RiEyeLine, 
-  // RiLockLine, 
-  // RiSettings3Line,
+  RiEyeLine,
   RiLogoutBoxLine,
   RiUserLine
 } from 'react-icons/ri';
@@ -28,9 +26,7 @@ const Sidebar: React.FC = () => {
     { name: 'Dashboard', path: '/dashboard', icon: <RiHomeLine className="w-5 h-5" /> },
     { name: 'Inbox', path: '/inbox', icon: <RiInboxLine className="w-5 h-5" /> },
     { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-5 h-5" /> },
-    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> },
-    // { name: 'Privacy & Security', path: '/privacy', icon: <RiLockLine className="w-5 h-5" /> },
-    // { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-5 h-5" /> }
+    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> }
   ];
 
   return (
