@@ -94,18 +94,18 @@ const Dashboard: React.FC = () => {
   const riskInfo = getRiskLevel(stats.overallRiskScore);
 
   return (
-    <div className="flex-1 overflow-auto bg-slate-50/50 dark:bg-slate-900">
+    <div className="flex-1 overflow-auto bg-slate-50/50">
       <Header title="Dashboard Overview" />
 
       <div className="p-8 space-y-8 animate-fade-in max-w-7xl mx-auto">
         {/* Auto-refresh indicator */}
         {advanced.autoRefresh && (
-          <div className="bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/50 rounded-xl p-3 flex items-center justify-between">
+          <div className="bg-blue-50/50 backdrop-blur-sm border border-blue-200/50 rounded-xl p-3 flex items-center justify-between">
             <div className="flex items-center space-x-2 text-sm">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <span className="text-blue-700 dark:text-blue-400 font-medium">Auto-refresh enabled</span>
+              <span className="text-blue-700 font-medium">Auto-refresh enabled</span>
             </div>
-            <span className="text-xs text-blue-600 dark:text-blue-400">Last updated: {lastRefresh.toLocaleTimeString()}</span>
+            <span className="text-xs text-blue-600">Last updated: {lastRefresh.toLocaleTimeString()}</span>
           </div>
         )}
         {/* Hero Stats */}
@@ -148,9 +148,9 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Overall Risk Score */}
           <div className="lg:col-span-1">
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-6 h-full">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-6 flex items-center">
-                <RiFireLine className="w-5 h-5 mr-2 text-slate-400 dark:text-slate-500" />
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 p-6 h-full">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6 flex items-center">
+                <RiFireLine className="w-5 h-5 mr-2 text-slate-400" />
                 Overall Risk Score
               </h3>
               
@@ -166,7 +166,7 @@ const Dashboard: React.FC = () => {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="8"
-                      className="text-slate-100 dark:text-slate-700"
+                      className="text-slate-100"
                     />
                     {/* Progress circle */}
                     <circle
@@ -183,8 +183,8 @@ const Dashboard: React.FC = () => {
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-extrabold text-slate-900 dark:text-white">{stats.overallRiskScore}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">out of 100</span>
+                    <span className="text-4xl font-extrabold text-slate-900">{stats.overallRiskScore}</span>
+                    <span className="text-xs text-slate-500 font-medium">out of 100</span>
                   </div>
                 </div>
 
@@ -192,7 +192,7 @@ const Dashboard: React.FC = () => {
                   <span className={`text-sm font-bold ${riskInfo.color}`}>Risk Level: {riskInfo.level}</span>
                 </div>
 
-                <p className="text-xs text-slate-500 dark:text-slate-400 text-center mt-4 leading-relaxed">
+                <p className="text-xs text-slate-500 text-center mt-4 leading-relaxed">
                   Based on {stats.totalFlagged} flagged emails with various threat levels
                 </p>
               </div>
@@ -201,20 +201,20 @@ const Dashboard: React.FC = () => {
 
           {/* Threat Breakdown */}
           <div className="lg:col-span-2">
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-6 h-full">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 p-6 h-full">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6">Threat Distribution</h3>
               
               <div className="space-y-4">
                 {/* Critical */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                    <span className="text-sm font-semibold text-slate-700 flex items-center">
                       <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
                       Critical Risk
                     </span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">{stats.criticalCount} emails</span>
+                    <span className="text-sm font-bold text-slate-900">{stats.criticalCount} emails</span>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                     <div 
                       className="bg-gradient-to-r from-red-500 to-red-600 h-full rounded-full transition-all duration-1000 shadow-sm"
                       style={{ width: `${stats.totalFlagged > 0 ? (stats.criticalCount / stats.totalFlagged) * 100 : 0}%` }}
@@ -274,12 +274,12 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Detection Rate */}
-                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <div className="pt-4 mt-4 border-t border-slate-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-slate-700">Detection Rate</span>
-                    <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">{stats.detectionRate}%</span>
+                    <span className="text-2xl font-extrabold text-blue-600">{stats.detectionRate}%</span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {stats.totalFlagged} of {stats.totalProcessed} emails flagged as suspicious
                   </p>
                 </div>
@@ -291,34 +291,34 @@ const Dashboard: React.FC = () => {
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top Threat Sources */}
-          <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-6">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-6 flex items-center">
-              <RiTrophyLine className="w-5 h-5 mr-2 text-slate-400 dark:text-slate-500" />
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 p-6">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6 flex items-center">
+              <RiTrophyLine className="w-5 h-5 mr-2 text-slate-400" />
               Top Threat Sources
             </h3>
             
             {stats.topThreats.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+              <div className="text-center py-8 text-slate-500">
                 <RiShieldCheckLine className="w-12 h-12 mx-auto mb-2 text-emerald-400" />
                 <p className="text-sm">No threats detected</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {stats.topThreats.map(([domain, count], index) => (
-                  <div key={domain} className="flex items-center space-x-4 p-3 bg-slate-50/50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-700 transition-all group">
+                  <div key={domain} className="flex items-center space-x-4 p-3 bg-slate-50/50 rounded-xl border border-slate-100 hover:border-blue-200 transition-all group">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
-                      index === 0 ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400' :
-                      index === 1 ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400' :
-                      index === 2 ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400' :
-                      'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300'
+                      index === 0 ? 'bg-red-100 text-red-600 :
+                      index === 1 ? 'bg-orange-100 text-orange-600 :
+                      index === 2 ? 'bg-yellow-100 text-yellow-600 :
+                      'bg-slate-100 text-slate-600
                     }`}>
                       #{index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{domain}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{count} threat{count !== 1 ? 's' : ''} detected</p>
+                      <p className="text-sm font-semibold text-slate-900 truncate">{domain}</p>
+                      <p className="text-xs text-slate-500">{count} threat{count !== 1 ? 's' : ''} detected</p>
                     </div>
-                    <div className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors">
                       {Math.round((count / stats.totalFlagged) * 100)}%
                     </div>
                   </div>
@@ -328,35 +328,35 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Recently Released Emails */}
-          <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-6">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-6 flex items-center">
-              <RiTimeLine className="w-5 h-5 mr-2 text-slate-400 dark:text-slate-500" />
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 p-6">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6 flex items-center">
+              <RiTimeLine className="w-5 h-5 mr-2 text-slate-400" />
               Recent Activity
             </h3>
             
             {stats.recentReleased.length === 0 ? (
-              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                <RiMailLine className="w-12 h-12 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+              <div className="text-center py-8 text-slate-500">
+                <RiMailLine className="w-12 h-12 mx-auto mb-2 text-slate-300" />
                 <p className="text-sm">No released emails yet</p>
                 <p className="text-xs mt-1">Released emails will appear here</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {stats.recentReleased.map((released) => (
-                  <div key={released.id} className="p-4 bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/50 hover:border-emerald-200 dark:hover:border-emerald-700 transition-all group">
+                  <div key={released.id} className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 hover:border-emerald-200 transition-all group">
                     <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
                         <RiShieldCheckLine className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{released.originalEmail.subject}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">From: {released.originalEmail.sender}</p>
+                        <p className="text-sm font-semibold text-slate-900 truncate">{released.originalEmail.subject}</p>
+                        <p className="text-xs text-slate-500 truncate">From: {released.originalEmail.sender}</p>
                         <div className="flex items-center mt-2 space-x-3">
-                          <div className="flex items-center text-xs text-slate-400 dark:text-slate-500">
+                          <div className="flex items-center text-xs text-slate-400">
                             <RiUserLine className="w-3 h-3 mr-1" />
                             {released.releasedBy}
                           </div>
-                          <div className="flex items-center text-xs text-slate-400 dark:text-slate-500">
+                          <div className="flex items-center text-xs text-slate-400">
                             <RiTimeLine className="w-3 h-3 mr-1" />
                             {released.releasedAt}
                           </div>
