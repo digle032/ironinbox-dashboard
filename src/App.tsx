@@ -6,8 +6,8 @@ import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
 import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
-import Privacy from './pages/Privacy';
-import Settings from './pages/Settings';
+// import Privacy from './pages/Privacy';
+// import Settings from './pages/Settings';
 
 function App() {
   try {

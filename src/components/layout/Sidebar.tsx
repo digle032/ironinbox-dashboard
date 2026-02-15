@@ -6,8 +6,8 @@ import {
   RiInboxLine, 
   RiFlagLine, 
   RiEyeLine, 
-  RiLockLine, 
-  RiSettings3Line,
+  // RiLockLine, 
+  // RiSettings3Line,
   RiLogoutBoxLine,
   RiUserLine
 } from 'react-icons/ri';
