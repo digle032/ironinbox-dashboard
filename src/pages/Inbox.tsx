@@ -8,7 +8,6 @@ import {
   RiTimeLine,
   RiUserLine,
   RiShieldCheckLine,
-  RiAlertLine,
   RiInboxLine,
   RiCalendarLine
 } from 'react-icons/ri';

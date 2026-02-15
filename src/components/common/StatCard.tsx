@@ -32,7 +32,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconColor, tren
         </div>
         
         <div className={`p-3 rounded-xl bg-gradient-to-br ${iconColor.replace('text-', 'from-').replace('600', '100')} to-white shadow-sm border border-slate-100 group-hover:rotate-6 transition-transform duration-300`}>
-          {React.cloneElement(icon as React.ReactElement, { 
+          {React.cloneElement(icon as React.ReactElement<any>, { 
             className: `w-6 h-6 ${iconColor}` 
           })}
         </div>

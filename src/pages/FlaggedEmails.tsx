@@ -4,7 +4,7 @@ import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import EmailDetailModal from '../components/dashboard/EmailDetailModal';
 import { generatePDFReport } from '../utils/pdfExport';
-import { RiAlertLine, RiFireLine, RiKeyLine, RiSearchLine, RiFilter3Line, RiSortDesc } from 'react-icons/ri';
+import { RiAlertLine, RiFireLine, RiKeyLine, RiSearchLine, RiSortDesc } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
 
 type FilterType = 'All' | 'Keyword' | 'Typo' | 'Both';

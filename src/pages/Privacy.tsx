@@ -5,13 +5,9 @@ import Toast from '../components/common/Toast';
 import { 
   RiShieldCheckLine, 
   RiLockLine, 
-  RiEyeLine, 
-  RiEyeOffLine,
   RiShieldLine,
-  RiUserLine,
   RiMailLine,
-  RiCheckLine,
-  RiCloseLine
+  RiCheckLine
 } from 'react-icons/ri';
 
 const Privacy: React.FC = () => {
