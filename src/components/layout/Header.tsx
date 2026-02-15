@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
-import { RiBellLine, RiSearchLine, RiFileDownloadLine } from 'react-icons/ri';
+import { RiBellLine, RiFileDownloadLine } from 'react-icons/ri';
 
 interface HeaderProps {
   title: string;
@@ -29,23 +29,6 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
             <span className="text-blue-600">{title}</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-display">{title}</h1>
-        </div>
-
-        {/* Center Search (Optional - adds balance) */}
-        <div className="hidden md:flex flex-1 max-w-md mx-12">
-          <div className="relative w-full group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <RiSearchLine className="h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-            </div>
-            <input 
-              type="text" 
-              className="block w-full pl-11 pr-4 py-2.5 border-0 rounded-2xl bg-slate-100/50 text-slate-600 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:shadow-lg transition-all duration-300 sm:text-sm font-medium"
-              placeholder="Search emails, alerts, or keywords..."
-            />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <span className="text-slate-400 text-xs font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-sm">⌘K</span>
-            </div>
-          </div>
         </div>
 
         {/* Right Side Actions */}
