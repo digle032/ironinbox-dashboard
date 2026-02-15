@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900">Profile Settings</h3>
-              <p className="text-sm text-slate-500">Manage your account information</p>
+              <p className="text-sm text-slate-500 ">Manage your account information</p>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ const Settings: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900">Appearance</h3>
-              <p className="text-sm text-slate-500">Customize the look and feel</p>
+              <p className="text-sm text-slate-500 ">Customize the look and feel</p>
             </div>
           </div>
 
@@ -349,3 +349,4 @@ const Settings: React.FC = () => {
 };
 
 export default Settings;
+
