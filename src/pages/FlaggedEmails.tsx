@@ -36,11 +36,24 @@ const FlaggedEmails: React.FC = () => {
 
   // Filter and sort emails (same logic)
   const filteredEmails = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    
     let filtered = flaggedEmails.filter(email => {
+      // If no query, skip search check
+      if (!query) {
+        if (filterType === 'All') return true;
+        const hasKeyword = email.signals.some(s => s.type === 'keyword');
+        const hasTypo = email.signals.some(s => s.type === 'typo');
+        if (filterType === 'Keyword') return hasKeyword && !hasTypo;
+        if (filterType === 'Typo') return hasTypo && !hasKeyword;
+        if (filterType === 'Both') return hasKeyword && hasTypo;
+        return true;
+      }
+
       const matchesSearch = 
-        email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        email.signals.some(s => s.value.toLowerCase().includes(searchQuery.toLowerCase()));
+        (email.sender && email.sender.toLowerCase().includes(query)) ||
+        (email.subject && email.subject.toLowerCase().includes(query)) ||
+        (email.signals && email.signals.some(s => s.value && s.value.toLowerCase().includes(query)));
 
       if (!matchesSearch) return false;
 
