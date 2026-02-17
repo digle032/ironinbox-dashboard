@@ -146,26 +146,4 @@ ironinbox-dashboard/
 - Top threat sources
 - Recent activity feed
 
-### Settings
-- Profile customization
-- Notification preferences
-- Auto-refresh dashboard
-- Timezone selection
-- Cache management
-- Settings export/import
-
-## 🤝 Contributing
-
-This is a class project. Feel free to fork and experiment!
-
-## 📄 License
-
-MIT License - Feel free to use for educational purposes
-
-## 👨‍💻 Author
-
-Created for CS Security Course Project
-
----
-
-**Note**: This is a demo application with mock data. For production use, connect to a real email security backend.
+**Note**: This is a demo application with mock data.
