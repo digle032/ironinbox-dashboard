@@ -1,6 +1,6 @@
 # 🛡️ IronInbox Dashboard
 
-A modern, glassmorphic email phishing detection dashboard built with React, TypeScript, and Tailwind CSS.
+Email phishing detection dashboard built with React, TypeScript, and Tailwind CSS.
 
 ## ✨ Features
 
