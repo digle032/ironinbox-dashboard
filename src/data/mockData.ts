@@ -180,7 +180,6 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   }
 ];
 
-
 export const mockReleasedEmails: ReleasedEmail[] = [
   {
     id: 'r1',
@@ -425,14 +424,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
 ];
 
 export const mockKeywords: Keyword[] = [
-  { id: '1', value: 'verify', createdAt: '2024-01-15' },
-  { id: '2', value: 'urgent', createdAt: '2024-01-16' },
-  { id: '3', value: 'suspended', createdAt: '2024-01-16' },
-  { id: '4', value: 'confirm', createdAt: '2024-01-17' },
-  { id: '5', value: 'won', createdAt: '2024-01-17' },
-  { id: '6', value: 'prize', createdAt: '2024-01-18' },
-  { id: '7', value: 'account', createdAt: '2024-01-18' },
-  { id: '8', value: 'security', createdAt: '2024-01-19' },
-  { id: '9', value: 'expires', createdAt: '2024-01-19' },
-  { id: '10', value: 'click here', createdAt: '2024-01-20' }
+  { id: '1', value: 'verify', createdAt: '2024-01-15', enabled: true },
+  { id: '2', value: 'urgent', createdAt: '2024-01-16', enabled: true },
+  { id: '3', value: 'suspended', createdAt: '2024-01-16', enabled: true },
+  { id: '4', value: 'confirm', createdAt: '2024-01-17', enabled: true },
+  { id: '5', value: 'won', createdAt: '2024-01-17', enabled: true },
+  { id: '6', value: 'prize', createdAt: '2024-01-18', enabled: true },
+  { id: '7', value: 'account', createdAt: '2024-01-18', enabled: true },
+  { id: '8', value: 'security', createdAt: '2024-01-19', enabled: true },
+  { id: '9', value: 'expires', createdAt: '2024-01-19', enabled: true },
+  { id: '10', value: 'click here', createdAt: '2024-01-20', enabled: true }
 ];
