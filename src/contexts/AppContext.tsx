@@ -44,7 +44,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         id: Date.now().toString(),
         originalEmail: emailToRelease,
         releasedAt: new Date().toLocaleString(),
-        releasedBy: 'John Doe'
+        releasedBy: 'John Doe',
+        starred: false,
+        isRead: false
       };
       setReleasedEmails(prev => [releasedEmail, ...prev]);
       
@@ -62,12 +64,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       id: Date.now().toString(),
       value: keyword,
       createdAt: new Date().toISOString()
+      enabled: true
     };
     setKeywords(prev => [...prev, newKeyword]);
   };
 
   const deleteKeyword = (keywordId: string) => {
     setKeywords(prev => prev.filter(kw => kw.id !== keywordId));
+  };
+  
+  const toggleKeyword = (keywordId: string) => {
+    setKeywords(prev =>
+      prev.map(kw =>
+        kw.id === keywordId ? { ...kw, enabled: !kw.enabled } : kw
+      )
+    );
+  };
+
+
+  const updateKeyword = (keywordId: string, value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setKeywords(prev =>
+      prev.map(kw =>
+        kw.id === keywordId ? { ...kw, value: trimmed } : kw
+      )
+    );
+  };
+
+  const toggleStarReleasedEmail = (releasedId: string) => {
+    setReleasedEmails(prev =>
+      prev.map(released =>
+        released.id === releasedId ? { ...released, starred: !released.starred } : released
+      )
+    );
+  };
+
+  const toggleReadReleasedEmail = (releasedId: string, isRead?: boolean) => {
+    setReleasedEmails(prev =>
+      prev.map(released => {
+        if (released.id !== releasedId) return released;
+        const nextRead = typeof isRead === 'boolean' ? isRead : !released.isRead;
+        return { ...released, isRead: nextRead };
+      })
+    );
+  };
+
+  const reFlagReleasedEmails = (releasedIds: string[]) => {
+    if (releasedIds.length === 0) return;
+
+    const toReflag = releasedEmails.filter(r => releasedIds.includes(r.id));
+    if (toReflag.length === 0) return;
+
+    // Move emails back into the flagged list (as their original email)
+    setFlaggedEmails(prev => [...toReflag.map(r => r.originalEmail), ...prev]);
+
+    // Remove from released emails
+    setReleasedEmails(prev => prev.filter(r => !releasedIds.includes(r.id)));
   };
 
   const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
@@ -89,6 +142,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         selectedEmail,
         setSelectedEmail,
         releaseEmail,
+        toggleStarReleasedEmail,
+        toggleReadReleasedEmail,
+        reFlagReleasedEmails,
         addKeyword,
         deleteKeyword,
         updateDetectionOptions,
