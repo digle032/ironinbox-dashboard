@@ -9,10 +9,19 @@ interface AppContextType {
   detectionOptions: DetectionOptions;
   detectionActions: DetectionActions;
   selectedEmail: FlaggedEmail | null;
+  
   setSelectedEmail: (email: FlaggedEmail | null) => void;
   releaseEmail: (emailId: string) => void;
+  
   addKeyword: (keyword: string) => void;
   deleteKeyword: (keywordId: string) => void;
+  toggleKeyword: (keywordId: string) => void;
+  updateKeyword: (keywordId: string, value: string) => void;
+  
+  toggleStarReleasedEmail: (releasedId: string) => void;
+  toggleReadReleasedEmail: (releasedId: string, isRead?: boolean) => void;
+  reFlagReleasedEmails: (releasedIds: string[]) => void;
+  
   updateDetectionOptions: (options: Partial<DetectionOptions>) => void;
   updateDetectionActions: (actions: Partial<DetectionActions>) => void;
 }
@@ -21,7 +30,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>(mockFlaggedEmails);
-  const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>([]);
+  const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>(mockReleasedEmails);
   const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
   const [selectedEmail, setSelectedEmail] = useState<FlaggedEmail | null>(null);
   const [detectionOptions, setDetectionOptions] = useState<DetectionOptions>({
@@ -63,7 +72,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newKeyword: Keyword = {
       id: Date.now().toString(),
       value: keyword,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
       enabled: true
     };
     setKeywords(prev => [...prev, newKeyword]);
