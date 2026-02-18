@@ -156,6 +156,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         reFlagReleasedEmails,
         addKeyword,
         deleteKeyword,
+        toggleKeyword,
+        updateKeyword,
         updateDetectionOptions,
         updateDetectionActions
       }}
