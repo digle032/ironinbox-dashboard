@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
-import { mockFlaggedEmails, mockKeywords } from '../data/mockData';
+import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
 
 interface AppContextType {
   flaggedEmails: FlaggedEmail[];
@@ -9,19 +9,15 @@ interface AppContextType {
   detectionOptions: DetectionOptions;
   detectionActions: DetectionActions;
   selectedEmail: FlaggedEmail | null;
-  
   setSelectedEmail: (email: FlaggedEmail | null) => void;
   releaseEmail: (emailId: string) => void;
-  
-  addKeyword: (keyword: string) => void;
-  deleteKeyword: (keywordId: string) => void;
-  toggleKeyword: (keywordId: string) => void;
-  updateKeyword: (keywordId: string, value: string) => void;
-  
   toggleStarReleasedEmail: (releasedId: string) => void;
   toggleReadReleasedEmail: (releasedId: string, isRead?: boolean) => void;
   reFlagReleasedEmails: (releasedIds: string[]) => void;
-  
+  addKeyword: (keyword: string) => void;
+  deleteKeyword: (keywordId: string) => void;
+  toggleKeyword: (id: string) => void;
+  updateKeyword: (id: string, text: string) => void;
   updateDetectionOptions: (options: Partial<DetectionOptions>) => void;
   updateDetectionActions: (actions: Partial<DetectionActions>) => void;
 }
@@ -90,7 +86,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
 
-
   const updateKeyword = (keywordId: string, value: string) => {
     const trimmed = value.trim();
     if (!trimmed) return;
@@ -132,7 +127,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setReleasedEmails(prev => prev.filter(r => !releasedIds.includes(r.id)));
   };
 
-  const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
+const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
     setDetectionOptions(prev => ({ ...prev, ...options }));
   };
 
