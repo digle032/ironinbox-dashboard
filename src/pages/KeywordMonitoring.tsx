@@ -8,6 +8,8 @@ const KeywordMonitoring: React.FC = () => {
     keywords, 
     addKeyword, 
     deleteKeyword,
+    toggleKeyword,
+    updateKeyword,
     detectionOptions,
     detectionActions,
     updateDetectionOptions,
@@ -16,6 +18,8 @@ const KeywordMonitoring: React.FC = () => {
 
   const [newKeyword, setNewKeyword] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [editingKeywordId, setEditingKeywordId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
 
   const handleAddKeyword = () => {
     if (newKeyword.trim()) {
@@ -29,6 +33,24 @@ const KeywordMonitoring: React.FC = () => {
       handleAddKeyword();
     }
   };
+
+const startEditing = (keywordId: string, currentValue: string) => {
+  setEditingKeywordId(keywordId);
+  setEditValue(currentValue);
+  setActiveMenu(null);
+};
+
+const commitEdit = (keywordId: string) => {
+  updateKeyword(keywordId, editValue);
+  setEditingKeywordId(null);
+  setEditValue('');
+};
+
+const cancelEdit = () => {
+  setEditingKeywordId(null);
+  setEditValue('');
+};
+
 
   return (
     <div className="flex-1 overflow-auto">
@@ -66,38 +88,100 @@ const KeywordMonitoring: React.FC = () => {
               {keywords.length === 0 ? (
                 <p className="text-gray-500 text-sm">No keywords added yet</p>
               ) : (
-                keywords.map((keyword) => (
-                  <div
-                    key={keyword.id}
-                    className="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full border border-blue-200 group hover:bg-blue-100 transition-colors"
-                  >
-                    <span className="font-medium">{keyword.value}</span>
-                    <div className="relative">
-                      <button
-                        onClick={() => setActiveMenu(activeMenu === keyword.id ? null : keyword.id)}
-                        className="p-1 hover:bg-blue-200 rounded transition-colors"
-                      >
-                        <RiMoreLine className="w-4 h-4" />
-                      </button>
+                keywords.map((keyword) => {
+                  const isEditing = editingKeywordId === keyword.id;
+                  const isEnabled = keyword.enabled;
 
-                      {/* Dropdown Menu */}
-                      {activeMenu === keyword.id && (
-                        <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-10 min-w-[120px]">
-                          <button
-                            onClick={() => {
-                              deleteKeyword(keyword.id);
-                              setActiveMenu(null);
+                  return (
+                    <div
+                      key={keyword.id}
+                      className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full border transition-colors group ${
+                        isEnabled
+                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                          : 'bg-gray-50 text-gray-500 border-gray-200'
+                      }`}
+                    >
+                      {isEditing ? (
+                        <div className="flex items-center space-x-2">
+                          <input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') commitEdit(keyword.id);
+                              if (e.key === 'Escape') cancelEdit();
                             }}
-                            className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            className="w-40 px-3 py-1 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => commitEdit(keyword.id)}
+                            className="px-3 py-1 text-sm rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                           >
-                            <RiDeleteBinLine className="w-4 h-4" />
-                            <span>Delete</span>
+                            Save
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="px-3 py-1 text-sm rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                          >
+                            Cancel
                           </button>
                         </div>
+                      ) : (
+                        <>
+                          <span className="font-medium">{keyword.value}</span>
+                          {!isEnabled && (
+                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+                              Disabled
+                            </span>
+                          )}
+                        </>
                       )}
+
+                      <div className="relative">
+                        <button
+                          onClick={() => setActiveMenu(activeMenu === keyword.id ? null : keyword.id)}
+                          className="p-1 rounded transition-colors hover:bg-black/5"
+                          disabled={isEditing}
+                        >
+                          <RiMoreLine className="w-4 h-4" />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {activeMenu === keyword.id && !isEditing && (
+                          <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-10 min-w-[160px]">
+                            <button
+                              onClick={() => startEditing(keyword.id, keyword.value)}
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              <span>Edit</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                toggleKeyword(keyword.id);
+                                setActiveMenu(null);
+                              }}
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              <span>{keyword.enabled ? 'Disable' : 'Enable'}</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                deleteKeyword(keyword.id);
+                                setActiveMenu(null);
+                              }}
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <RiDeleteBinLine className="w-4 h-4" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
