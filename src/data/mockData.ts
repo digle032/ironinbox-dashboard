@@ -180,6 +180,250 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   }
 ];
 
+
+export const mockReleasedEmails: ReleasedEmail[] = [
+  {
+    id: 'r1',
+    originalEmail: {
+      id: 's1',
+      received: '08:12 AM',
+      sender: 'billing@spotify.com',
+      subject: 'Your receipt for Spotify Premium',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Thanks for your payment. This receipt confirms your subscription renewal.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r2',
+    originalEmail: {
+      id: 's2',
+      received: '09:05 AM',
+      sender: 'noreply@github.com',
+      subject: 'Security alert: New sign-in to your account',
+      signals: [],
+      riskLevel: 'Low',
+      content: `We noticed a new sign-in to your GitHub account from a new device. If this was you, no action is needed.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r3',
+    originalEmail: {
+      id: 's3',
+      received: '10:41 AM',
+      sender: 'events@meetup.com',
+      subject: 'Reminder: NYC React Meetup tonight',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Your event starts at 6:30 PM. Venue details and check-in info inside.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: true
+  },
+  {
+    id: 'r4',
+    originalEmail: {
+      id: 's4',
+      received: '11:22 AM',
+      sender: 'support@delta.com',
+      subject: 'Trip itinerary: BOS → JFK',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Your flight details, seat assignment, and baggage policy are included.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r5',
+    originalEmail: {
+      id: 's5',
+      received: '12:03 PM',
+      sender: 'newsletter@nytimes.com',
+      subject: 'Today’s headlines',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Here’s a quick read of the top stories for today.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: true,
+    isRead: false
+  },
+  {
+    id: 'r6',
+    originalEmail: {
+      id: 's6',
+      received: '01:15 PM',
+      sender: 'hr@acme.com',
+      subject: 'Interview schedule confirmation',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Confirming your interview time and meeting link. Reply if you need to reschedule.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: true
+  },
+  {
+    id: 'r7',
+    originalEmail: {
+      id: 's7',
+      received: '02:30 PM',
+      sender: 'receipts@amazon.com',
+      subject: 'Your Amazon.com order has shipped',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Tracking number and delivery estimate included.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r8',
+    originalEmail: {
+      id: 's8',
+      received: '03:04 PM',
+      sender: 'no-reply@slack.com',
+      subject: 'You were added to #product-updates',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Welcome! Here are a few tips to get started.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r9',
+    originalEmail: {
+      id: 's9',
+      received: '03:58 PM',
+      sender: 'hello@canva.com',
+      subject: 'Your design is ready to share',
+      signals: [],
+      riskLevel: 'Low',
+      content: `We saved your latest changes. Share with teammates using this link.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: true
+  },
+  {
+    id: 'r10',
+    originalEmail: {
+      id: 's10',
+      received: '04:37 PM',
+      sender: 'notifications@bankofamerica.com',
+      subject: 'Account notice: Statement available',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Your monthly statement is now available in Online Banking.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: true,
+    isRead: false
+  },
+  {
+    id: 'r11',
+    originalEmail: {
+      id: 's11',
+      received: '05:18 PM',
+      sender: 'info@openai.com',
+      subject: 'Product update: New features available',
+      signals: [],
+      riskLevel: 'Low',
+      content: `We’ve shipped improvements and new capabilities. Learn what’s new.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r12',
+    originalEmail: {
+      id: 's12',
+      received: '06:09 PM',
+      sender: 'team@trello.com',
+      subject: 'Board activity: Sprint Planning',
+      signals: [],
+      riskLevel: 'Low',
+      content: `A card you’re watching was updated. View the changes.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: true
+  },
+  {
+    id: 'r13',
+    originalEmail: {
+      id: 's13',
+      received: '07:45 PM',
+      sender: 'notifications@linkedin.com',
+      subject: 'New job recommendations for you',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Here are roles based on your profile and interests.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r14',
+    originalEmail: {
+      id: 's14',
+      received: '08:20 PM',
+      sender: 'service@ubereats.com',
+      subject: 'Your order is on the way',
+      signals: [],
+      riskLevel: 'Low',
+      content: `Your driver is heading to you. Track your delivery in the app.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: false,
+    isRead: false
+  },
+  {
+    id: 'r15',
+    originalEmail: {
+      id: 's15',
+      received: '09:02 PM',
+      sender: 'calendar@google.com',
+      subject: 'Invitation: Weekly sync',
+      signals: [],
+      riskLevel: 'Low',
+      content: `You’ve been invited to an event. View details and RSVP.`
+    },
+    releasedAt: '2024-02-01',
+    releasedBy: 'System',
+    starred: true,
+    isRead: true
+  }
+];
+
 export const mockKeywords: Keyword[] = [
   { id: '1', value: 'verify', createdAt: '2024-01-15' },
   { id: '2', value: 'urgent', createdAt: '2024-01-16' },
