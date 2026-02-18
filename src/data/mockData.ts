@@ -1,4 +1,4 @@
-import { FlaggedEmail, Keyword } from '../types';
+import { FlaggedEmail, ReleasedEmail, Keyword } from '../types';
 
 export const mockFlaggedEmails: FlaggedEmail[] = [
   {
