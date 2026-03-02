@@ -1,33 +1,43 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import { SettingsProvider } from './contexts/SettingsContext';
-import Sidebar from './components/layout/Sidebar';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardLayout from './components/DashboardLayout';
 import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
 import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
+import Login from './pages/Login';
 
 function App() {
   try {
     return (
       <SettingsProvider>
-        <AppProvider>
-          <Router>
-            <div className="flex h-screen bg-slate-50">
-              <Sidebar />
-              <div className="flex-1 ml-72 bg-slate-50">
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/inbox" element={<Inbox />} />
-              <Route path="/flagged-emails" element={<FlaggedEmails />} />
-              <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
-            </Routes>
-          </div>
-        </div>
-      </Router>
-    </AppProvider>
-  </SettingsProvider>
+        <AuthProvider>
+          <AppProvider>
+            <Router basename={import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '')}>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Navigate to="/dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="inbox" element={<Inbox />} />
+                  <Route path="flagged-emails" element={<FlaggedEmails />} />
+                  <Route path="keyword-monitoring" element={<KeywordMonitoring />} />
+                </Route>
+              </Routes>
+            </Router>
+          </AppProvider>
+        </AuthProvider>
+      </SettingsProvider>
     );
   } catch (error) {
     console.error('App Error:', error);
