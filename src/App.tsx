@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
 import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
+import PrivacyAccessControl from './pages/PrivacyAccessControl';
 import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
 import Login from './pages/Login';
@@ -32,6 +33,7 @@ function App() {
                   <Route path="inbox" element={<Inbox />} />
                   <Route path="flagged-emails" element={<FlaggedEmails />} />
                   <Route path="keyword-monitoring" element={<KeywordMonitoring />} />
+                  <Route path="privacy-access-control" element={<PrivacyAccessControl />} />
                 </Route>
               </Routes>
             </Router>

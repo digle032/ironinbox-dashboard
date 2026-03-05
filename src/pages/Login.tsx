@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { auth } from '../lib/firebase';
 import { SiMinutemailer } from 'react-icons/si';
 import { RiMailLine, RiLockPasswordLine, RiGoogleFill } from 'react-icons/ri';
 
@@ -62,19 +61,6 @@ const Login: React.FC = () => {
     }
   };
 
-  if (!auth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
-        <div className="glass-card p-8 max-w-md text-center">
-          <h2 className="text-xl font-bold text-slate-800 mb-2">Firebase Not Configured</h2>
-          <p className="text-slate-600 text-sm mb-4">
-            Create a <code className="bg-slate-100 px-1 rounded">.env</code> file with your Firebase config. See <code>.env.example</code> for the required variables.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="glass-card p-8 w-full max-w-md animate-fade-in">
@@ -87,9 +73,12 @@ const Login: React.FC = () => {
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1">Security Dashboard</p>
         </div>
 
-        <h2 className="text-lg font-semibold text-slate-800 mb-6 text-center">
+        <h2 className="text-lg font-semibold text-slate-800 mb-2 text-center">
           {mode === 'signin' ? 'Sign in to your account' : 'Create an account'}
         </h2>
+        <p className="text-xs text-slate-500 mb-6 text-center">
+          This is a demo-only login. Any email and password will sign you into the dashboard without contacting a real backend.
+        </p>
 
         {/* Federation */}
         <button

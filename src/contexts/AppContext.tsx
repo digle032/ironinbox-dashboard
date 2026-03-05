@@ -9,7 +9,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
-import { mockFlaggedEmails, mockKeywords } from '../data/mockData';
+import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
 import { db } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 

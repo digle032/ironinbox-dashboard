@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { auth } from '../lib/firebase';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,10 +9,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
-
-  if (!auth) {
-    return <Navigate to="/login" state={{ from: location, firebaseNotConfigured: true }} replace />;
-  }
 
   if (loading) {
     return (

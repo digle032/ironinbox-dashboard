@@ -1,4 +1,4 @@
-import { FlaggedEmail, Keyword } from '../types';
+import { FlaggedEmail, ReleasedEmail, Keyword } from '../types';
 
 export const mockFlaggedEmails: FlaggedEmail[] = [
   {
@@ -179,6 +179,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
     content: 'Please confirm your recent transaction of $1,250.00. If unauthorized, click here immediately.'
   }
 ];
+
+export const mockReleasedEmails: ReleasedEmail[] = [];
 
 export const mockKeywords: Keyword[] = [
   { id: '1', value: 'verify', createdAt: '2024-01-15' },
