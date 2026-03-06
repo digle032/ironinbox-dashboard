@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       user.photoURL ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`;
     updateProfile({ name: displayName, email, avatar, role: 'User' });
-  }, [user, updateProfile]);
+  }, [user]);
 
   useEffect(() => {
     try {
