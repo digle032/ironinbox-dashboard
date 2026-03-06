@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   RiHomeLine, 
   RiInboxLine, 
   RiFlagLine, 
   RiEyeLine,
+  RiLockLine,
   RiLogoutBoxLine,
   RiUserLine
 } from 'react-icons/ri';
@@ -19,14 +21,17 @@ interface NavItem {
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const { profile } = useSettings();
+  const { signOut, monitoredEmail } = useAuth();
 
   const navItems: NavItem[] = [
     { name: 'Dashboard', path: '/dashboard', icon: <RiHomeLine className="w-5 h-5" /> },
     { name: 'Inbox', path: '/inbox', icon: <RiInboxLine className="w-5 h-5" /> },
     { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-5 h-5" /> },
-    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> }
+    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> },
+    { name: 'Privacy & Access Control', path: '/privacy-access-control', icon: <RiLockLine className="w-5 h-5" /> }
   ];
 
   return (
@@ -77,6 +82,13 @@ const Sidebar: React.FC = () => {
         })}
       </nav>
 
+      {monitoredEmail && (
+        <div className="px-4 mx-4 mb-2 py-2 rounded-xl bg-blue-50/80 border border-blue-100">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Monitoring</p>
+          <p className="text-xs font-medium text-slate-700 truncate" title={monitoredEmail}>{monitoredEmail}</p>
+        </div>
+      )}
+
       {/* User Profile */}
       <div className="p-4 m-4 bg-white/50 backdrop-blur-sm rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
         <div className="relative">
@@ -114,7 +126,13 @@ const Sidebar: React.FC = () => {
                 <span className="font-medium">My Profile</span>
               </button>
               <div className="h-px bg-slate-100 my-1"></div>
-              <button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-red-50 text-sm text-red-600 transition-colors group/item">
+              <button
+                onClick={async () => {
+                  await signOut();
+                  navigate('/login');
+                }}
+                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-red-50 text-sm text-red-600 transition-colors group/item"
+              >
                 <RiLogoutBoxLine className="w-4 h-4 text-red-400 group-hover/item:text-red-500 transition-colors" />
                 <span className="font-medium">Sign Out</span>
               </button>
