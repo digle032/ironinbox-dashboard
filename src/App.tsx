@@ -1,15 +1,26 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import DashboardLayout from './components/DashboardLayout';
+import Sidebar from './components/layout/Sidebar';
 import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
-import PrivacyAccessControl from './pages/PrivacyAccessControl';
 import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
 import Login from './pages/Login';
+import PrivacyAccessControl from './pages/PrivacyAccessControl';
+
+function AppShell() {
+  return (
+    <div className="flex h-screen bg-slate-50">
+      <Sidebar />
+      <div className="flex-1 ml-72 bg-slate-50">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   try {
@@ -17,24 +28,26 @@ function App() {
       <SettingsProvider>
         <AuthProvider>
           <AppProvider>
-            <Router basename={import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router>
               <Routes>
                 <Route path="/login" element={<Login />} />
+
                 <Route
-                  path="/"
                   element={
                     <ProtectedRoute>
-                      <DashboardLayout />
+                      <AppShell />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<Navigate to="/dashboard" replace />} />
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="inbox" element={<Inbox />} />
-                  <Route path="flagged-emails" element={<FlaggedEmails />} />
-                  <Route path="keyword-monitoring" element={<KeywordMonitoring />} />
-                  <Route path="privacy-access-control" element={<PrivacyAccessControl />} />
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/inbox" element={<Inbox />} />
+                  <Route path="/flagged-emails" element={<FlaggedEmails />} />
+                  <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
+                  <Route path="/privacy-access-control" element={<PrivacyAccessControl />} />
                 </Route>
+
+                <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
             </Router>
           </AppProvider>
