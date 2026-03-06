@@ -10,8 +10,6 @@ import {
 } from 'firebase/firestore';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
 import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
-import { db } from '../lib/firebase';
-import { useAuth } from './AuthContext';
 
 interface AppContextType {
   flaggedEmails: FlaggedEmail[];
@@ -23,8 +21,13 @@ interface AppContextType {
   hydrating: boolean;
   setSelectedEmail: (email: FlaggedEmail | null) => void;
   releaseEmail: (emailId: string) => void;
+  toggleStarReleasedEmail: (releasedId: string) => void;
+  toggleReadReleasedEmail: (releasedId: string, isRead?: boolean) => void;
+  reFlagReleasedEmails: (releasedIds: string[]) => void;
   addKeyword: (keyword: string) => void;
   deleteKeyword: (keywordId: string) => void;
+  toggleKeyword: (id: string) => void;
+  updateKeyword: (id: string, text: string) => void;
   updateDetectionOptions: (options: Partial<DetectionOptions>) => void;
   updateDetectionActions: (actions: Partial<DetectionActions>) => void;
 }
@@ -32,11 +35,9 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
-
-  const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>([]);
-  const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>([]);
-  const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>(mockFlaggedEmails);
+  const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>(mockReleasedEmails);
+  const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
   const [selectedEmail, setSelectedEmail] = useState<FlaggedEmail | null>(null);
   const [hydrating, setHydrating] = useState(false);
   const [detectionOptions, setDetectionOptions] = useState<DetectionOptions>({
@@ -198,7 +199,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newKeyword: Keyword = {
       id: Date.now().toString(),
       value: keyword,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      enabled: true
     };
     setKeywords(prev => [...prev, newKeyword]);
 
@@ -219,17 +221,58 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       });
     }
   };
+  
+  const toggleKeyword = (keywordId: string) => {
+    setKeywords(prev =>
+      prev.map(kw =>
+        kw.id === keywordId ? { ...kw, enabled: !kw.enabled } : kw
+      )
+    );
+  };
 
-  const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
-    setDetectionOptions(prev => {
-      const next = { ...prev, ...options };
-      if (userRefs && db) {
-        setDoc(userRefs.configDoc, { detectionOptions: next }, { merge: true }).catch((e) => {
-          console.error('Failed to persist detectionOptions:', e);
-        });
-      }
-      return next;
-    });
+  const updateKeyword = (keywordId: string, value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setKeywords(prev =>
+      prev.map(kw =>
+        kw.id === keywordId ? { ...kw, value: trimmed } : kw
+      )
+    );
+  };
+
+  const toggleStarReleasedEmail = (releasedId: string) => {
+    setReleasedEmails(prev =>
+      prev.map(released =>
+        released.id === releasedId ? { ...released, starred: !released.starred } : released
+      )
+    );
+  };
+
+  const toggleReadReleasedEmail = (releasedId: string, isRead?: boolean) => {
+    setReleasedEmails(prev =>
+      prev.map(released => {
+        if (released.id !== releasedId) return released;
+        const nextRead = typeof isRead === 'boolean' ? isRead : !released.isRead;
+        return { ...released, isRead: nextRead };
+      })
+    );
+  };
+
+  const reFlagReleasedEmails = (releasedIds: string[]) => {
+    if (releasedIds.length === 0) return;
+
+    const toReflag = releasedEmails.filter(r => releasedIds.includes(r.id));
+    if (toReflag.length === 0) return;
+
+    // Move emails back into the flagged list (as their original email)
+    setFlaggedEmails(prev => [...toReflag.map(r => r.originalEmail), ...prev]);
+
+    // Remove from released emails
+    setReleasedEmails(prev => prev.filter(r => !releasedIds.includes(r.id)));
+  };
+
+const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
+    setDetectionOptions(prev => ({ ...prev, ...options }));
   };
 
   const updateDetectionActions = (actions: Partial<DetectionActions>) => {
@@ -256,8 +299,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         hydrating,
         setSelectedEmail,
         releaseEmail,
+        toggleStarReleasedEmail,
+        toggleReadReleasedEmail,
+        reFlagReleasedEmails,
         addKeyword,
         deleteKeyword,
+        toggleKeyword,
+        updateKeyword,
         updateDetectionOptions,
         updateDetectionActions
       }}
