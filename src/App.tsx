@@ -44,9 +44,9 @@ function App() {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/inbox" element={<Inbox />} />
                   <Route path="/flagged-emails" element={<FlaggedEmails />} />
+                  <Route path="/incidents" element={<Incidents totalIncidents={0} />} />
                   <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
                   <Route path="/privacy-access-control" element={<PrivacyAccessControl />} />
-                  <Route path="/incidents" element={<Incidents totalIncidents={0} />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/login" replace />} />

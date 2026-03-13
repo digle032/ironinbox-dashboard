@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 import { User, Calendar } from 'lucide-react';
 import Header from '../components/layout/Header';
 
@@ -17,7 +17,7 @@ export interface Incident {
   source?: string;
 }
 
-interface IncidentsPageProps {
+  interface IncidentsPageProps {
   totalIncidents: number;
 }
 
