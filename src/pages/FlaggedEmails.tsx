@@ -122,9 +122,9 @@ const FlaggedEmails: React.FC = () => {
     <div className="flex-1 overflow-auto bg-slate-50/50">
       <Header title="Flagged Emails" showActions onExportPDF={handleExportPDF} />
 
-      <div className="p-8 space-y-8 animate-fade-in max-w-7xl mx-auto">
+      <div className="p-5 space-y-5 animate-fade-in max-w-7xl mx-auto">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Flagged"
             value={stats.totalFlagged}
@@ -160,10 +160,10 @@ const FlaggedEmails: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 overflow-hidden">
+        <div className="bg-white rounded-lg border border-white/50 shadow-xl shadow-slate-200/50 overflow-hidden">
           
           {/* Controls Bar */}
-          <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40">
+          <div className="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40">
             {/* Search */}
             <div className="relative flex-1 max-w-md group">
               <RiSearchLine className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -172,7 +172,7 @@ const FlaggedEmails: React.FC = () => {
                 placeholder="Search emails..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 shadow-sm"
               />
             </div>
 
@@ -201,7 +201,7 @@ const FlaggedEmails: React.FC = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortType)}
-                  className="pl-9 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
+                  className="pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
                 >
                   <option value="Risk">Risk Level</option>
                   <option value="Received">Date Received</option>
@@ -217,12 +217,12 @@ const FlaggedEmails: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-slate-50/80 text-left border-b border-slate-200/60">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Received</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sender</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Signals</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Risk Level</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Received</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sender</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Signals</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Risk Level</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -246,25 +246,25 @@ const FlaggedEmails: React.FC = () => {
                       className="group hover:bg-blue-50/40 cursor-pointer transition-colors duration-200"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 font-medium">
                         {email.received}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm border border-white">
                             {email.sender.charAt(0).toUpperCase()}
                           </div>
-                          <div className="text-sm font-medium text-slate-900 truncate max-w-[180px]">
+                          <div className="text-sm font-medium text-slate-900 truncate max-w-[160px]">
                             {email.sender}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <div className="text-sm text-slate-600 font-medium truncate max-w-xs group-hover:text-blue-600 transition-colors">
                           {email.subject}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
                           {email.signals.slice(0, 2).map((signal, idx) => (
                             <span
@@ -286,7 +286,7 @@ const FlaggedEmails: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border shadow-sm ${getRiskColor(email.riskLevel)}`}>
                           <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
                             email.riskLevel === 'Critical' ? 'bg-red-500 animate-pulse' : 
@@ -296,7 +296,7 @@ const FlaggedEmails: React.FC = () => {
                           {email.riskLevel.toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -315,7 +315,7 @@ const FlaggedEmails: React.FC = () => {
           </div>
           
           {/* Footer / Pagination */}
-          <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between">
+          <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between">
             <p className="text-sm text-slate-500">
               Showing <span className="font-medium text-slate-900">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredEmails.length)}</span> of <span className="font-medium text-slate-900">{filteredEmails.length}</span> results
             </p>

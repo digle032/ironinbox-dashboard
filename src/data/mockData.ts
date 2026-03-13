@@ -5,7 +5,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
     id: '1',
     received: '09:38 PM',
     sender: 'admin@acme-c0rp.test',
-    subject: 'Urgent: Verify your account immediately',
+    subject: 'Urgent: Verify your account',
     signals: [
       { type: 'keyword', value: 'verify', description: 'Contains sensitive keyword: verify' },
       { type: 'typo', value: 'acme-c0rp.test', description: 'Suspicious domain similar to acme-corp.com' }
@@ -53,7 +53,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
     id: '5',
     received: '05:18 PM',
     sender: 'admin@micr0soft.test',
-    subject: 'Your Office 365 subscription expires today',
+    subject: 'Your subscription expires today',
     signals: [
       { type: 'keyword', value: 'expires', description: 'Contains urgency keyword: expires' },
       { type: 'typo', value: 'micr0soft.test', description: 'Suspicious domain similar to microsoft.com' }
