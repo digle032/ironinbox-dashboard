@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Inbox from './pages/Inbox';
 import Login from './pages/Login';
 import PrivacyAccessControl from './pages/PrivacyAccessControl';
+import Incidents from './pages/Incidents';
 
 function AppShell() {
   return (
@@ -45,6 +46,7 @@ function App() {
                   <Route path="/flagged-emails" element={<FlaggedEmails />} />
                   <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
                   <Route path="/privacy-access-control" element={<PrivacyAccessControl />} />
+                  <Route path="/incidents" element={<Incidents totalIncidents={0} />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/login" replace />} />
