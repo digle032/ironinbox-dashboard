@@ -133,31 +133,31 @@ const Inbox: React.FC = () => {
   }, [searchQuery, timeFilter, folder]);
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Inbox" />
 
       <div className="p-6 space-y-6">
         {/* Controls */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 dark:bg-[#1e293b] dark:border-[#334155]">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex-1 relative">
-              <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <RiSearchLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 dark:text-[#94a3b8]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by sender or subject..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#243247] dark:border-[#334155] dark:text-[#f8fafc] dark:placeholder:text-[#94a3b8]"
               />
             </div>
 
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center space-x-2">
-                <RiInboxLine className="text-gray-400 w-5 h-5" />
+                <RiInboxLine className="text-gray-400 w-5 h-5 dark:text-[#94a3b8]" />
                 <select
                   value={folder}
                   onChange={(e) => setFolder(e.target.value as FolderType)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#243247] dark:border-[#334155] dark:text-[#f8fafc]"
                 >
                   <option value="All">All</option>
                   <option value="Starred">Starred</option>
@@ -166,11 +166,11 @@ const Inbox: React.FC = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <RiTimeLine className="text-gray-400 w-5 h-5" />
+                <RiTimeLine className="text-gray-400 w-5 h-5 dark:text-[#94a3b8]" />
                 <select
                   value={timeFilter}
                   onChange={(e) => setTimeFilter(e.target.value as TimeFilterType)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#243247] dark:border-[#334155] dark:text-[#f8fafc]"
                 >
                   <option value="All">All time</option>
                   <option value="Today">Today</option>
@@ -183,16 +183,16 @@ const Inbox: React.FC = () => {
 
           {/* Bulk actions */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <label className="inline-flex items-center space-x-2 text-sm text-gray-700 select-none">
+            <label className="inline-flex items-center space-x-2 text-sm text-gray-700 select-none dark:text-[#cbd5e1]">
               <input
                 type="checkbox"
                 checked={allVisibleSelected}
                 onChange={toggleSelectAllVisible}
-                className="w-4 h-4 rounded border-gray-300"
+                className="w-4 h-4 rounded border-gray-300 dark:border-[#334155]"
               />
               <span>Select page</span>
               {selectedIds.size > 0 && (
-                <span className="text-gray-500">({selectedIds.size} selected)</span>
+                <span className="text-gray-500 dark:text-[#94a3b8]">({selectedIds.size} selected)</span>
               )}
             </label>
 
@@ -200,7 +200,7 @@ const Inbox: React.FC = () => {
               <button
                 onClick={bulkToggleStar}
                 disabled={selectedIds.size === 0}
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2 dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
               >
                 <RiStarLine className="w-4 h-4" />
                 Star/Unstar
@@ -209,7 +209,7 @@ const Inbox: React.FC = () => {
               <button
                 onClick={() => bulkSetRead(true)}
                 disabled={selectedIds.size === 0}
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2 dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
               >
                 <RiCheckLine className="w-4 h-4" />
                 Mark read
@@ -218,7 +218,7 @@ const Inbox: React.FC = () => {
               <button
                 onClick={() => bulkSetRead(false)}
                 disabled={selectedIds.size === 0}
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
               >
                 Mark unread
               </button>
@@ -237,21 +237,21 @@ const Inbox: React.FC = () => {
         </div>
 
         {/* Email List */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden dark:bg-[#1e293b] dark:border-[#334155]">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-[#334155]">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-[#f8fafc]"> 
               Released Emails ({filteredEmails.length})
             </h2>
           </div>
 
           {filteredEmails.length === 0 ? (
             <div className="p-12 text-center">
-              <RiMailLine className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-700 mb-2">No emails found</h3>
-              <p className="text-gray-500">Try adjusting your filters or search terms.</p>
+              <RiMailLine className="w-12 h-12 text-gray-300 mx-auto mb-4 dark:text-[#64748b]" />
+              <h3 className="text-lg font-medium text-gray-700 mb-2 dark:text-[#cbd5e1]">No emails found</h3>
+              <p className="text-gray-500 dark:text-[#94a3b8]">Try adjusting your filters or search terms.</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 dark:divide-[#334155]">
               {paginated.map((released) => {
                 const isSelected = selectedIds.has(released.id);
                 const isActive = selectedEmail?.id === released.id;
@@ -259,15 +259,15 @@ const Inbox: React.FC = () => {
                 return (
                   <div
                     key={released.id}
-                    className={`flex items-start gap-3 px-6 py-4 hover:bg-gray-50 transition-colors ${
-                      isActive ? 'bg-blue-50' : ''
+                    className={`flex items-start gap-3 px-6 py-4 hover:bg-gray-50 transition-colors dark:hover:bg-[#243247] ${
+                      isActive ? 'bg-blue-50 dark:bg-blue-950/40' : ''
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelect(released.id)}
-                      className="mt-1 w-4 h-4 rounded border-gray-300"
+                      className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-[#334155]"
                     />
 
                     <button
@@ -276,13 +276,13 @@ const Inbox: React.FC = () => {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center flex-shrink-0 dark:from-emerald-950/40 dark:to-teal-950/40">
                             <RiUserLine className="w-5 h-5 text-emerald-600" />
                           </div>
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <h3 className={`text-sm truncate ${released.isRead ? 'text-gray-700' : 'text-gray-900 font-semibold'}`}>
+                              <h3 className={`text-sm truncate ${released.isRead ? 'text-gray-700 dark:text-[#cbd5e1]' : 'text-gray-900 font-semibold dark:text-[#f8fafc]'}`}>
                                 {released.originalEmail.sender}
                               </h3>
                               {released.starred && (
@@ -290,11 +290,11 @@ const Inbox: React.FC = () => {
                               )}
                             </div>
 
-                            <p className={`text-sm truncate ${released.isRead ? 'text-gray-600' : 'text-gray-900 font-medium'}`}>
+                            <p className={`text-sm truncate ${released.isRead ? 'text-gray-600 dark:text-[#94a3b8]' : 'text-gray-900 font-medium dark:text-[#f8fafc]'}`}>
                               {released.originalEmail.subject}
                             </p>
 
-                            <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                            <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-[#94a3b8]">
                               <span className="flex items-center space-x-1">
                                 <RiCalendarLine className="w-4 h-4" />
                                 <span>{released.releasedAt}</span>
@@ -314,13 +314,13 @@ const Inbox: React.FC = () => {
                               e.stopPropagation();
                               toggleStarReleasedEmail(released.id);
                             }}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors dark:hover:bg-[#243247]"
                             title={released.starred ? 'Unstar' : 'Star'}
                           >
                             {released.starred ? (
                               <RiStarFill className="w-5 h-5 text-amber-500" />
                             ) : (
-                              <RiStarLine className="w-5 h-5 text-gray-400" />
+                              <RiStarLine className="w-5 h-5 text-gray-400 dark:text-[#94a3b8]" />
                             )}
                           </button>
 
@@ -330,11 +330,11 @@ const Inbox: React.FC = () => {
                               e.stopPropagation();
                               toggleReadReleasedEmail(released.id);
                             }}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors dark:hover:bg-[#243247]"
                             title={released.isRead ? 'Mark unread' : 'Mark read'}
                           >
                             {released.isRead ? (
-                              <RiMailLine className="w-5 h-5 text-gray-400" />
+                              <RiMailLine className="w-5 h-5 text-gray-400 dark:text-[#94a3b8]" />
                             ) : (
                               <RiMailOpenLine className="w-5 h-5 text-blue-600" />
                             )}
@@ -350,22 +350,22 @@ const Inbox: React.FC = () => {
 
           {/* Pagination */}
           {filteredEmails.length > 0 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <p className="text-sm text-gray-600">
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between dark:border-[#334155]">
+              <p className="text-sm text-gray-600 dark:text-[#94a3b8]">
                 Page {page} of {totalPages}
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
                 >
                   Next
                 </button>
@@ -376,31 +376,31 @@ const Inbox: React.FC = () => {
 
         {/* Details */}
         {selectedEmail && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Email Details</h3>
-              <span className="text-sm text-gray-500">Released • {selectedEmail.releasedAt}</span>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-[#f8fafc]">Email Details</h3>
+              <span className="text-sm text-gray-500 dark:text-[#94a3b8]">Released • {selectedEmail.releasedAt}</span>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
-                <p className="text-gray-900">{selectedEmail.originalEmail.sender}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-[#cbd5e1]">From</label>
+                <p className="text-gray-900 dark:text-[#f8fafc]">{selectedEmail.originalEmail.sender}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                <p className="text-gray-900">{selectedEmail.originalEmail.subject}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-[#cbd5e1]">Subject</label>
+                <p className="text-gray-900 dark:text-[#f8fafc]">{selectedEmail.originalEmail.subject}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Released By</label>
-                <p className="text-gray-900">{selectedEmail.releasedBy}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-[#cbd5e1]">Released By</label>
+                <p className="text-gray-900 dark:text-[#f8fafc]">{selectedEmail.releasedBy}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                <div className="bg-gray-50 rounded-lg p-4 text-gray-800 text-sm leading-relaxed">
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-[#cbd5e1]">Content</label>
+                <div className="bg-gray-50 rounded-lg p-4 text-gray-800 text-sm leading-relaxed dark:bg-[#243247] dark:text-[#cbd5e1]">
                   {selectedEmail.originalEmail.content}
                 </div>
               </div>

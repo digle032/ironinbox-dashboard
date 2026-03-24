@@ -53,14 +53,14 @@ const cancelEdit = () => {
 
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Keyword Monitoring" />
 
       <div className="p-8 max-w-4xl">
         <div className="space-y-8">
           {/* Active Keywords Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Active Keywords</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-[#f8fafc]">Active Keywords</h2>
             
             {/* Add New Keyword */}
             <div className="mb-6">
@@ -71,12 +71,12 @@ const cancelEdit = () => {
                   value={newKeyword}
                   onChange={(e) => setNewKeyword(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#243247] dark:border-[#334155] dark:text-[#f8fafc] dark:placeholder:text-[#94a3b8]"
                 />
                 <button
                   onClick={handleAddKeyword}
                   disabled={!newKeyword.trim()}
-                  className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors dark:shadow-[0_0_20px_rgba(59,130,246,0.18)]"
                 >
                   <RiAddLine className="w-6 h-6" />
                 </button>
@@ -86,7 +86,7 @@ const cancelEdit = () => {
             {/* Keywords List */}
             <div className="flex flex-wrap gap-3">
               {keywords.length === 0 ? (
-                <p className="text-gray-500 text-sm">No keywords added yet</p>
+                <p className="text-gray-500 text-sm dark:text-[#94a3b8]">No keywords added yet</p>
               ) : (
                 keywords.map((keyword) => {
                   const isEditing = editingKeywordId === keyword.id;
@@ -97,8 +97,8 @@ const cancelEdit = () => {
                       key={keyword.id}
                       className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full border transition-colors group ${
                         isEnabled
-                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-                          : 'bg-gray-50 text-gray-500 border-gray-200'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50 dark:hover:bg-blue-900/40'
+                          : 'bg-gray-50 text-gray-500 border-gray-200 dark:bg-[#243247] dark:text-[#94a3b8] dark:border-[#334155]'
                       }`}
                     >
                       {isEditing ? (
@@ -110,7 +110,7 @@ const cancelEdit = () => {
                               if (e.key === 'Enter') commitEdit(keyword.id);
                               if (e.key === 'Escape') cancelEdit();
                             }}
-                            className="w-40 px-3 py-1 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-40 px-3 py-1 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#f8fafc]"
                             autoFocus
                           />
                           <button
@@ -121,7 +121,7 @@ const cancelEdit = () => {
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="px-3 py-1 text-sm rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                            className="px-3 py-1 text-sm rounded-full border border-gray-300 hover:bg-gray-50 transition-colors dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
                           >
                             Cancel
                           </button>
@@ -130,7 +130,7 @@ const cancelEdit = () => {
                         <>
                           <span className="font-medium">{keyword.value}</span>
                           {!isEnabled && (
-                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
+                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full dark:bg-[#334155] dark:text-[#cbd5e1]">
                               Disabled
                             </span>
                           )}
@@ -140,7 +140,7 @@ const cancelEdit = () => {
                       <div className="relative">
                         <button
                           onClick={() => setActiveMenu(activeMenu === keyword.id ? null : keyword.id)}
-                          className="p-1 rounded transition-colors hover:bg-black/5"
+                          className="p-1 rounded transition-colors hover:bg-black/5 dark:hover:bg-white/10"
                           disabled={isEditing}
                         >
                           <RiMoreLine className="w-4 h-4" />
@@ -148,10 +148,10 @@ const cancelEdit = () => {
 
                         {/* Dropdown Menu */}
                         {activeMenu === keyword.id && !isEditing && (
-                          <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-10 min-w-[160px]">
+                          <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-10 min-w-[160px] dark:bg-[#1e293b] dark:border-[#334155]">
                             <button
                               onClick={() => startEditing(keyword.id, keyword.value)}
-                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
                             >
                               <span>Edit</span>
                             </button>
@@ -161,7 +161,7 @@ const cancelEdit = () => {
                                 toggleKeyword(keyword.id);
                                 setActiveMenu(null);
                               }}
-                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
                             >
                               <span>{keyword.enabled ? 'Disable' : 'Enable'}</span>
                             </button>
@@ -171,7 +171,7 @@ const cancelEdit = () => {
                                 deleteKeyword(keyword.id);
                                 setActiveMenu(null);
                               }}
-                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                              className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-950/40"
                             >
                               <RiDeleteBinLine className="w-4 h-4" />
                               <span>Delete</span>
@@ -187,21 +187,21 @@ const cancelEdit = () => {
           </div>
 
           {/* Detection Options Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Detection Options</h2>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-[#f8fafc]">Detection Options</h2>
             <div className="space-y-3">
               <label className="flex items-center space-x-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={detectionOptions.caseInsensitive}
                   onChange={(e) => updateDetectionOptions({ caseInsensitive: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500 dark:border-[#334155]"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Case-insensitive matching
                   </span>
-                  <p className="text-sm text-gray-500">Ignore case when matching keywords (e.g., "Urgent" matches "urgent")</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Ignore case when matching keywords (e.g., "Urgent" matches "urgent")</p>
                 </div>
               </label>
 
@@ -213,10 +213,10 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Match in subject line
                   </span>
-                  <p className="text-sm text-gray-500">Search for keywords in email subject lines</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Search for keywords in email subject lines</p>
                 </div>
               </label>
 
@@ -228,10 +228,10 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Match in body
                   </span>
-                  <p className="text-sm text-gray-500">Search for keywords in email body content</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Search for keywords in email body content</p>
                 </div>
               </label>
 
@@ -243,19 +243,19 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Whole-word only
                   </span>
-                  <p className="text-sm text-gray-500">Only match complete words (e.g., "verify" won't match "verification")</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Only match complete words (e.g., "verify" won't match "verification")</p>
                 </div>
               </label>
             </div>
           </div>
 
           {/* Detection Actions Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Detection Actions</h2>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-[#f8fafc]">Detection Actions</h2>
+            <p className="text-sm text-gray-600 mb-4 dark:text-[#94a3b8]">
               Define what happens when a keyword is detected in an email.
             </p>
             <div className="space-y-3">
@@ -267,10 +267,10 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Flag the email
                   </span>
-                  <p className="text-sm text-gray-500">Automatically flag emails containing keywords</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Automatically flag emails containing keywords</p>
                 </div>
               </label>
 
@@ -282,10 +282,10 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Log keyword match
                   </span>
-                  <p className="text-sm text-gray-500">Record all keyword matches in the system log</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Record all keyword matches in the system log</p>
                 </div>
               </label>
 
@@ -297,10 +297,10 @@ const cancelEdit = () => {
                   className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors">
+                  <span className="text-gray-800 font-medium group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                     Show reason in dashboard
                   </span>
-                  <p className="text-sm text-gray-500">Display the matched keyword in the flagged emails dashboard</p>
+                  <p className="text-sm text-gray-500 dark:text-[#94a3b8]">Display the matched keyword in the flagged emails dashboard</p>
                 </div>
               </label>
             </div>

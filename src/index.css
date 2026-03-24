@@ -1,11 +1,17 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
-  @apply bg-slate-50 text-slate-800 antialiased;
+  @apply bg-slate-50 text-slate-800 antialiased dark:bg-[#0f172a] dark:text-[#f8fafc];
   background-image:
     radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
   background-attachment: fixed;
+}
+
+html.dark body {
+  background-image: none;
 }
 
 /* Custom Scrollbar */
@@ -19,7 +25,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors dark:bg-slate-600 dark:hover:bg-slate-500;
 }
 
 /* Glassmorphism Utilities */
@@ -28,7 +34,7 @@ body {
 }
 
 .glass-card {
-  @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-lg shadow-slate-200/50 rounded-2xl;
+  @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-lg shadow-slate-200/50 rounded-2xl dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-lg dark:shadow-black/25 dark:backdrop-blur-none;
 }
 
 .glass-panel {

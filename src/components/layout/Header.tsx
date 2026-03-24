@@ -19,26 +19,26 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-sm shadow-slate-200/40 px-8 py-4 transition-all duration-300">
+    <div className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-sm shadow-slate-200/40 px-8 py-4 transition-all duration-300 dark:bg-[#1e293b]/95 dark:border-[#334155] dark:shadow-md dark:shadow-black/25 dark:backdrop-blur-none">
       <div className="flex items-center justify-between">
         {/* Page Title & Breadcrumbs */}
         <div className="flex flex-col">
-          <div className="flex items-center space-x-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-            <span className="hover:text-blue-500 cursor-pointer transition-colors">Home</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-blue-600">{title}</span>
+          <div className="flex items-center space-x-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 dark:text-[#94a3b8]">
+            <span className="hover:text-blue-500 cursor-pointer transition-colors dark:hover:text-blue-400">Home</span>
+            <span className="text-slate-300 dark:text-[#64748b]">/</span>
+            <span className="text-blue-600 dark:text-blue-400">{title}</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-display">{title}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-display dark:text-[#f8fafc]">{title}</h1>
         </div>
 
         {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
           {/* Action Buttons */}
           {showActions && (
-            <div className="flex items-center space-x-3 mr-2 border-r border-slate-200 pr-6">
+            <div className="flex items-center space-x-3 mr-2 border-r border-slate-200 pr-6 dark:border-[#334155]">
               <button 
                 onClick={handleExportPDF}
-                className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-xl transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-blue-600/30 active:scale-95 text-sm font-medium group"
+                className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-xl transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-blue-600/30 active:scale-95 text-sm font-medium group dark:bg-[#243247] dark:hover:bg-blue-600 dark:shadow-[0_0_20px_rgba(59,130,246,0.12)]"
               >
                 <RiFileDownloadLine className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
                 <span>Export Report</span>
@@ -47,23 +47,23 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
           )}
 
           {/* Notification Bell */}
-          <button className="relative p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group">
+          <button className="relative p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group dark:text-[#94a3b8] dark:hover:bg-[#243247] dark:hover:text-blue-400">
             <RiBellLine className="w-5 h-5 transition-transform group-hover:rotate-12" />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm"></span>
+            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm dark:border-[#1e293b]"></span>
           </button>
 
-          <div className="h-8 w-px bg-slate-200/60"></div>
+          <div className="h-8 w-px bg-slate-200/60 dark:bg-[#334155]"></div>
 
           {/* User Profile Mini */}
           <div className="relative group">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center space-x-2 p-1 rounded-full border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200"
+              className="flex items-center space-x-2 p-1 rounded-full border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200 dark:hover:border-[#334155] dark:hover:bg-[#243247]"
             >
               <img 
                 src={profile.avatar} 
                 alt="Profile" 
-                className="w-9 h-9 rounded-full shadow-sm ring-2 ring-white object-cover"
+                className="w-9 h-9 rounded-full shadow-sm ring-2 ring-white object-cover dark:ring-[#334155]"
               />
             </button>
           </div>
