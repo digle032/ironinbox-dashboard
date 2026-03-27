@@ -12,7 +12,10 @@ export function getVisibleSignals(email: FlaggedEmail, keywords: Keyword[]): Sig
 
 // Emails with at least one visible signal will still be enabled.
 export function filterVisibleFlaggedEmails(emails: FlaggedEmail[], keywords: Keyword[]): FlaggedEmail[] {
-  return emails.filter(e => getVisibleSignals(e, keywords).length > 0);
+  return emails.filter(e => {
+    if (!e.signals || e.signals.length === 0) return true;
+    return getVisibleSignals(e, keywords).length > 0;
+  });
 }
 
 export function hasVisibleKeywordHit(email: FlaggedEmail, keywords: Keyword[]): boolean {
