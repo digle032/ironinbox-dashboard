@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
+import { filterVisibleFlaggedEmails } from '../utils/keywordSignals';
 import { useSettings } from '../contexts/SettingsContext';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
@@ -33,14 +34,15 @@ const Dashboard: React.FC = () => {
 
   // Calculate comprehensive statistics
   const stats = useMemo(() => {
-    const totalFlagged = flaggedEmails.length;
+    const visibleFlagged = filterVisibleFlaggedEmails(flaggedEmails, keywords);
+    const totalFlagged = visibleFlagged.length;
     const totalReleased = releasedEmails.length;
     const totalProcessed = totalFlagged + totalReleased;
     
-    const criticalCount = flaggedEmails.filter(e => e.riskLevel === 'Critical').length;
-    const highCount = flaggedEmails.filter(e => e.riskLevel === 'High').length;
-    const mediumCount = flaggedEmails.filter(e => e.riskLevel === 'Medium').length;
-    const lowCount = flaggedEmails.filter(e => e.riskLevel === 'Low').length;
+    const criticalCount = visibleFlagged.filter(e => e.riskLevel === 'Critical').length;
+    const highCount = visibleFlagged.filter(e => e.riskLevel === 'High').length;
+    const mediumCount = visibleFlagged.filter(e => e.riskLevel === 'Medium').length;
+    const lowCount = visibleFlagged.filter(e => e.riskLevel === 'Low').length;
     
     // Calculate overall risk score (0-100)
     const riskWeights = { Critical: 100, High: 70, Medium: 40, Low: 20 };
@@ -57,7 +59,7 @@ const Dashboard: React.FC = () => {
     
     // Top threat domains
     const domainCounts: Record<string, number> = {};
-    flaggedEmails.forEach(email => {
+    visibleFlagged.forEach(email => {
       const domain = email.sender.split('@')[1] || email.sender;
       domainCounts[domain] = (domainCounts[domain] || 0) + 1;
     });
@@ -80,7 +82,7 @@ const Dashboard: React.FC = () => {
       detectionRate,
       topThreats,
       recentReleased,
-      activeKeywords: keywords.length
+      activeKeywords: keywords.filter(k => k.enabled).length
     };
   }, [flaggedEmails, releasedEmails, keywords]);
 
@@ -380,4 +382,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-

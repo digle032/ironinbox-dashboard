@@ -4,6 +4,12 @@ import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import EmailDetailModal from '../components/dashboard/EmailDetailModal';
 import { generatePDFReport } from '../utils/pdfExport';
+import {
+  filterVisibleFlaggedEmails,
+  getVisibleSignals,
+  hasVisibleTypoHit,
+  hasVisibleKeywordHit
+} from '../utils/keywordSignals';
 import { RiAlertLine, RiFireLine, RiKeyLine, RiSearchLine, RiSortDesc } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
 
@@ -11,39 +17,48 @@ type FilterType = 'All' | 'Keyword' | 'Typo' | 'Both';
 type SortType = 'Risk' | 'Received' | 'Sender' | 'Subject';
 
 const FlaggedEmails: React.FC = () => {
-  const { flaggedEmails, setSelectedEmail, selectedEmail, releaseEmail } = useApp();
+  const { flaggedEmails, keywords, setSelectedEmail, selectedEmail, releaseEmail } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('All');
   const [sortBy, setSortBy] = useState<SortType>('Risk');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Calculate statistics (same logic)
+  const visibleFlaggedEmails = useMemo(
+    () => filterVisibleFlaggedEmails(flaggedEmails, keywords),
+    [flaggedEmails, keywords]
+  );
+
+  React.useEffect(() => {
+    if (!selectedEmail) return;
+    if (!visibleFlaggedEmails.some(e => e.id === selectedEmail.id)) {
+      setSelectedEmail(null);
+    }
+  }, [visibleFlaggedEmails, selectedEmail, setSelectedEmail]);
+
+  // Calculate statistics (respects enabled keywords only)
   const stats = useMemo(() => {
-    const totalFlagged = flaggedEmails.length;
-    const highCritical = flaggedEmails.filter(e => 
+    const totalFlagged = visibleFlaggedEmails.length;
+    const highCritical = visibleFlaggedEmails.filter(e =>
       e.riskLevel === 'Critical' || e.riskLevel === 'High'
     ).length;
-    const keywordHits = flaggedEmails.filter(e => 
-      e.signals.some(s => s.type === 'keyword')
-    ).length;
-    const typoHits = flaggedEmails.filter(e => 
-      e.signals.some(s => s.type === 'typo')
-    ).length;
+    const keywordHits = visibleFlaggedEmails.filter(e => hasVisibleKeywordHit(e, keywords)).length;
+    const typoHits = visibleFlaggedEmails.filter(e => hasVisibleTypoHit(e, keywords)).length;
 
     return { totalFlagged, highCritical, keywordHits, typoHits };
-  }, [flaggedEmails]);
+  }, [visibleFlaggedEmails, keywords]);
 
   // Filter and sort emails (same logic)
   const filteredEmails = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     
-    let filtered = flaggedEmails.filter(email => {
+    let filtered = visibleFlaggedEmails.filter(email => {
+      const visibleSignals = getVisibleSignals(email, keywords);
       // If no query, skip search check
       if (!query) {
         if (filterType === 'All') return true;
-        const hasKeyword = email.signals.some(s => s.type === 'keyword');
-        const hasTypo = email.signals.some(s => s.type === 'typo');
+        const hasKeyword = visibleSignals.some(s => s.type === 'keyword');
+        const hasTypo = visibleSignals.some(s => s.type === 'typo');
         if (filterType === 'Keyword') return hasKeyword && !hasTypo;
         if (filterType === 'Typo') return hasTypo && !hasKeyword;
         if (filterType === 'Both') return hasKeyword && hasTypo;
@@ -53,14 +68,14 @@ const FlaggedEmails: React.FC = () => {
       const matchesSearch = 
         (email.sender && email.sender.toLowerCase().includes(query)) ||
         (email.subject && email.subject.toLowerCase().includes(query)) ||
-        (email.signals && email.signals.some(s => s.value && s.value.toLowerCase().includes(query)));
+        (visibleSignals.some(s => s.value && s.value.toLowerCase().includes(query)));
 
       if (!matchesSearch) return false;
 
       if (filterType === 'All') return true;
       
-      const hasKeyword = email.signals.some(s => s.type === 'keyword');
-      const hasTypo = email.signals.some(s => s.type === 'typo');
+      const hasKeyword = visibleSignals.some(s => s.type === 'keyword');
+      const hasTypo = visibleSignals.some(s => s.type === 'typo');
 
       if (filterType === 'Keyword') return hasKeyword && !hasTypo;
       if (filterType === 'Typo') return hasTypo && !hasKeyword;
@@ -87,7 +102,7 @@ const FlaggedEmails: React.FC = () => {
     });
 
     return filtered;
-  }, [flaggedEmails, searchQuery, filterType, sortBy]);
+  }, [visibleFlaggedEmails, keywords, searchQuery, filterType, sortBy]);
 
   // Pagination
   const totalPages = Math.ceil(filteredEmails.length / itemsPerPage);
@@ -115,7 +130,7 @@ const FlaggedEmails: React.FC = () => {
   };
 
   const handleExportPDF = () => {
-    generatePDFReport(filteredEmails);
+    generatePDFReport(filteredEmails, keywords);
   };
 
   return (
@@ -239,7 +254,9 @@ const FlaggedEmails: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  paginatedEmails.map((email, index) => (
+                  paginatedEmails.map((email, index) => {
+                    const visibleSignals = getVisibleSignals(email, keywords);
+                    return (
                     <tr
                       key={email.id}
                       onClick={() => setSelectedEmail(email)}
@@ -266,7 +283,7 @@ const FlaggedEmails: React.FC = () => {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
-                          {email.signals.slice(0, 2).map((signal, idx) => (
+                          {visibleSignals.slice(0, 2).map((signal, idx) => (
                             <span
                               key={idx}
                               className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border shadow-sm ${
@@ -279,9 +296,9 @@ const FlaggedEmails: React.FC = () => {
                               {signal.value}
                             </span>
                           ))}
-                          {email.signals.length > 2 && (
+                          {visibleSignals.length > 2 && (
                             <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#243247] dark:text-[#94a3b8] dark:border-[#334155]">
-                              +{email.signals.length - 2}
+                              +{visibleSignals.length - 2}
                             </span>
                           )}
                         </div>
@@ -308,7 +325,8 @@ const FlaggedEmails: React.FC = () => {
                         </button>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

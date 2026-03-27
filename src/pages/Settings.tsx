@@ -16,7 +16,7 @@ const Settings: React.FC = () => {
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-1 dark:text-[#f8fafc]">Appearance</h2>
               <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
-                Light or dark theme for this app only. Your OS or browser theme is not used.
+                Light or dark appearance for this app.
               </p>
             </div>
             <button

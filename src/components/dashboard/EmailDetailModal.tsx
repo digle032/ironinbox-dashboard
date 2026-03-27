@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from '../common/Modal';
 import { FlaggedEmail } from '../../types';
 import { useApp } from '../../contexts/AppContext';
+import { getVisibleSignals } from '../../utils/keywordSignals';
 import { RiAlertLine, RiKeyLine, RiShieldCheckLine, RiTimeLine, RiUser3Line } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
 
@@ -11,9 +12,11 @@ interface EmailDetailModalProps {
 }
 
 const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) => {
-  const { releaseEmail } = useApp();
+  const { releaseEmail, keywords } = useApp();
 
   if (!email) return null;
+
+  const visibleSignals = getVisibleSignals(email, keywords);
 
   const handleRelease = () => {
     releaseEmail(email.id);
@@ -72,10 +75,15 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
           <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center dark:text-[#f8fafc]">
             <RiAlertLine className="w-5 h-5 mr-2 text-slate-400 dark:text-[#94a3b8]" />
             Detection Signals
-            <span className="ml-2 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs dark:bg-[#243247] dark:text-[#cbd5e1]">{email.signals.length}</span>
+            <span className="ml-2 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs dark:bg-[#243247] dark:text-[#cbd5e1]">{visibleSignals.length}</span>
           </h3>
           <div className="grid gap-3">
-            {email.signals.map((signal, index) => (
+            {visibleSignals.length === 0 ? (
+              <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
+                No active detection signals for this email based on your current keyword settings.
+              </p>
+            ) : (
+            visibleSignals.map((signal, index) => (
               <div
                 key={index}
                 className={`p-4 rounded-xl border transition-all duration-300 hover:shadow-md ${
@@ -105,10 +113,9 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
                   </div>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
-
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-8 dark:border-[#334155]">
