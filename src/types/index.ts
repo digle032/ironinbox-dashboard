@@ -13,6 +13,8 @@ export type ReleasedEmail = {
   originalEmail: FlaggedEmail;
   releasedAt: string;
   releasedBy: string;
+  starred: boolean;
+  isRead: boolean;
 }
 
 export type Signal = {
@@ -25,6 +27,7 @@ export type Keyword = {
   id: string;
   value: string;
   createdAt: string;
+  enabled: boolean;
 }
 
 export type DetectionOptions = {

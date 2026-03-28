@@ -1,8 +1,9 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { FlaggedEmail } from '../types';
+import { FlaggedEmail, Keyword } from '../types';
+import { getVisibleSignals } from './keywordSignals';
 
-export const generatePDFReport = (flaggedEmails: FlaggedEmail[]) => {
+export const generatePDFReport = (flaggedEmails: FlaggedEmail[], keywords?: Keyword[]) => {
   const doc = new jsPDF();
   
   // Add header
@@ -47,13 +48,18 @@ export const generatePDFReport = (flaggedEmails: FlaggedEmail[]) => {
   yPos += 12;
   
   // Prepare table data
-  const tableData = flaggedEmails.map(email => [
-    email.received,
-    email.sender.length > 35 ? email.sender.substring(0, 32) + '...' : email.sender,
-    email.subject.length > 40 ? email.subject.substring(0, 37) + '...' : email.subject,
-    email.signals.map(s => `${s.type}: ${s.value}`).join(', ').substring(0, 30) + '...',
-    email.riskLevel
-  ]);
+  const tableData = flaggedEmails.map(email => {
+    const signals = keywords ? getVisibleSignals(email, keywords) : email.signals;
+    const raw = signals.map(s => `${s.type}: ${s.value}`).join(', ');
+    const sigText = signals.length === 0 ? '—' : (raw.length > 30 ? raw.substring(0, 30) + '...' : raw);
+    return [
+      email.received,
+      email.sender.length > 35 ? email.sender.substring(0, 32) + '...' : email.sender,
+      email.subject.length > 40 ? email.subject.substring(0, 37) + '...' : email.subject,
+      sigText,
+      email.riskLevel
+    ];
+  });
   
   // Add table
   autoTable(doc, {

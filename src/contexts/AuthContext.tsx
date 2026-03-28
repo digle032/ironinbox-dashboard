@@ -1,22 +1,34 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  GoogleAuthProvider,
-  signOut as firebaseSignOut
-} from 'firebase/auth';
-import { auth } from '../lib/firebase';
 import { useSettings } from './SettingsContext';
 
 const MONITORED_EMAIL_KEY = 'ironinbox_monitored_email';
 const NEEDS_MONITORED_EMAIL_KEY = 'ironinbox_needs_monitored_email';
 
+const MOCK_USER_KEY = 'ironinbox_mock_user';
+
+interface DemoUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
+
+const createDemoUser = (email: string, nameOverride?: string | null): DemoUser => {
+  const baseName = nameOverride || email.split('@')[0] || 'User';
+  const displayName = baseName;
+  const photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    displayName
+  )}&background=0D8ABC&color=fff`;
+  return {
+    uid: `demo-${email}`,
+    email,
+    displayName,
+    photoURL
+  };
+};
+
 interface AuthContextType {
-  user: User | null;
+  user: DemoUser | null;
   monitoredEmail: string | null;
   loading: boolean;
   isNewUser: boolean;
@@ -31,7 +43,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<DemoUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [monitoredEmail, setMonitoredEmailState] = useState<string | null>(() => {
@@ -39,7 +51,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   const { updateProfile } = useSettings();
 
-  // Persist monitored email to localStorage
   const setMonitoredEmail = (email: string) => {
     setMonitoredEmailState(email);
     localStorage.setItem(MONITORED_EMAIL_KEY, email);
@@ -51,48 +62,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsNewUser(false);
   };
 
-  // Sync profile from auth user
   useEffect(() => {
     if (!user) return;
     const displayName = user.displayName || user.email?.split('@')[0] || 'User';
     const email = user.email || '';
-    const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`;
+    const avatar =
+      user.photoURL ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`;
     updateProfile({ name: displayName, email, avatar, role: 'User' });
-  }, [user, updateProfile]);
+  }, [user]);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      if (u) {
-        const stored = localStorage.getItem(MONITORED_EMAIL_KEY);
-        const needsSetup = sessionStorage.getItem(NEEDS_MONITORED_EMAIL_KEY);
-        if (stored) {
-          setMonitoredEmailState(stored);
-          setIsNewUser(false);
-        } else if (needsSetup) {
-          setMonitoredEmailState(null);
-          setIsNewUser(true);
-        } else {
-          setMonitoredEmailState(u.email || null);
-          setIsNewUser(false);
-        }
-      } else {
-        setMonitoredEmailState(null);
+    try {
+      const rawUser = localStorage.getItem(MOCK_USER_KEY);
+      if (rawUser) {
+        const parsed = JSON.parse(rawUser) as DemoUser;
+        setUser(parsed);
+      }
+      const storedEmail = localStorage.getItem(MONITORED_EMAIL_KEY);
+      if (storedEmail) {
+        setMonitoredEmailState(storedEmail);
         setIsNewUser(false);
       }
+    } catch (e) {
+      // If anything goes wrong, fall back to a signed-out demo state.
+      // eslint-disable-next-line no-console
+      console.error('Failed to hydrate auth state:', e);
+      setUser(null);
+      setMonitoredEmailState(null);
+      setIsNewUser(false);
+    } finally {
       setLoading(false);
-    });
-    return () => unsub();
+    }
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error('Firebase not configured');
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    setUser(result.user);
+    void password;
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const demoUser = createDemoUser(email);
+    setUser(demoUser);
+    localStorage.setItem(MOCK_USER_KEY, JSON.stringify(demoUser));
     const stored = localStorage.getItem(MONITORED_EMAIL_KEY);
     setMonitoredEmailState(stored || email);
     setIsNewUser(false);
@@ -100,45 +110,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error('Firebase not configured');
+    void password;
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const demoUser = createDemoUser(email);
+    setUser(demoUser);
+    localStorage.setItem(MOCK_USER_KEY, JSON.stringify(demoUser));
     sessionStorage.setItem(NEEDS_MONITORED_EMAIL_KEY, '1');
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    setUser(result.user);
     setMonitoredEmailState(null);
     setIsNewUser(true);
     setLoading(false);
   };
 
   const signInWithGoogle = async () => {
-    if (!auth) throw new Error('Firebase not configured');
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const u = result.user;
-      setUser(u);
-      setLoading(false);
-      if (u.email) {
-        setMonitoredEmailState(u.email);
-        localStorage.setItem(MONITORED_EMAIL_KEY, u.email);
-      }
-      setIsNewUser(false);
-      return 'popup' as const;
-    } catch (err: unknown) {
-      const code = typeof err === 'object' && err && 'code' in err ? (err as { code?: string }).code : undefined;
-      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
-        await signInWithRedirect(auth, provider);
-        return 'redirect' as const;
-      }
-      throw err;
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const demoUser = createDemoUser('demo@ironinbox.app', 'IronInbox Demo');
+    setUser(demoUser);
+    localStorage.setItem(MOCK_USER_KEY, JSON.stringify(demoUser));
+    setMonitoredEmailState(demoUser.email);
+    if (demoUser.email) {
+      localStorage.setItem(MONITORED_EMAIL_KEY, demoUser.email);
     }
+    setIsNewUser(false);
+    setLoading(false);
+    return 'popup' as const;
   };
 
   const signOut = async () => {
-    if (auth) await firebaseSignOut(auth);
-    localStorage.removeItem(MONITORED_EMAIL_KEY);
     setUser(null);
     setMonitoredEmailState(null);
     setIsNewUser(false);
+    localStorage.removeItem(MONITORED_EMAIL_KEY);
+    sessionStorage.removeItem(NEEDS_MONITORED_EMAIL_KEY);
+    localStorage.removeItem(MOCK_USER_KEY);
   };
 
   const value: AuthContextType = {
@@ -162,3 +167,4 @@ export const useAuth = () => {
   if (ctx === undefined) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
+

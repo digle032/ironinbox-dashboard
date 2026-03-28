@@ -6,6 +6,12 @@ import EmailDetailModal from '../components/dashboard/EmailDetailModal';
 import RoleGate from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { generatePDFReport } from '../utils/pdfExport';
+import {
+  filterVisibleFlaggedEmails,
+  getVisibleSignals,
+  hasVisibleTypoHit,
+  hasVisibleKeywordHit
+} from '../utils/keywordSignals';
 import { RiAlertLine, RiFireLine, RiKeyLine, RiSearchLine, RiSortDesc } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
 
@@ -14,39 +20,48 @@ type SortType = 'Risk' | 'Received' | 'Sender' | 'Subject';
 
 const FlaggedEmails: React.FC = () => {
   useEngagementTracker('flagged-emails');
-  const { flaggedEmails, setSelectedEmail, selectedEmail, releaseEmail } = useApp();
+  const { flaggedEmails, keywords, setSelectedEmail, selectedEmail, releaseEmail } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('All');
   const [sortBy, setSortBy] = useState<SortType>('Risk');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Calculate statistics (same logic)
+  const visibleFlaggedEmails = useMemo(
+    () => filterVisibleFlaggedEmails(flaggedEmails, keywords),
+    [flaggedEmails, keywords]
+  );
+
+  React.useEffect(() => {
+    if (!selectedEmail) return;
+    if (!visibleFlaggedEmails.some(e => e.id === selectedEmail.id)) {
+      setSelectedEmail(null);
+    }
+  }, [visibleFlaggedEmails, selectedEmail, setSelectedEmail]);
+
+  // Calculate statistics (respects enabled keywords only)
   const stats = useMemo(() => {
-    const totalFlagged = flaggedEmails.length;
-    const highCritical = flaggedEmails.filter(e => 
+    const totalFlagged = visibleFlaggedEmails.length;
+    const highCritical = visibleFlaggedEmails.filter(e =>
       e.riskLevel === 'Critical' || e.riskLevel === 'High'
     ).length;
-    const keywordHits = flaggedEmails.filter(e => 
-      e.signals.some(s => s.type === 'keyword')
-    ).length;
-    const typoHits = flaggedEmails.filter(e => 
-      e.signals.some(s => s.type === 'typo')
-    ).length;
+    const keywordHits = visibleFlaggedEmails.filter(e => hasVisibleKeywordHit(e, keywords)).length;
+    const typoHits = visibleFlaggedEmails.filter(e => hasVisibleTypoHit(e, keywords)).length;
 
     return { totalFlagged, highCritical, keywordHits, typoHits };
-  }, [flaggedEmails]);
+  }, [visibleFlaggedEmails, keywords]);
 
   // Filter and sort emails (same logic)
   const filteredEmails = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     
-    let filtered = flaggedEmails.filter(email => {
+    let filtered = visibleFlaggedEmails.filter(email => {
+      const visibleSignals = getVisibleSignals(email, keywords);
       // If no query, skip search check
       if (!query) {
         if (filterType === 'All') return true;
-        const hasKeyword = email.signals.some(s => s.type === 'keyword');
-        const hasTypo = email.signals.some(s => s.type === 'typo');
+        const hasKeyword = visibleSignals.some(s => s.type === 'keyword');
+        const hasTypo = visibleSignals.some(s => s.type === 'typo');
         if (filterType === 'Keyword') return hasKeyword && !hasTypo;
         if (filterType === 'Typo') return hasTypo && !hasKeyword;
         if (filterType === 'Both') return hasKeyword && hasTypo;
@@ -56,14 +71,14 @@ const FlaggedEmails: React.FC = () => {
       const matchesSearch = 
         (email.sender && email.sender.toLowerCase().includes(query)) ||
         (email.subject && email.subject.toLowerCase().includes(query)) ||
-        (email.signals && email.signals.some(s => s.value && s.value.toLowerCase().includes(query)));
+        (visibleSignals.some(s => s.value && s.value.toLowerCase().includes(query)));
 
       if (!matchesSearch) return false;
 
       if (filterType === 'All') return true;
       
-      const hasKeyword = email.signals.some(s => s.type === 'keyword');
-      const hasTypo = email.signals.some(s => s.type === 'typo');
+      const hasKeyword = visibleSignals.some(s => s.type === 'keyword');
+      const hasTypo = visibleSignals.some(s => s.type === 'typo');
 
       if (filterType === 'Keyword') return hasKeyword && !hasTypo;
       if (filterType === 'Typo') return hasTypo && !hasKeyword;
@@ -90,7 +105,7 @@ const FlaggedEmails: React.FC = () => {
     });
 
     return filtered;
-  }, [flaggedEmails, searchQuery, filterType, sortBy]);
+  }, [visibleFlaggedEmails, keywords, searchQuery, filterType, sortBy]);
 
   // Pagination
   const totalPages = Math.ceil(filteredEmails.length / itemsPerPage);
@@ -107,28 +122,28 @@ const FlaggedEmails: React.FC = () => {
   const getRiskColor = (risk: string) => {
     switch (risk) {
       case 'Critical':
-        return 'text-red-700 bg-red-50 border-red-200';
+        return 'text-red-700 bg-red-50 border-red-200 dark:text-red-300 dark:bg-red-950/45 dark:border-red-900/60';
       case 'High':
-        return 'text-orange-700 bg-orange-50 border-orange-200';
+        return 'text-orange-700 bg-orange-50 border-orange-200 dark:text-orange-300 dark:bg-orange-950/45 dark:border-orange-900/60';
       case 'Medium':
-        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200 dark:text-yellow-300 dark:bg-yellow-950/45 dark:border-yellow-900/60';
       default:
-        return 'text-blue-700 bg-blue-50 border-blue-200';
+        return 'text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-300 dark:bg-blue-950/45 dark:border-blue-900/60';
     }
   };
 
   const handleExportPDF = () => {
-    generatePDFReport(filteredEmails);
+    generatePDFReport(filteredEmails, keywords);
   };
 
   return (
     <RoleGate permission="canViewFlaggedEmails">
-    <div className="flex-1 overflow-auto bg-slate-50/50">
+    <div className="flex-1 overflow-auto bg-slate-50/50 dark:bg-[#0f172a]">
       <Header title="Flagged Emails" showActions onExportPDF={handleExportPDF} />
 
-      <div className="p-8 space-y-8 animate-fade-in max-w-7xl mx-auto">
+      <div className="p-5 space-y-5 animate-fade-in max-w-7xl mx-auto">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Flagged"
             value={stats.totalFlagged}
@@ -164,33 +179,33 @@ const FlaggedEmails: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl shadow-slate-200/50 overflow-hidden">
+        <div className="bg-white rounded-lg border border-white/50 shadow-xl shadow-slate-200/50 overflow-hidden dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-black/30">
           
           {/* Controls Bar */}
-          <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40">
+          <div className="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40 dark:border-[#334155] dark:bg-[#1e293b]">
             {/* Search */}
             <div className="relative flex-1 max-w-md group">
-              <RiSearchLine className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <RiSearchLine className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors dark:text-[#94a3b8]" />
               <input
                 type="text"
                 placeholder="Search emails..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 shadow-sm"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 shadow-sm dark:bg-[#243247] dark:border-[#334155] dark:text-[#f8fafc] dark:placeholder:text-[#94a3b8]"
               />
             </div>
 
             {/* Filters & Sort */}
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/50">
+              <div className="flex items-center bg-slate-100/50 p-1 rounded-xl border border-slate-200/50 dark:bg-[#243247] dark:border-[#334155]">
                 {(['All', 'Keyword', 'Typo', 'Both'] as FilterType[]).map((type) => (
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
                     className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 ${
                       filterType === type
-                        ? 'bg-white text-blue-600 shadow-sm shadow-slate-200'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                        ? 'bg-white text-blue-600 shadow-sm shadow-slate-200 dark:bg-[#1e293b] dark:text-blue-400'
+                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50 dark:text-[#94a3b8] dark:hover:text-[#cbd5e1] dark:hover:bg-[#1e293b]'
                     }`}
                   >
                     {type}
@@ -198,14 +213,14 @@ const FlaggedEmails: React.FC = () => {
                 ))}
               </div>
 
-              <div className="w-px h-8 bg-slate-200 mx-2 hidden md:block"></div>
+              <div className="w-px h-8 bg-slate-200 mx-2 hidden md:block dark:bg-[#334155]"></div>
 
               <div className="relative group">
-                <RiSortDesc className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <RiSortDesc className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#94a3b8]" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortType)}
-                  className="pl-9 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
+                  className="pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]"
                 >
                   <option value="Risk">Risk Level</option>
                   <option value="Received">Date Received</option>
@@ -220,77 +235,79 @@ const FlaggedEmails: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50/80 text-left border-b border-slate-200/60">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Received</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sender</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Subject</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Signals</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Risk Level</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                <tr className="bg-slate-50/80 text-left border-b border-slate-200/60 dark:bg-[#243247] dark:border-[#334155]">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Received</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Sender</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Subject</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Signals</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Risk Level</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#334155]">
                 {paginatedEmails.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-16 text-center text-slate-500">
+                    <td colSpan={6} className="px-6 py-16 text-center text-slate-500 dark:text-[#94a3b8]">
                       <div className="flex flex-col items-center justify-center">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                          <RiSearchLine className="w-8 h-8 text-slate-400" />
+                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 dark:bg-[#243247]">
+                          <RiSearchLine className="w-8 h-8 text-slate-400 dark:text-[#94a3b8]" />
                         </div>
-                        <p className="text-lg font-medium text-slate-900">No emails found</p>
-                        <p className="text-sm text-slate-500 mt-1">Try adjusting your search or filters</p>
+                        <p className="text-lg font-medium text-slate-900 dark:text-[#f8fafc]">No emails found</p>
+                        <p className="text-sm text-slate-500 mt-1 dark:text-[#94a3b8]">Try adjusting your search or filters</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
-                  paginatedEmails.map((email, index) => (
+                  paginatedEmails.map((email, index) => {
+                    const visibleSignals = getVisibleSignals(email, keywords);
+                    return (
                     <tr
                       key={email.id}
                       onClick={() => setSelectedEmail(email)}
-                      className="group hover:bg-blue-50/40 cursor-pointer transition-colors duration-200"
+                      className="group hover:bg-blue-50/40 cursor-pointer transition-colors duration-200 dark:hover:bg-[#243247]"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 font-medium dark:text-[#cbd5e1]">
                         {email.received}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm border border-white">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm border border-white dark:from-[#243247] dark:to-[#243247] dark:border-[#334155] dark:text-[#cbd5e1]">
                             {email.sender.charAt(0).toUpperCase()}
                           </div>
-                          <div className="text-sm font-medium text-slate-900 truncate max-w-[180px]">
+                          <div className="text-sm font-medium text-slate-900 truncate max-w-[160px] dark:text-[#f8fafc]">
                             {email.sender}
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-slate-600 font-medium truncate max-w-xs group-hover:text-blue-600 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="text-sm text-slate-600 font-medium truncate max-w-xs group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
                           {email.subject}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
-                          {email.signals.slice(0, 2).map((signal, idx) => (
+                          {visibleSignals.slice(0, 2).map((signal, idx) => (
                             <span
                               key={idx}
                               className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border shadow-sm ${
                                 signal.type === 'keyword'
-                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                  : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/45 dark:text-amber-300 dark:border-amber-900/60'
+                                  : 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/45 dark:text-indigo-300 dark:border-indigo-900/60'
                               }`}
                             >
                               {signal.type === 'keyword' ? <RiKeyLine className="mr-1 w-3 h-3" /> : <RiAlertLine className="mr-1 w-3 h-3" />}
                               {signal.value}
                             </span>
                           ))}
-                          {email.signals.length > 2 && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                              +{email.signals.length - 2}
+                          {visibleSignals.length > 2 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#243247] dark:text-[#94a3b8] dark:border-[#334155]">
+                              +{visibleSignals.length - 2}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border shadow-sm ${getRiskColor(email.riskLevel)}`}>
                           <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
                             email.riskLevel === 'Critical' ? 'bg-red-500 animate-pulse' : 
@@ -300,28 +317,29 @@ const FlaggedEmails: React.FC = () => {
                           {email.riskLevel.toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             releaseEmail(email.id);
                           }}
-                          className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-200 shadow-sm active:scale-95"
+                          className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-200 shadow-sm active:scale-95 dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b] dark:hover:text-blue-400"
                         >
                           Release
                         </button>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>
           </div>
           
           {/* Footer / Pagination */}
-          <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
-              Showing <span className="font-medium text-slate-900">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredEmails.length)}</span> of <span className="font-medium text-slate-900">{filteredEmails.length}</span> results
+          <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between dark:bg-[#243247] dark:border-[#334155]">
+            <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
+              Showing <span className="font-medium text-slate-900 dark:text-[#f8fafc]">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredEmails.length)}</span> of <span className="font-medium text-slate-900 dark:text-[#f8fafc]">{filteredEmails.length}</span> results
             </p>
             <div className="flex items-center space-x-2">
               <button 
@@ -329,8 +347,8 @@ const FlaggedEmails: React.FC = () => {
                 disabled={currentPage === 1}
                 className={`px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm shadow-sm transition-all ${
                   currentPage === 1 
-                    ? 'text-slate-400 cursor-not-allowed' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200'
+                    ? 'text-slate-400 cursor-not-allowed dark:text-[#64748b]' 
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 dark:text-[#cbd5e1] dark:bg-[#1e293b] dark:border-[#334155] dark:hover:bg-[#243247] dark:hover:text-blue-400'
                 }`}
               >
                 Previous
@@ -343,7 +361,7 @@ const FlaggedEmails: React.FC = () => {
                     className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
                       currentPage === page
                         ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-blue-200'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-blue-200 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]'
                     }`}
                   >
                     {page}
@@ -355,8 +373,8 @@ const FlaggedEmails: React.FC = () => {
                 disabled={currentPage === totalPages || filteredEmails.length === 0}
                 className={`px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm shadow-sm transition-all ${
                   currentPage === totalPages || filteredEmails.length === 0
-                    ? 'text-slate-400 cursor-not-allowed' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200'
+                    ? 'text-slate-400 cursor-not-allowed dark:text-[#64748b]' 
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 dark:text-[#cbd5e1] dark:bg-[#1e293b] dark:border-[#334155] dark:hover:bg-[#243247] dark:hover:text-blue-400'
                 }`}
               >
                 Next
