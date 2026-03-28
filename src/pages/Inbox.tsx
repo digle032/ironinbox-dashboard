@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
+import RoleGate from '../components/common/RoleGate';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import {
   RiMailLine,
   RiMailOpenLine,
@@ -22,6 +24,7 @@ type FolderType = 'All' | 'Starred' | 'Unread';
 const ITEMS_PER_PAGE = 10;
 
 const Inbox: React.FC = () => {
+  useEngagementTracker('inbox');
   const {
     releasedEmails,
     toggleStarReleasedEmail,
@@ -133,6 +136,7 @@ const Inbox: React.FC = () => {
   }, [searchQuery, timeFilter, folder]);
 
   return (
+    <RoleGate permission="canViewInbox">
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Inbox" />
 
@@ -409,6 +413,7 @@ const Inbox: React.FC = () => {
         )}
       </div>
     </div>
+    </RoleGate>
   );
 };
 

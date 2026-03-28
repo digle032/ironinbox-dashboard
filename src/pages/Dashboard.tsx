@@ -4,6 +4,9 @@ import { filterVisibleFlaggedEmails } from '../utils/keywordSignals';
 import { useSettings } from '../contexts/SettingsContext';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
+import RoleGate from '../components/common/RoleGate';
+import EngagementLog from '../components/dashboard/EngagementLog';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { 
   RiShieldCheckLine, 
   RiAlertLine, 
@@ -19,6 +22,8 @@ const Dashboard: React.FC = () => {
   const { flaggedEmails, releasedEmails, keywords } = useApp();
   const { advanced } = useSettings();
   const [lastRefresh, setLastRefresh] = useState(new Date());
+
+  useEngagementTracker('dashboard');
 
   // Auto-refresh functionality
   useEffect(() => {
@@ -121,14 +126,18 @@ const Dashboard: React.FC = () => {
             trend="+8.2%"
             trendUp={true}
           />
-          <StatCard
-            title="Currently Flagged"
-            value={stats.totalFlagged}
-            icon={<RiAlertLine className="w-6 h-6" />}
-            iconColor="text-red-600"
-            trend="+12%"
-            trendUp={false}
-          />
+          <RoleGate permission="canViewFlaggedEmails">
+            <div className="contents">
+              <StatCard
+                title="Currently Flagged"
+                value={stats.totalFlagged}
+                icon={<RiAlertLine className="w-6 h-6" />}
+                iconColor="text-red-600"
+                trend="+12%"
+                trendUp={false}
+              />
+            </div>
+          </RoleGate>
           <StatCard
             title="Emails Released"
             value={stats.totalReleased}
@@ -137,16 +146,22 @@ const Dashboard: React.FC = () => {
             trend="+5.4%"
             trendUp={true}
           />
-          <StatCard
-            title="Active Keywords"
-            value={stats.activeKeywords}
-            icon={<RiSpamLine className="w-6 h-6" />}
-            iconColor="text-purple-600"
-            trend="+2"
-            trendUp={true}
-          />
+          <RoleGate permission="canViewFlaggedEmails">
+            <div className="contents">
+              <StatCard
+                title="Active Keywords"
+                value={stats.activeKeywords}
+                icon={<RiSpamLine className="w-6 h-6" />}
+                iconColor="text-purple-600"
+                trend="+2"
+                trendUp={true}
+              />
+            </div>
+          </RoleGate>
         </div>
 
+        <RoleGate permission="canViewFlaggedEmails">
+          <>
         {/* Risk Score & Detection Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Overall Risk Score */}
@@ -376,6 +391,10 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
+          </>
+        </RoleGate>
+
+        <EngagementLog />
       </div>
     </div>
   );

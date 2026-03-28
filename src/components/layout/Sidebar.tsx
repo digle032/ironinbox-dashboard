@@ -21,7 +21,17 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-const Sidebar: React.FC = () => {
+export interface SidebarProps {
+  canViewInbox?: boolean;
+  canViewFlaggedEmails?: boolean;
+  canViewKeywordMonitoring?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
+  canViewInbox = true,
+  canViewFlaggedEmails = true,
+  canViewKeywordMonitoring = true,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -37,6 +47,13 @@ const Sidebar: React.FC = () => {
     { name: 'Privacy & Access Control', path: '/privacy-access-control', icon: <RiLockLine className="w-5 h-5" /> },
     { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-5 h-5" /> }
   ];
+
+  const visibleNavItems = navItems.filter((item) => {
+    if (item.path === '/inbox') return canViewInbox;
+    if (item.path === '/flagged-emails') return canViewFlaggedEmails;
+    if (item.path === '/keyword-monitoring') return canViewKeywordMonitoring;
+    return true;
+  });
 
   return (
     <div className="w-72 bg-white/80 backdrop-blur-2xl h-screen flex flex-col border-r border-slate-100 shadow-2xl shadow-slate-200/50 fixed left-0 top-0 z-50 transition-all duration-300 dark:bg-[#020617] dark:border-[#334155] dark:shadow-xl dark:shadow-black/40 dark:backdrop-blur-none">

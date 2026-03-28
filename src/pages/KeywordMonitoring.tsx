@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
+import RoleGate from '../components/common/RoleGate';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { RiAddLine, RiMoreLine, RiDeleteBinLine } from 'react-icons/ri';
 
 const KeywordMonitoring: React.FC = () => {
+  useEngagementTracker('keyword-monitoring');
   const { 
     keywords, 
     addKeyword, 
@@ -53,6 +56,7 @@ const cancelEdit = () => {
 
 
   return (
+    <RoleGate permission="canViewKeywordMonitoring">
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Keyword Monitoring" />
 
@@ -315,6 +319,7 @@ const cancelEdit = () => {
         </div>
       </div>
     </div>
+    </RoleGate>
   );
 };
 
