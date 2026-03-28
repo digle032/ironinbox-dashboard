@@ -18,7 +18,17 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-const Sidebar: React.FC = () => {
+export interface SidebarProps {
+  canViewInbox?: boolean;
+  canViewFlaggedEmails?: boolean;
+  canViewKeywordMonitoring?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
+  canViewInbox = true,
+  canViewFlaggedEmails = true,
+  canViewKeywordMonitoring = true,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -31,6 +41,13 @@ const Sidebar: React.FC = () => {
     { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-5 h-5" /> },
     { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> }
   ];
+
+  const visibleNavItems = navItems.filter((item) => {
+    if (item.path === '/inbox') return canViewInbox;
+    if (item.path === '/flagged-emails') return canViewFlaggedEmails;
+    if (item.path === '/keyword-monitoring') return canViewKeywordMonitoring;
+    return true;
+  });
 
   return (
     <div className="w-72 bg-white/80 backdrop-blur-2xl h-screen flex flex-col border-r border-slate-100 shadow-2xl shadow-slate-200/50 fixed left-0 top-0 z-50 transition-all duration-300">
@@ -53,7 +70,7 @@ const Sidebar: React.FC = () => {
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-4 scrollbar-hide">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 mb-4 mt-2">Menu</div>
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link

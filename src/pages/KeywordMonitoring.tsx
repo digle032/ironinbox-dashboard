@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
+import RoleGate from '../components/common/RoleGate';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { RiAddLine, RiMoreLine, RiDeleteBinLine } from 'react-icons/ri';
 
 const KeywordMonitoring: React.FC = () => {
+  useEngagementTracker('keyword-monitoring');
   const { 
     keywords, 
     addKeyword, 
@@ -31,6 +34,7 @@ const KeywordMonitoring: React.FC = () => {
   };
 
   return (
+    <RoleGate permission="canViewKeywordMonitoring">
     <div className="flex-1 overflow-auto">
       <Header title="Keyword Monitoring" />
 
@@ -231,6 +235,7 @@ const KeywordMonitoring: React.FC = () => {
         </div>
       </div>
     </div>
+    </RoleGate>
   );
 };
 

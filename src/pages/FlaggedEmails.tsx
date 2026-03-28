@@ -3,6 +3,8 @@ import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import EmailDetailModal from '../components/dashboard/EmailDetailModal';
+import RoleGate from '../components/common/RoleGate';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { generatePDFReport } from '../utils/pdfExport';
 import { RiAlertLine, RiFireLine, RiKeyLine, RiSearchLine, RiSortDesc } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
@@ -11,6 +13,7 @@ type FilterType = 'All' | 'Keyword' | 'Typo' | 'Both';
 type SortType = 'Risk' | 'Received' | 'Sender' | 'Subject';
 
 const FlaggedEmails: React.FC = () => {
+  useEngagementTracker('flagged-emails');
   const { flaggedEmails, setSelectedEmail, selectedEmail, releaseEmail } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('All');
@@ -119,6 +122,7 @@ const FlaggedEmails: React.FC = () => {
   };
 
   return (
+    <RoleGate permission="canViewFlaggedEmails">
     <div className="flex-1 overflow-auto bg-slate-50/50">
       <Header title="Flagged Emails" showActions onExportPDF={handleExportPDF} />
 
@@ -367,6 +371,7 @@ const FlaggedEmails: React.FC = () => {
         onClose={() => setSelectedEmail(null)}
       />
     </div>
+    </RoleGate>
   );
 };
 

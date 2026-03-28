@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
+import RoleGate from '../components/common/RoleGate';
+import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { 
   RiMailLine, 
   RiMailOpenLine, 
@@ -15,6 +17,7 @@ import {
 type FilterType = 'All' | 'Today' | 'This Week' | 'This Month';
 
 const Inbox: React.FC = () => {
+  useEngagementTracker('inbox');
   const { releasedEmails } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('All');
@@ -54,6 +57,7 @@ const Inbox: React.FC = () => {
   };
 
   return (
+    <RoleGate permission="canViewInbox">
     <div className="flex-1 overflow-auto bg-slate-50/50">
       <Header title="Inbox" />
 
@@ -303,6 +307,7 @@ const Inbox: React.FC = () => {
         </div>
       </div>
     </div>
+    </RoleGate>
   );
 };
 
