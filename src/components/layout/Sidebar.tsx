@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useRole } from '../../utils/useRole';
+import { ROLE_LABELS } from '../../types/roles';
 import { 
   RiHomeLine, 
   RiInboxLine, 
@@ -37,6 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const { profile } = useSettings();
   const { signOut, monitoredEmail } = useAuth();
+  const { role } = useRole();
 
   const navItems: NavItem[] = [
     { name: 'Dashboard', path: '/dashboard', icon: <RiHomeLine className="w-5 h-5" /> },
@@ -53,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (item.path === '/flagged-emails') return canViewFlaggedEmails;
     if (item.path === '/keyword-monitoring') return canViewKeywordMonitoring;
     return true;
-  });
+  });  
 
   return (
     <div className="w-72 bg-white/80 backdrop-blur-2xl h-screen flex flex-col border-r border-slate-100 shadow-2xl shadow-slate-200/50 fixed left-0 top-0 z-50 transition-all duration-300 dark:bg-[#020617] dark:border-[#334155] dark:shadow-xl dark:shadow-black/40 dark:backdrop-blur-none">
@@ -76,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-4 scrollbar-hide">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 mb-4 mt-2 dark:text-[#94a3b8]">Menu</div>
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
@@ -130,7 +133,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="flex-1 text-left">
               <p className="text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors tracking-tight dark:text-[#f8fafc] dark:group-hover:text-blue-400">{profile.name}</p>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-500 transition-colors dark:text-[#94a3b8] dark:group-hover:text-[#cbd5e1]">{profile.role}</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-500 transition-colors dark:text-[#94a3b8] dark:group-hover:text-[#cbd5e1]">
+                {ROLE_LABELS[role]}
+              </p>
             </div>
             <div className={`w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition-all duration-300 dark:bg-[#243247] dark:text-[#94a3b8] dark:group-hover:bg-blue-950/50 dark:group-hover:text-blue-400 ${showDropdown ? 'rotate-180 bg-blue-50 text-blue-500 dark:bg-blue-950/50 dark:text-blue-400' : ''}`}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

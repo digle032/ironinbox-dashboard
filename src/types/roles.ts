@@ -1,5 +1,11 @@
 export type UserRole = 'admin' | 'manager' | 'viewer';
 
+export const ROLE_LABELS: Record<UserRole, string> = {
+  viewer: 'Viewer',
+  manager: 'Manager',
+  admin: 'Admin',
+};
+
 export interface RolePermissions {
   canViewFlaggedEmails: boolean;
   canViewKeywordMonitoring: boolean;

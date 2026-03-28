@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/layout/Sidebar';
+import { useRole } from './utils/useRole';
 import FlaggedEmails from './pages/FlaggedEmails';
 import KeywordMonitoring from './pages/KeywordMonitoring';
 import Dashboard from './pages/Dashboard';
@@ -15,9 +16,14 @@ import Settings from './pages/Settings';
 import Incidents from './pages/Incidents';
 
 function AppShell() {
+  const { hasPermission } = useRole();
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-[#0f172a]">
-      <Sidebar />
+      <Sidebar
+        canViewInbox={hasPermission('canViewInbox')}
+        canViewFlaggedEmails={hasPermission('canViewFlaggedEmails')}
+        canViewKeywordMonitoring={hasPermission('canViewKeywordMonitoring')}
+      />
       <div className="flex-1 ml-72 bg-slate-50 dark:bg-[#0f172a]">
         <Outlet />
       </div>
