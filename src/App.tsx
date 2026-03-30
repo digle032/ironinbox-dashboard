@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import PrivacyAccessControl from './pages/PrivacyAccessControl';
 import Settings from './pages/Settings';
 import Incidents from './pages/Incidents';
+import Account from './pages/Account';
 
 function AppShell() {
   const { hasPermission } = useRole();
@@ -57,6 +58,7 @@ function App() {
                     <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/privacy-access-control" element={<PrivacyAccessControl />} />
+                    <Route path="/account" element={<Account />} />
                   </Route>
 
                   <Route path="*" element={<Navigate to="/login" replace />} />

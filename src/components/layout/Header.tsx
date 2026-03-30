@@ -262,8 +262,9 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
 
           {/* User Profile Mini */}
           <div className="relative group">
-            <button className="flex items-center space-x-2 p-1 rounded-full border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200 dark:hover:border-[#334155] dark:hover:bg-[#243247]"
-            >
+            <button
+              onClick={() => navigate('/account')}
+              className="flex items-center space-x-2 p-1 rounded-full border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200 dark:hover:border-[#334155] dark:hover:bg-[#243247]"            >
               <img 
                 src={profile.avatar} 
                 alt="Profile" 

@@ -147,8 +147,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Dropdown Menu */}
           <div className={`absolute bottom-full left-0 right-0 mb-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden transition-all duration-300 origin-bottom dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-xl dark:shadow-black/40 dark:backdrop-blur-none ${showDropdown ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
             <div className="p-1">
-              <button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors group/item dark:text-[#cbd5e1] dark:hover:bg-[#243247]">
-                <RiUserLine className="w-4 h-4 text-slate-400 group-hover/item:text-blue-500 transition-colors dark:text-[#94a3b8] dark:group-hover/item:text-blue-400" />
+              <button
+                onClick={() => {
+                  setShowDropdown(false);
+                  navigate('/account');
+                }}
+                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors group/item dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
+              >                <RiUserLine className="w-4 h-4 text-slate-400 group-hover/item:text-blue-500 transition-colors dark:text-[#94a3b8] dark:group-hover/item:text-blue-400" />
                 <span className="font-medium">My Profile</span>
               </button>
               <div className="h-px bg-slate-100 my-1 dark:bg-[#334155]"></div>
