@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { User, Calendar } from 'lucide-react';
 import Header from '../components/layout/Header';
+import { useApp } from '../contexts/AppContext';
 
 export interface Incident {
   id: string;
@@ -21,7 +22,11 @@ export interface Incident {
   totalIncidents: number;
 }
 
-const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents }) => {
+const MOCK_TOTAL_REQUESTS = 79;
+const MOCK_PENDING_REQUESTS = 63;
+
+const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalIncidents }) => {
+  const { isWiped } = useApp();
   const [, setOpenDropdownId] = useState<string | null>(null);
   
   // Close dropdown when clicking outside
@@ -106,44 +111,49 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents }) => {
   }
 ]);
 
-const [, setSelectedIncident] = useState<Incident | null>(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
+  const [, setSelectedIncident] = useState<Incident | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
 
-const openIncidentModal = (incident: Incident) => {
-  setSelectedIncident(incident);
-  setDraftIncident(incident);
-  setIsModalOpen(true);
-};
+  const displayedIncidents = isWiped ? [] : incidents;
+  const totalRequestsDisplay = isWiped ? 0 : MOCK_TOTAL_REQUESTS;
+  const pendingRequestsDisplay = isWiped ? 0 : MOCK_PENDING_REQUESTS;
+  const pageFrom = displayedIncidents.length === 0 ? 0 : 1;
+  const pageTo = displayedIncidents.length;
 
-const closeIncidentModal = () => {
-  setSelectedIncident(null);
-  setDraftIncident(null);
-  setIsModalOpen(false);
-};
+  useEffect(() => {
+    if (isWiped) {
+      setSelectedIncident(null);
+      setDraftIncident(null);
+      setIsModalOpen(false);
+    }
+  }, [isWiped]);
 
-const handleSaveIncident = () => {
-  if (!draftIncident) return;
+  const openIncidentModal = (incident: Incident) => {
+    setSelectedIncident(incident);
+    setDraftIncident(incident);
+    setIsModalOpen(true);
+  };
 
-  setIncidents((prev) =>
-    prev.map((incident) =>
-      incident.id === draftIncident.id ? draftIncident : incident
-    )
-  );
+  const closeIncidentModal = () => {
+    setSelectedIncident(null);
+    setDraftIncident(null);
+    setIsModalOpen(false);
+  };
 
-  setIsModalOpen(false);
-  setSelectedIncident(null);
-  setDraftIncident(null);
-};
+  const handleSaveIncident = () => {
+    if (!draftIncident) return;
 
-   const [] = useState(() => {
-    const visiblePending = incidents.filter(i => i.status !== 'Resolved').length;
-    // Mock hidden pending count
-    const hiddenPending = Math.floor((totalIncidents - incidents.length) * 0.8);
-    return visiblePending + hiddenPending;
-  });
+    setIncidents((prev) =>
+      prev.map((incident) =>
+        incident.id === draftIncident.id ? draftIncident : incident
+      )
+    );
 
-
+    setIsModalOpen(false);
+    setSelectedIncident(null);
+    setDraftIncident(null);
+  };
 
   return (
      <>
@@ -212,7 +222,9 @@ const handleSaveIncident = () => {
 
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-[#94a3b8]">Total Amount of Requests</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">79</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">
+                  {totalRequestsDisplay}
+                </p>
               </div>
             </div>
 
@@ -255,7 +267,9 @@ const handleSaveIncident = () => {
 
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-[#94a3b8]">Requests Pending</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">63</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">
+                  {pendingRequestsDisplay}
+                </p>
               </div>
             </div>
 
@@ -310,7 +324,7 @@ const handleSaveIncident = () => {
             </thead>
 
             <tbody className="divide-y divide-slate-200 dark:divide-[#334155]">
-  {incidents.map((incident) => (
+  {displayedIncidents.map((incident) => (
     <tr
       key={incident.id}
       className="cursor-pointer hover:bg-slate-50 transition dark:hover:bg-[#243247]"
@@ -381,9 +395,13 @@ const handleSaveIncident = () => {
 
         <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-[#334155]">
           <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
-            Showing <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">1</span> to{" "}
-            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">5</span> of{" "}
-            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">79</span> results
+            Showing{' '}
+            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">{pageFrom}</span> to{' '}
+            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">{pageTo}</span> of{' '}
+            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">
+              {totalRequestsDisplay}
+            </span>{' '}
+            results
           </p>
 
           <div className="flex items-center gap-2">
