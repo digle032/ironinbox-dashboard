@@ -2,9 +2,26 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
 import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
 
+<<<<<<< feature/wipe-all-session
 const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
 const EMPTY_KEYWORDS: Keyword[] = [];
 const EMPTY_RELEASED_EMAILS: ReleasedEmail[] = [];
+=======
+export type AppIncident = {
+  id: string;
+  createdTime: string;
+  reporter: string;
+  subject: string;
+  priority: 'Critical' | 'High' | 'Medium' | 'Low';
+  status: 'Open' | 'In Progress' | 'Resolved';
+  dueDate: string;
+  description: string;
+  category?: string;
+  assignedTo?: string;
+  source?: string;
+  sourceEmailId?: string;
+};
+>>>>>>> main
 
 interface AppContextType {
   flaggedEmails: FlaggedEmail[];
@@ -13,7 +30,12 @@ interface AppContextType {
   detectionOptions: DetectionOptions;
   detectionActions: DetectionActions;
   selectedEmail: FlaggedEmail | null;
+  linkedIncidents: AppIncident[];
   setSelectedEmail: (email: FlaggedEmail | null) => void;
+  createIncidentFromFlaggedEmail: (
+    email: FlaggedEmail,
+    options: { dueDate: string; assignedTo?: string }
+  ) => AppIncident;
   releaseEmail: (emailId: string) => void;
   toggleStarReleasedEmail: (releasedId: string) => void;
   toggleReadReleasedEmail: (releasedId: string, isRead?: boolean) => void;
@@ -36,6 +58,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>(mockReleasedEmails);
   const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
   const [selectedEmail, setSelectedEmail] = useState<FlaggedEmail | null>(null);
+  const [linkedIncidents, setLinkedIncidents] = useState<AppIncident[]>([]);
   const [detectionOptions, setDetectionOptions] = useState<DetectionOptions>({
     caseInsensitive: true,
     matchInSubject: true,
@@ -146,6 +169,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setDetectionActions(prev => ({ ...prev, ...actions }));
   };
 
+  const createIncidentFromFlaggedEmail = (
+    email: FlaggedEmail,
+    options: { dueDate: string; assignedTo?: string }
+  ) => {
+    const now = new Date();
+    const suffix = String(now.getTime()).slice(-4);
+    const incident: AppIncident = {
+      id: `INC-LINK-${suffix}`,
+      createdTime: 'Just now',
+      reporter: 'Flagged Email Workflow',
+      subject: `Email Threat Investigation: ${email.subject}`,
+      priority: email.riskLevel,
+      status: 'Open',
+      dueDate: options.dueDate,
+      description: `A flagged email was automatically escalated for investigation after detection controls identified multiple suspicious indicators in the message context and content. The email was received from ${email.sender} on ${email.received} and classified as ${email.riskLevel.toLowerCase()} risk based on the triggered rules.\n\nInitial analysis found the following indicators: ${email.signals.map(signal => `${signal.type} match "${signal.value}"`).join(', ')}. Analysts should validate sender legitimacy, review embedded links or attachments, and confirm whether recipient interaction occurred before containment and remediation actions are finalized.`,
+      category: 'Email Security',
+      assignedTo: options.assignedTo || 'SOC Team',
+      source: 'Flagged Email',
+      sourceEmailId: email.id
+    };
+
+    setLinkedIncidents(prev => [incident, ...prev]);
+    return incident;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -154,8 +202,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         keywords: displayedKeywords,
         detectionOptions,
         detectionActions,
+<<<<<<< feature/wipe-all-session
         selectedEmail: displayedSelectedEmail,
+=======
+        selectedEmail,
+        linkedIncidents,
+>>>>>>> main
         setSelectedEmail,
+        createIncidentFromFlaggedEmail,
         releaseEmail,
         toggleStarReleasedEmail,
         toggleReadReleasedEmail,

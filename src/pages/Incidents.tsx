@@ -16,17 +16,23 @@ export interface Incident {
   category?: string;
   assignedTo?: string;
   source?: string;
+  sourceEmailId?: string;
 }
 
   interface IncidentsPageProps {
   totalIncidents: number;
 }
 
+<<<<<<< feature/wipe-all-session
 const MOCK_TOTAL_REQUESTS = 79;
 const MOCK_PENDING_REQUESTS = 63;
 
 const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalIncidents }) => {
   const { isWiped } = useApp();
+=======
+const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents }) => {
+  const { linkedIncidents } = useApp();
+>>>>>>> main
   const [, setOpenDropdownId] = useState<string | null>(null);
   
   // Close dropdown when clicking outside
@@ -111,9 +117,60 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   }
 ]);
 
+<<<<<<< feature/wipe-all-session
   const [, setSelectedIncident] = useState<Incident | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
+=======
+const [, setSelectedIncident] = useState<Incident | null>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
+
+useEffect(() => {
+  if (linkedIncidents.length === 0) return;
+  setIncidents(prev => {
+    const existingIds = new Set(prev.map(incident => incident.id));
+    const mapped = linkedIncidents
+      .filter(incident => !existingIds.has(incident.id))
+      .map(incident => ({ ...incident }));
+    if (mapped.length === 0) return prev;
+    return [...mapped, ...prev];
+  });
+}, [linkedIncidents]);
+
+const openIncidentModal = (incident: Incident) => {
+  setSelectedIncident(incident);
+  setDraftIncident(incident);
+  setIsModalOpen(true);
+};
+
+const closeIncidentModal = () => {
+  setSelectedIncident(null);
+  setDraftIncident(null);
+  setIsModalOpen(false);
+};
+
+const handleSaveIncident = () => {
+  if (!draftIncident) return;
+
+  setIncidents((prev) =>
+    prev.map((incident) =>
+      incident.id === draftIncident.id ? draftIncident : incident
+    )
+  );
+
+  setIsModalOpen(false);
+  setSelectedIncident(null);
+  setDraftIncident(null);
+};
+
+   const [] = useState(() => {
+    const visiblePending = incidents.filter(i => i.status !== 'Resolved').length;
+    // Mock hidden pending count
+    const hiddenPending = Math.floor((totalIncidents - incidents.length) * 0.8);
+    return visiblePending + hiddenPending;
+  });
+>>>>>>> main
 
   const displayedIncidents = isWiped ? [] : incidents;
   const totalRequestsDisplay = isWiped ? 0 : MOCK_TOTAL_REQUESTS;
@@ -159,7 +216,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
      <>
     <Header title={'Incidents'} /> 
 
-       <div className="p-6 space-y-6 bg-slate-50 min-h-screen dark:bg-[#0f172a]">
+       <div className="p-8 space-y-6 bg-slate-50 min-h-screen max-w-7xl mx-auto dark:bg-[#0f172a]">
       {/* Top section */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -337,6 +394,11 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
 
       <td className="px-6 py-5 align-top font-semibold text-slate-900 dark:text-[#f8fafc]">
         {incident.subject}
+        {incident.sourceEmailId && (
+          <span className="ml-2 inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/45 dark:text-blue-300">
+            Linked Email
+          </span>
+        )}
       </td>
 
       <td className="px-6 py-5 align-top">
@@ -462,7 +524,12 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Due Date</p>
             <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-[#334155] dark:bg-[#243247]">
               <Calendar className="h-4 w-4 text-slate-400 dark:text-[#94a3b8]" />
-              <span className="font-medium text-slate-800 dark:text-[#cbd5e1]">{draftIncident.dueDate}</span>   
+              <input
+                type="text"
+                value={draftIncident.dueDate}
+                onChange={(e) => setDraftIncident({ ...draftIncident, dueDate: e.target.value })}
+                className="w-full bg-transparent font-medium text-slate-800 outline-none dark:text-[#cbd5e1]"
+              />
             </div>
           </div>
         </div>

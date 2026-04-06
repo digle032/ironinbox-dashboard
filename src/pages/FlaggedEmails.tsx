@@ -113,6 +113,14 @@ const FlaggedEmails: React.FC = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  const paginationWindow = 5;
+  const startPage = Math.max(1, currentPage - Math.floor(paginationWindow / 2));
+  const endPage = Math.min(totalPages, startPage + paginationWindow - 1);
+  const normalizedStartPage = Math.max(1, endPage - paginationWindow + 1);
+  const visiblePages = Array.from(
+    { length: Math.max(0, endPage - normalizedStartPage + 1) },
+    (_, i) => normalizedStartPage + i
+  );
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
@@ -141,9 +149,9 @@ const FlaggedEmails: React.FC = () => {
     <div className="flex-1 overflow-auto bg-slate-50/50 dark:bg-[#0f172a]">
       <Header title="Flagged Emails" showActions onExportPDF={handleExportPDF} />
 
-      <div className="p-5 space-y-5 animate-fade-in max-w-7xl mx-auto">
+      <div className="p-8 space-y-4 animate-fade-in max-w-5xl mx-auto">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <StatCard
             title="Total Flagged"
             value={stats.totalFlagged}
@@ -233,7 +241,15 @@ const FlaggedEmails: React.FC = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full table-fixed">
+              <colgroup>
+                <col className="w-[118px]" />
+                <col className="w-[178px]" />
+                <col className="w-[228px]" />
+                <col className="w-[148px]" />
+                <col className="w-[100px]" />
+                <col className="w-[108px]" />
+              </colgroup>
               <thead>
                 <tr className="bg-slate-50/80 text-left border-b border-slate-200/60 dark:bg-[#243247] dark:border-[#334155]">
                   <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Received</th>
@@ -267,34 +283,40 @@ const FlaggedEmails: React.FC = () => {
                       className="group hover:bg-blue-50/40 cursor-pointer transition-colors duration-200 dark:hover:bg-[#243247]"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 font-medium dark:text-[#cbd5e1]">
-                        {email.received}
+                      <td className="px-3 py-3 text-xs leading-snug text-slate-600 font-medium dark:text-[#cbd5e1]">
+                        <span className="line-clamp-2 break-words" title={email.received}>
+                          {email.received}
+                        </span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-xs font-bold text-slate-600 shadow-sm border border-white dark:from-[#243247] dark:to-[#243247] dark:border-[#334155] dark:text-[#cbd5e1]">
                             {email.sender.charAt(0).toUpperCase()}
                           </div>
-                          <div className="text-sm font-medium text-slate-900 truncate max-w-[160px] dark:text-[#f8fafc]">
+                          <div className="text-sm font-medium text-slate-900 truncate max-w-[130px] dark:text-[#f8fafc]">
                             {email.sender}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="text-sm text-slate-600 font-medium truncate max-w-xs group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400">
+                        <div
+                          title={email.subject}
+                          className="text-sm text-slate-600 font-medium truncate whitespace-nowrap max-w-[175px] group-hover:text-blue-600 transition-colors dark:text-[#cbd5e1] dark:group-hover:text-blue-400"
+                        >
                           {email.subject}
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-col items-start gap-1 max-w-[132px]">
                           {visibleSignals.slice(0, 2).map((signal, idx) => (
                             <span
                               key={idx}
-                              className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border shadow-sm ${
+                              className={`inline-flex max-w-full items-center px-2.5 py-1 rounded-md text-xs font-medium border shadow-sm truncate ${
                                 signal.type === 'keyword'
                                   ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/45 dark:text-amber-300 dark:border-amber-900/60'
                                   : 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/45 dark:text-indigo-300 dark:border-indigo-900/60'
                               }`}
+                              title={signal.value}
                             >
                               {signal.type === 'keyword' ? <RiKeyLine className="mr-1 w-3 h-3" /> : <RiAlertLine className="mr-1 w-3 h-3" />}
                               {signal.value}
@@ -307,8 +329,8 @@ const FlaggedEmails: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border shadow-sm ${getRiskColor(email.riskLevel)}`}>
+                      <td className="px-2 py-3 whitespace-nowrap">
+                        <span className={`inline-flex items-center max-w-full px-2 py-0.5 rounded-full text-[10px] font-bold border shadow-sm ${getRiskColor(email.riskLevel)}`}>
                           <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
                             email.riskLevel === 'Critical' ? 'bg-red-500 animate-pulse' : 
                             email.riskLevel === 'High' ? 'bg-orange-500' :
@@ -337,11 +359,11 @@ const FlaggedEmails: React.FC = () => {
           </div>
           
           {/* Footer / Pagination */}
-          <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between dark:bg-[#243247] dark:border-[#334155]">
+          <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-200/60 flex flex-col gap-3 md:flex-row md:items-center md:justify-between dark:bg-[#243247] dark:border-[#334155]">
             <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
               Showing <span className="font-medium text-slate-900 dark:text-[#f8fafc]">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredEmails.length)}</span> of <span className="font-medium text-slate-900 dark:text-[#f8fafc]">{filteredEmails.length}</span> results
             </p>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 overflow-x-auto">
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
@@ -354,7 +376,20 @@ const FlaggedEmails: React.FC = () => {
                 Previous
               </button>
               <div className="flex items-center space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                {normalizedStartPage > 1 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      className="w-10 h-10 rounded-lg text-sm font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-blue-200 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
+                    >
+                      1
+                    </button>
+                    {normalizedStartPage > 2 && (
+                      <span className="px-1 text-slate-400 dark:text-[#94a3b8]">...</span>
+                    )}
+                  </>
+                )}
+                {visiblePages.map((page) => (
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
@@ -367,6 +402,19 @@ const FlaggedEmails: React.FC = () => {
                     {page}
                   </button>
                 ))}
+                {endPage < totalPages && (
+                  <>
+                    {endPage < totalPages - 1 && (
+                      <span className="px-1 text-slate-400 dark:text-[#94a3b8]">...</span>
+                    )}
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="w-10 h-10 rounded-lg text-sm font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-blue-200 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
               </div>
               <button 
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}

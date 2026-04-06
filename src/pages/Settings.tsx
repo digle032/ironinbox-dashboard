@@ -36,7 +36,8 @@ const Settings: React.FC = () => {
   return (
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Settings" />
-      <div className="p-8 max-w-4xl flex flex-col gap-8">
+      <div className="w-full max-w-7xl mx-auto px-8 py-8">
+        <div className="space-y-8">
         <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -143,6 +144,7 @@ const Settings: React.FC = () => {
             </p>
           </div>
           <EngagementLog skipRoleGate />
+        </div>
         </div>
       </div>
     </div>

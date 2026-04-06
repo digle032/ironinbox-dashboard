@@ -5,6 +5,7 @@ import { useApp } from '../../contexts/AppContext';
 import { getVisibleSignals } from '../../utils/keywordSignals';
 import { RiAlertLine, RiKeyLine, RiShieldCheckLine, RiTimeLine, RiUser3Line } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 
 interface EmailDetailModalProps {
   email: FlaggedEmail | null;
@@ -12,7 +13,16 @@ interface EmailDetailModalProps {
 }
 
 const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) => {
-  const { releaseEmail, keywords } = useApp();
+  const { releaseEmail, keywords, createIncidentFromFlaggedEmail } = useApp();
+  const navigate = useNavigate();
+  const [showCreateIncidentPanel, setShowCreateIncidentPanel] = React.useState(false);
+  const [assignedTo, setAssignedTo] = React.useState('SOC Team');
+  const [dueDate, setDueDate] = React.useState(() => {
+    const nextDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    nextDay.setHours(17, 0, 0, 0);
+    const offsetMs = nextDay.getTimezoneOffset() * 60 * 1000;
+    return new Date(nextDay.getTime() - offsetMs).toISOString().slice(0, 16);
+  });
 
   if (!email) return null;
 
@@ -21,6 +31,31 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
   const handleRelease = () => {
     releaseEmail(email.id);
     onClose();
+  };
+
+  const handleCreateIncident = () => {
+    if (!dueDate) return;
+    const parsed = new Date(dueDate);
+    if (Number.isNaN(parsed.getTime())) return;
+    const now = new Date();
+    const sameDay = parsed.toDateString() === now.toDateString();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const isTomorrow = parsed.toDateString() === tomorrow.toDateString();
+    const timePart = parsed.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const datePart = parsed.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const friendlyDueDate = sameDay
+      ? `Today, ${timePart}`
+      : isTomorrow
+        ? `Tomorrow, ${timePart}`
+        : `${datePart}, ${timePart}`;
+    createIncidentFromFlaggedEmail(email, {
+      dueDate: friendlyDueDate,
+      assignedTo: assignedTo.trim() || 'SOC Team'
+    });
+    setShowCreateIncidentPanel(false);
+    onClose();
+    navigate('/incidents');
   };
 
   const getRiskColor = (risk: string) => {
@@ -122,6 +157,12 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
           <p className="text-xs text-slate-400 dark:text-[#94a3b8]">Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}</p>
           <div className="flex space-x-3">
             <button
+              onClick={() => setShowCreateIncidentPanel(prev => !prev)}
+              className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl transition-all duration-200 font-medium text-sm dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]"
+            >
+              {showCreateIncidentPanel ? 'Cancel Incident Draft' : 'Create Incident'}
+            </button>
+            <button
               onClick={onClose}
               className="px-5 py-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-200 font-medium text-sm dark:text-[#cbd5e1] dark:hover:text-[#f8fafc] dark:hover:bg-[#243247]"
             >
@@ -136,6 +177,48 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
             </button>
           </div>
         </div>
+        {showCreateIncidentPanel && (
+          <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-5 dark:border-blue-900/60 dark:bg-blue-950/30">
+            <h4 className="text-sm font-bold text-blue-700 dark:text-blue-300">Create Linked Incident</h4>
+            <p className="mt-1 text-xs text-slate-600 dark:text-[#94a3b8]">
+              Review these fields, then confirm to avoid accidental incident creation.
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-[#94a3b8]">
+                  Due Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-[#94a3b8]">
+                  Assigned To
+                </label>
+                <input
+                  type="text"
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  placeholder="SOC Team"
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleCreateIncident}
+                disabled={!dueDate}
+                className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400 dark:bg-blue-700 dark:hover:bg-blue-800"
+              >
+                Confirm & Create Incident
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );

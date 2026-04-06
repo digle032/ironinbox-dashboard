@@ -39,12 +39,12 @@ const PrivacyAccessControl: React.FC = () => {
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Privacy & Access Control" />
 
-      <div className="p-8 max-w-4xl">
-        <p className="text-sm text-slate-500 mb-8 text-center max-w-xl mx-auto dark:text-[#94a3b8]">
+      <div className="w-full max-w-7xl mx-auto px-8 py-8">
+        <div className="space-y-8">
+        <p className="text-sm text-slate-500 text-center max-w-xl mx-auto dark:text-[#94a3b8]">
           Your data is protected. We only access what is required for monitoring.
         </p>
 
-        <div className="space-y-6">
           {/* What Ironbox Can Access */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-[#f8fafc]">What Ironbox Can Access</h2>
