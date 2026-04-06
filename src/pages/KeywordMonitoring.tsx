@@ -60,7 +60,7 @@ const cancelEdit = () => {
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Keyword Monitoring" />
 
-      <div className="p-8 max-w-4xl">
+      <div className="w-full max-w-7xl mx-auto px-8 py-8">
         <div className="space-y-8">
           {/* Active Keywords Section */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 dark:bg-[#1e293b] dark:border-[#334155]">

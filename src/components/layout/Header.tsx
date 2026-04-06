@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
 
   return (
     <div className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-sm shadow-slate-200/40 px-8 py-4 transition-all duration-300 dark:bg-[#1e293b]/95 dark:border-[#334155] dark:shadow-md dark:shadow-black/25 dark:backdrop-blur-none">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         {/* Page Title & Breadcrumbs */}
         <div className="flex flex-col">
           <div className="flex items-center space-x-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 dark:text-[#94a3b8]">
@@ -156,20 +156,16 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
         </div>
 
         {/* Right Side Actions */}
-        <div className="flex items-center space-x-4">
-          {/* Action Buttons */}
+        <div className="flex items-center space-x-2">
           {showActions && (
-            <div className="flex items-center space-x-3 mr-2 border-r border-slate-200 pr-6 dark:border-[#334155]">
-              <button 
-                onClick={handleExportPDF}
-                className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-xl transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-blue-600/30 active:scale-95 text-sm font-medium group dark:bg-[#243247] dark:hover:bg-blue-600 dark:shadow-[0_0_20px_rgba(59,130,246,0.12)]"
-              >
-                <RiFileDownloadLine className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
-                <span>Export Report</span>
-              </button>
-            </div>
+            <button
+              onClick={handleExportPDF}
+              className="hidden md:flex items-center space-x-2 px-3.5 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-xl transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-blue-600/30 active:scale-95 text-sm font-medium group mr-1 dark:bg-[#243247] dark:hover:bg-blue-600 dark:shadow-[0_0_20px_rgba(59,130,246,0.12)]"
+            >
+              <RiFileDownloadLine className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+              <span>Export Report</span>
+            </button>
           )}
-
           {/* Notification Bell */}
           <div className="relative" ref={dropdownRef}>
             <button

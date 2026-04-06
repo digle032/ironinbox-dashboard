@@ -140,7 +140,7 @@ const Inbox: React.FC = () => {
     <div className="flex-1 overflow-auto dark:bg-[#0f172a]">
       <Header title="Inbox" />
 
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-6 max-w-7xl mx-auto">
         {/* Controls */}
         <div className="bg-white rounded-lg border border-gray-200 p-4 dark:bg-[#1e293b] dark:border-[#334155]">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

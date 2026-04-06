@@ -3,7 +3,7 @@ import { FlaggedEmail, ReleasedEmail, Keyword } from '../types';
 export const mockFlaggedEmails: FlaggedEmail[] = [
   {
     id: '1',
-    received: '09:38 PM',
+    received: '9:38 PM',
     sender: 'admin@acme-c0rp.test',
     subject: 'Urgent: Verify your account',
     signals: [
@@ -15,7 +15,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '2',
-    received: '08:15 PM',
+    received: '8:15 PM',
     sender: 'security@paypa1.test',
     subject: 'Verify your account now',
     signals: [
@@ -27,7 +27,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '3',
-    received: '07:42 PM',
+    received: '7:42 PM',
     sender: 'noreply@g00gle.test',
     subject: 'Security alert on your account',
     signals: [
@@ -39,7 +39,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '4',
-    received: '06:29 PM',
+    received: '6:29 PM',
     sender: 'support@bank0famerica.test',
     subject: 'Update your banking information',
     signals: [
@@ -51,7 +51,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '5',
-    received: '05:18 PM',
+    received: '5:18 PM',
     sender: 'admin@micr0soft.test',
     subject: 'Your subscription expires today',
     signals: [
@@ -63,7 +63,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '6',
-    received: '04:55 PM',
+    received: 'Apr 5, 2026',
     sender: 'notifications@amaz0n.test',
     subject: 'Confirm your recent order',
     signals: [
@@ -75,7 +75,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '7',
-    received: '03:12 PM',
+    received: 'Apr 4, 2026',
     sender: 'admin@appleid-verify.test',
     subject: 'Suspicious activity detected',
     signals: [
@@ -87,7 +87,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '8',
-    received: '02:47 PM',
+    received: 'Apr 3, 2026',
     sender: 'no-reply@linkedln.test',
     subject: 'You have 3 new connection requests',
     signals: [
@@ -98,7 +98,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '9',
-    received: '01:33 PM',
+    received: 'Apr 2, 2026',
     sender: 'support@netfIix.test',
     subject: 'Your payment method failed',
     signals: [
@@ -110,7 +110,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '10',
-    received: '12:08 PM',
+    received: 'Apr 1, 2026',
     sender: 'alerts@chase-bank.test',
     subject: 'Unusual account activity',
     signals: [
@@ -122,7 +122,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '11',
-    received: '11:25 AM',
+    received: 'Mar 30, 2026',
     sender: 'info@dropb0x.test',
     subject: 'Your files are ready for download',
     signals: [
@@ -133,7 +133,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '12',
-    received: '10:42 AM',
+    received: 'Mar 27, 2026',
     sender: 'team@slacck.test',
     subject: 'You have been mentioned',
     signals: [
@@ -144,7 +144,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '13',
-    received: '09:15 AM',
+    received: 'Mar 24, 2026',
     sender: 'updates@faceb00k.test',
     subject: 'Someone logged into your account',
     signals: [
@@ -156,7 +156,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '14',
-    received: '08:33 AM',
+    received: 'Mar 20, 2026',
     sender: 'noreply@we11sfargo.test',
     subject: 'Action required: Verify your identity',
     signals: [
@@ -168,7 +168,7 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
   },
   {
     id: '15',
-    received: '07:58 AM',
+    received: 'Mar 16, 2026',
     sender: 'service@paypa1-secure.test',
     subject: 'Confirm recent transaction',
     signals: [
@@ -185,14 +185,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r1',
     originalEmail: {
       id: 's1',
-      received: '08:12 AM',
+      received: 'Apr 5, 2026',
       sender: 'billing@spotify.com',
       subject: 'Your receipt for Spotify Premium',
       signals: [],
       riskLevel: 'Low',
       content: `Thanks for your payment. This receipt confirms your subscription renewal.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-04-05',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -201,14 +201,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r2',
     originalEmail: {
       id: 's2',
-      received: '09:05 AM',
+      received: 'Apr 4, 2026',
       sender: 'noreply@github.com',
       subject: 'Security alert: New sign-in to your account',
       signals: [],
       riskLevel: 'Low',
       content: `We noticed a new sign-in to your GitHub account from a new device. If this was you, no action is needed.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-04-04',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -217,14 +217,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r3',
     originalEmail: {
       id: 's3',
-      received: '10:41 AM',
+      received: 'Apr 3, 2026',
       sender: 'events@meetup.com',
       subject: 'Reminder: NYC React Meetup tonight',
       signals: [],
       riskLevel: 'Low',
       content: `Your event starts at 6:30 PM. Venue details and check-in info inside.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-04-03',
     releasedBy: 'System',
     starred: false,
     isRead: true
@@ -233,14 +233,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r4',
     originalEmail: {
       id: 's4',
-      received: '11:22 AM',
+      received: 'Apr 2, 2026',
       sender: 'support@delta.com',
       subject: 'Trip itinerary: BOS → JFK',
       signals: [],
       riskLevel: 'Low',
       content: `Your flight details, seat assignment, and baggage policy are included.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-04-02',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -249,14 +249,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r5',
     originalEmail: {
       id: 's5',
-      received: '12:03 PM',
+      received: 'Apr 1, 2026',
       sender: 'newsletter@nytimes.com',
       subject: 'Today’s headlines',
       signals: [],
       riskLevel: 'Low',
       content: `Here’s a quick read of the top stories for today.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-04-01',
     releasedBy: 'System',
     starred: true,
     isRead: false
@@ -265,14 +265,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r6',
     originalEmail: {
       id: 's6',
-      received: '01:15 PM',
+      received: 'Mar 31, 2026',
       sender: 'hr@acme.com',
       subject: 'Interview schedule confirmation',
       signals: [],
       riskLevel: 'Low',
       content: `Confirming your interview time and meeting link. Reply if you need to reschedule.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-31',
     releasedBy: 'System',
     starred: false,
     isRead: true
@@ -281,14 +281,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r7',
     originalEmail: {
       id: 's7',
-      received: '02:30 PM',
+      received: 'Mar 30, 2026',
       sender: 'receipts@amazon.com',
       subject: 'Your Amazon.com order has shipped',
       signals: [],
       riskLevel: 'Low',
       content: `Tracking number and delivery estimate included.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-30',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -297,14 +297,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r8',
     originalEmail: {
       id: 's8',
-      received: '03:04 PM',
+      received: 'Mar 29, 2026',
       sender: 'no-reply@slack.com',
       subject: 'You were added to #product-updates',
       signals: [],
       riskLevel: 'Low',
       content: `Welcome! Here are a few tips to get started.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-29',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -313,14 +313,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r9',
     originalEmail: {
       id: 's9',
-      received: '03:58 PM',
+      received: 'Mar 28, 2026',
       sender: 'hello@canva.com',
       subject: 'Your design is ready to share',
       signals: [],
       riskLevel: 'Low',
       content: `We saved your latest changes. Share with teammates using this link.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-28',
     releasedBy: 'System',
     starred: false,
     isRead: true
@@ -329,14 +329,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r10',
     originalEmail: {
       id: 's10',
-      received: '04:37 PM',
+      received: 'Mar 27, 2026',
       sender: 'notifications@bankofamerica.com',
       subject: 'Account notice: Statement available',
       signals: [],
       riskLevel: 'Low',
       content: `Your monthly statement is now available in Online Banking.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-27',
     releasedBy: 'System',
     starred: true,
     isRead: false
@@ -345,14 +345,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r11',
     originalEmail: {
       id: 's11',
-      received: '05:18 PM',
+      received: 'Mar 25, 2026',
       sender: 'info@openai.com',
       subject: 'Product update: New features available',
       signals: [],
       riskLevel: 'Low',
       content: `We’ve shipped improvements and new capabilities. Learn what’s new.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-25',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -361,14 +361,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r12',
     originalEmail: {
       id: 's12',
-      received: '06:09 PM',
+      received: 'Mar 23, 2026',
       sender: 'team@trello.com',
       subject: 'Board activity: Sprint Planning',
       signals: [],
       riskLevel: 'Low',
       content: `A card you’re watching was updated. View the changes.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-23',
     releasedBy: 'System',
     starred: false,
     isRead: true
@@ -377,14 +377,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r13',
     originalEmail: {
       id: 's13',
-      received: '07:45 PM',
+      received: 'Mar 22, 2026',
       sender: 'notifications@linkedin.com',
       subject: 'New job recommendations for you',
       signals: [],
       riskLevel: 'Low',
       content: `Here are roles based on your profile and interests.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-22',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -393,14 +393,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r14',
     originalEmail: {
       id: 's14',
-      received: '08:20 PM',
+      received: 'Mar 20, 2026',
       sender: 'service@ubereats.com',
       subject: 'Your order is on the way',
       signals: [],
       riskLevel: 'Low',
       content: `Your driver is heading to you. Track your delivery in the app.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-20',
     releasedBy: 'System',
     starred: false,
     isRead: false
@@ -409,14 +409,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
     id: 'r15',
     originalEmail: {
       id: 's15',
-      received: '09:02 PM',
+      received: 'Mar 18, 2026',
       sender: 'calendar@google.com',
       subject: 'Invitation: Weekly sync',
       signals: [],
       riskLevel: 'Low',
       content: `You’ve been invited to an event. View details and RSVP.`
     },
-    releasedAt: '2024-02-01',
+    releasedAt: '2026-03-18',
     releasedBy: 'System',
     starred: true,
     isRead: true
@@ -424,14 +424,14 @@ export const mockReleasedEmails: ReleasedEmail[] = [
 ];
 
 export const mockKeywords: Keyword[] = [
-  { id: '1', value: 'verify', createdAt: '2024-01-15', enabled: true },
-  { id: '2', value: 'urgent', createdAt: '2024-01-16', enabled: true },
-  { id: '3', value: 'suspended', createdAt: '2024-01-16', enabled: true },
-  { id: '4', value: 'confirm', createdAt: '2024-01-17', enabled: true },
-  { id: '5', value: 'won', createdAt: '2024-01-17', enabled: true },
-  { id: '6', value: 'prize', createdAt: '2024-01-18', enabled: true },
-  { id: '7', value: 'account', createdAt: '2024-01-18', enabled: true },
-  { id: '8', value: 'security', createdAt: '2024-01-19', enabled: true },
-  { id: '9', value: 'expires', createdAt: '2024-01-19', enabled: true },
-  { id: '10', value: 'click here', createdAt: '2024-01-20', enabled: true }
+  { id: '1', value: 'verify', createdAt: '2025-02-15', enabled: true },
+  { id: '2', value: 'urgent', createdAt: '2026-02-16', enabled: true },
+  { id: '3', value: 'suspended', createdAt: '2026-02-16', enabled: true },
+  { id: '4', value: 'confirm', createdAt: '2026-02-17', enabled: true },
+  { id: '5', value: 'won', createdAt: '2026-02-17', enabled: true },
+  { id: '6', value: 'prize', createdAt: '2026-02-18', enabled: true },
+  { id: '7', value: 'account', createdAt: '2026-02-18', enabled: true },
+  { id: '8', value: 'security', createdAt: '2026-02-19', enabled: true },
+  { id: '9', value: 'expires', createdAt: '2026-02-19', enabled: true },
+  { id: '10', value: 'click here', createdAt: '2026-02-20', enabled: true }
 ];
