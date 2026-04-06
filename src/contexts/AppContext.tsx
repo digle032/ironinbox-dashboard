@@ -2,11 +2,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
 import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
 
-<<<<<<< feature/wipe-all-session
 const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
 const EMPTY_KEYWORDS: Keyword[] = [];
 const EMPTY_RELEASED_EMAILS: ReleasedEmail[] = [];
-=======
+
 export type AppIncident = {
   id: string;
   createdTime: string;
@@ -21,7 +20,6 @@ export type AppIncident = {
   source?: string;
   sourceEmailId?: string;
 };
->>>>>>> main
 
 interface AppContextType {
   flaggedEmails: FlaggedEmail[];
@@ -78,6 +76,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const wipeAllData = () => {
     setIsWiped(true);
+    setLinkedIncidents([]);
+    setSelectedEmail(null);
   };
 
   const releaseEmail = (emailId: string) => {
@@ -202,12 +202,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         keywords: displayedKeywords,
         detectionOptions,
         detectionActions,
-<<<<<<< feature/wipe-all-session
         selectedEmail: displayedSelectedEmail,
-=======
-        selectedEmail,
         linkedIncidents,
->>>>>>> main
         setSelectedEmail,
         createIncidentFromFlaggedEmail,
         releaseEmail,

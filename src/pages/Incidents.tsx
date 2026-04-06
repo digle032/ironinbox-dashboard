@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { User, Calendar } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -23,16 +23,11 @@ export interface Incident {
   totalIncidents: number;
 }
 
-<<<<<<< feature/wipe-all-session
 const MOCK_TOTAL_REQUESTS = 79;
 const MOCK_PENDING_REQUESTS = 63;
 
 const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalIncidents }) => {
-  const { isWiped } = useApp();
-=======
-const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents }) => {
-  const { linkedIncidents } = useApp();
->>>>>>> main
+  const { linkedIncidents, isWiped } = useApp();
   const [, setOpenDropdownId] = useState<string | null>(null);
   
   // Close dropdown when clicking outside
@@ -117,11 +112,6 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents }) => {
   }
 ]);
 
-<<<<<<< feature/wipe-all-session
-  const [, setSelectedIncident] = useState<Incident | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
-=======
 const [, setSelectedIncident] = useState<Incident | null>(null);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
@@ -164,53 +154,21 @@ const handleSaveIncident = () => {
   setDraftIncident(null);
 };
 
-   const [] = useState(() => {
-    const visiblePending = incidents.filter(i => i.status !== 'Resolved').length;
-    // Mock hidden pending count
-    const hiddenPending = Math.floor((totalIncidents - incidents.length) * 0.8);
-    return visiblePending + hiddenPending;
-  });
->>>>>>> main
+const displayedIncidents = isWiped ? [] : incidents;
+const totalRequestsDisplay = isWiped ? 0 : MOCK_TOTAL_REQUESTS;
+const pendingRequestsDisplay = isWiped ? 0 : MOCK_PENDING_REQUESTS;
+const pageFrom = displayedIncidents.length === 0 ? 0 : 1;
+const pageTo = displayedIncidents.length;
 
-  const displayedIncidents = isWiped ? [] : incidents;
-  const totalRequestsDisplay = isWiped ? 0 : MOCK_TOTAL_REQUESTS;
-  const pendingRequestsDisplay = isWiped ? 0 : MOCK_PENDING_REQUESTS;
-  const pageFrom = displayedIncidents.length === 0 ? 0 : 1;
-  const pageTo = displayedIncidents.length;
-
-  useEffect(() => {
-    if (isWiped) {
-      setSelectedIncident(null);
-      setDraftIncident(null);
-      setIsModalOpen(false);
-    }
-  }, [isWiped]);
-
-  const openIncidentModal = (incident: Incident) => {
-    setSelectedIncident(incident);
-    setDraftIncident(incident);
-    setIsModalOpen(true);
-  };
-
-  const closeIncidentModal = () => {
+useEffect(() => {
+  if (isWiped) {
     setSelectedIncident(null);
     setDraftIncident(null);
     setIsModalOpen(false);
-  };
+  }
+}, [isWiped]);
 
-  const handleSaveIncident = () => {
-    if (!draftIncident) return;
 
-    setIncidents((prev) =>
-      prev.map((incident) =>
-        incident.id === draftIncident.id ? draftIncident : incident
-      )
-    );
-
-    setIsModalOpen(false);
-    setSelectedIncident(null);
-    setDraftIncident(null);
-  };
 
   return (
      <>
