@@ -2,6 +2,11 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
 import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
 
+<<<<<<< feature/wipe-all-session
+const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
+const EMPTY_KEYWORDS: Keyword[] = [];
+const EMPTY_RELEASED_EMAILS: ReleasedEmail[] = [];
+=======
 export type AppIncident = {
   id: string;
   createdTime: string;
@@ -16,6 +21,7 @@ export type AppIncident = {
   source?: string;
   sourceEmailId?: string;
 };
+>>>>>>> main
 
 interface AppContextType {
   flaggedEmails: FlaggedEmail[];
@@ -40,11 +46,14 @@ interface AppContextType {
   updateKeyword: (id: string, text: string) => void;
   updateDetectionOptions: (options: Partial<DetectionOptions>) => void;
   updateDetectionActions: (actions: Partial<DetectionActions>) => void;
+  isWiped: boolean;
+  wipeAllData: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isWiped, setIsWiped] = useState(false);
   const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>(mockFlaggedEmails);
   const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>(mockReleasedEmails);
   const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
@@ -61,6 +70,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     logMatch: true,
     showInDashboard: true
   });
+
+  const displayedFlaggedEmails = isWiped ? EMPTY_FLAGGED_EMAILS : flaggedEmails;
+  const displayedKeywords = isWiped ? EMPTY_KEYWORDS : keywords;
+  const displayedReleasedEmails = isWiped ? EMPTY_RELEASED_EMAILS : releasedEmails;
+  const displayedSelectedEmail = isWiped ? null : selectedEmail;
+
+  const wipeAllData = () => {
+    setIsWiped(true);
+  };
 
   const releaseEmail = (emailId: string) => {
     const emailToRelease = flaggedEmails.find(email => email.id === emailId);
@@ -179,13 +197,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider
       value={{
-        flaggedEmails,
-        releasedEmails,
-        keywords,
+        flaggedEmails: displayedFlaggedEmails,
+        releasedEmails: displayedReleasedEmails,
+        keywords: displayedKeywords,
         detectionOptions,
         detectionActions,
+<<<<<<< feature/wipe-all-session
+        selectedEmail: displayedSelectedEmail,
+=======
         selectedEmail,
         linkedIncidents,
+>>>>>>> main
         setSelectedEmail,
         createIncidentFromFlaggedEmail,
         releaseEmail,
@@ -197,7 +219,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         toggleKeyword,
         updateKeyword,
         updateDetectionOptions,
-        updateDetectionActions
+        updateDetectionActions,
+        isWiped,
+        wipeAllData
       }}
     >
       {children}

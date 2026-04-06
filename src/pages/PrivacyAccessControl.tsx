@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/layout/Header';
 import { RiCheckLine, RiCloseLine, RiShieldLine, RiRefreshLine } from 'react-icons/ri';
 import Modal from '../components/common/Modal';
+import { useApp } from '../contexts/AppContext';
 
 const ACCESS_ITEMS = [
   { label: 'Read email subject & body', allowed: true },
@@ -19,15 +20,19 @@ const SECURITY_MEASURES = [
 ];
 
 const PrivacyAccessControl: React.FC = () => {
+  const { wipeAllData } = useApp();
   const [showWipeModal, setShowWipeModal] = useState(false);
   const [isWiping, setIsWiping] = useState(false);
+  const [wipeMessage, setWipeMessage] = useState<string | null>(null);
 
   const handleWipeData = async () => {
     setIsWiping(true);
-    // Simulate API call – replace with actual wipe logic when backend exists
     await new Promise((r) => setTimeout(r, 1500));
+    wipeAllData();
     setIsWiping(false);
     setShowWipeModal(false);
+    setWipeMessage('All personal data has been wiped for this session.');
+    window.setTimeout(() => setWipeMessage(null), 6000);
   };
 
   return (
@@ -84,8 +89,16 @@ const PrivacyAccessControl: React.FC = () => {
                 <RiRefreshLine className="w-5 h-5" />
                 <span>Wipe All Stored Monitoring Data</span>
               </button>
+              {wipeMessage ? (
+                <p
+                  className="text-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg px-3 py-2"
+                  role="status"
+                >
+                  {wipeMessage}
+                </p>
+              ) : null}
               <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
-                These actions are permanent and will erase your stored data.
+                Wipe applies to this session only; a full page reload restores data.
               </p>
             </div>
           </div>
@@ -99,7 +112,7 @@ const PrivacyAccessControl: React.FC = () => {
       >
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-[#cbd5e1]">
-            This will permanently delete all monitoring data we have stored for your account. This action cannot be undone.
+            This clears monitoring data and the incidents desk view for this browser session only. Refreshing or reopening the app restores the original demo data. Nothing is written to permanent storage for this action.
           </p>
           <div className="flex justify-end space-x-3">
             <button

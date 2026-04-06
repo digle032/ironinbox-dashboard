@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
 import RoleGate from '../components/common/RoleGate';
@@ -38,6 +38,27 @@ const Inbox: React.FC = () => {
   const [selectedEmail, setSelectedEmail] = useState<typeof releasedEmails[0] | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (releasedEmails.length === 0) {
+      setSelectedEmail(null);
+      setSelectedIds(new Set());
+      return;
+    }
+    if (selectedEmail && !releasedEmails.some((e) => e.id === selectedEmail.id)) {
+      setSelectedEmail(null);
+    }
+    setSelectedIds((prev) => {
+      const allowed = new Set(releasedEmails.map((e) => e.id));
+      let changed = false;
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (allowed.has(id)) next.add(id);
+        else changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [releasedEmails, selectedEmail]);
 
   const filteredEmails = useMemo(() => {
     let filtered = releasedEmails.filter(released => {
