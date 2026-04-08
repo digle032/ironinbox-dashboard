@@ -13,7 +13,8 @@ import {
   RiLogoutBoxLine,
   RiUserLine,
   RiAlarmWarningLine,
-  RiSettings3Line
+  RiSettings3Line,
+  RiShieldCheckLine,
 } from 'react-icons/ri';
 import { SiMinutemailer } from 'react-icons/si';
 
@@ -42,13 +43,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { role } = useRole();
 
   const navItems: NavItem[] = [
-    { name: 'Dashboard', path: '/dashboard', icon: <RiHomeLine className="w-5 h-5" /> },
-    { name: 'Inbox', path: '/inbox', icon: <RiInboxLine className="w-5 h-5" /> },
-    { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-5 h-5" /> },
-    { name: 'Incidents', path: '/incidents', icon: <RiAlarmWarningLine className="w-5 h-5" /> },
-    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-5 h-5" /> },
-    { name: 'Privacy & Access Control', path: '/privacy-access-control', icon: <RiLockLine className="w-5 h-5" /> },
-    { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-5 h-5" /> }
+    { name: 'Dashboard', path: '/dashboard', icon: <RiHomeLine className="w-4 h-4" /> },
+    { name: 'Inbox', path: '/inbox', icon: <RiInboxLine className="w-4 h-4" /> },
+    { name: 'Flagged Emails', path: '/flagged-emails', icon: <RiFlagLine className="w-4 h-4" /> },
+    { name: 'Incidents', path: '/incidents', icon: <RiAlarmWarningLine className="w-4 h-4" /> },
+    { name: 'Keyword Monitoring', path: '/keyword-monitoring', icon: <RiEyeLine className="w-4 h-4" /> },
+    { name: 'Privacy & Access', path: '/privacy-access-control', icon: <RiLockLine className="w-4 h-4" /> },
+    { name: 'Settings', path: '/settings', icon: <RiSettings3Line className="w-4 h-4" /> }
   ];
 
   const visibleNavItems = navItems.filter((item) => {
@@ -56,115 +57,153 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (item.path === '/flagged-emails') return canViewFlaggedEmails;
     if (item.path === '/keyword-monitoring') return canViewKeywordMonitoring;
     return true;
-  });  
+  });
 
   return (
-    <div className="w-72 bg-white/80 backdrop-blur-2xl h-screen flex flex-col border-r border-slate-100 shadow-2xl shadow-slate-200/50 fixed left-0 top-0 z-50 transition-all duration-300 dark:bg-[#020617] dark:border-[#334155] dark:shadow-xl dark:shadow-black/40 dark:backdrop-blur-none">
-      {/* Logo */}
-      <div className="p-8 pb-8">
-        <div className="flex items-center space-x-4 group cursor-pointer">
-          <div className="relative">
-            <div className="absolute inset-0 bg-blue-600 blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-xl dark:opacity-10 dark:group-hover:opacity-25"></div>
-            <div className="relative w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300 ring-1 ring-white/50 dark:shadow-[0_0_20px_rgba(59,130,246,0.18)]">
-              <SiMinutemailer className="w-6 h-6 text-white" />
-            </div>
+    <div className="w-72 h-screen flex flex-col fixed left-0 top-0 z-50
+                    bg-white border-r border-slate-200 shadow-xl
+                    dark:bg-[#060f1e] dark:border-[#0f2a4a] dark:shadow-none">
+
+      {/* ── Brand ─────────────────────────────────────────── */}
+      <div className="px-5 py-4 border-b border-slate-100 dark:border-[#0f2a4a]">
+        <div className="flex items-center space-x-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0
+                          bg-blue-600 shadow-lg shadow-blue-600/30
+                          dark:bg-transparent dark:border dark:border-cyan-500/30 dark:shadow-[0_0_16px_rgba(6,182,212,0.2)]">
+            <SiMinutemailer className="w-5 h-5 text-white dark:text-cyan-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors font-display dark:text-[#f8fafc] dark:group-hover:text-blue-400">IronInbox</h1>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 dark:text-[#94a3b8]">Security Dashboard</p>
+            <h1 className="text-sm font-bold text-slate-900 tracking-tight dark:text-white">IronInbox</h1>
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-cyan-500/60 dark:font-mono mt-px">
+              Security Dashboard
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-4 scrollbar-hide">
-        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest px-4 mb-4 mt-2 dark:text-[#94a3b8]">Menu</div>
+      {/* ── System Status ──────────────────────────────────── */}
+      <div className="px-5 py-2 border-b border-slate-100 bg-emerald-50/50 dark:border-[#0f2a4a] dark:bg-emerald-500/5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400/80 dark:font-mono">
+              All Systems Operational
+            </span>
+          </div>
+          <RiShieldCheckLine className="w-3.5 h-3.5 text-emerald-500/60" />
+        </div>
+      </div>
+
+      {/* ── Navigation ─────────────────────────────────────── */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400 px-3 mb-3
+                      dark:text-[#2a4a6a] dark:font-mono">
+          Navigation
+        </p>
         {visibleNavItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`group flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden ${
-                isActive
-                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-semibold shadow-sm ring-1 ring-blue-100 dark:from-blue-950/50 dark:to-indigo-950/50 dark:text-blue-300 dark:ring-blue-800 dark:shadow-[0_0_16px_rgba(59,130,246,0.12)]'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium dark:text-[#94a3b8] dark:hover:bg-[#243247] dark:hover:text-[#f8fafc]'
-              }`}
+              className={`group flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative text-sm
+                ${isActive
+                  ? 'bg-blue-50 text-blue-700 font-semibold dark:bg-cyan-500/10 dark:text-cyan-300 dark:font-medium'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium dark:text-[#4a6080] dark:hover:text-slate-200 dark:hover:bg-white/[0.03]'
+                }`}
             >
+              {/* Active indicator bar */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-600 rounded-r-full shadow-[0_0_12px_rgba(37,99,235,0.4)] dark:shadow-[0_0_12px_rgba(59,130,246,0.18)]"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full
+                                bg-blue-600 dark:bg-cyan-400" />
               )}
-              <div className={`transition-transform duration-300 ${isActive ? 'scale-110 text-blue-600 dark:text-blue-400' : 'group-hover:scale-110 group-hover:text-slate-700 dark:group-hover:text-[#cbd5e1]'}`}>
+
+              <span className={`flex-shrink-0 transition-colors duration-200
+                ${isActive
+                  ? 'text-blue-600 dark:text-cyan-400'
+                  : 'text-slate-400 group-hover:text-slate-600 dark:text-[#2a4a6a] dark:group-hover:text-slate-400'
+                }`}>
                 {item.icon}
-              </div>
-              <span className="relative z-10 text-sm tracking-wide">{item.name}</span>
+              </span>
+              <span className="tracking-wide">{item.name}</span>
               {isActive && (
-                <div className="absolute right-4 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50 dark:shadow-[0_0_10px_rgba(59,130,246,0.18)]"></div>
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-cyan-400 dark:shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
               )}
             </Link>
           );
         })}
       </nav>
 
+      {/* ── Monitored Email ────────────────────────────────── */}
       {monitoredEmail && (
-        <div className="px-4 mx-4 mb-2 py-2 rounded-xl bg-blue-50/80 border border-blue-100 dark:bg-blue-950/30 dark:border-[#334155]">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider dark:text-[#94a3b8]">Monitoring</p>
-          <p className="text-xs font-medium text-slate-700 truncate dark:text-[#cbd5e1]" title={monitoredEmail}>{monitoredEmail}</p>
+        <div className="mx-3 mb-2 px-3 py-2 rounded-lg
+                        bg-blue-50 border border-blue-100
+                        dark:bg-[#0a1f35] dark:border-[#0f2a4a]">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+            Monitoring
+          </p>
+          <p className="text-xs font-medium text-slate-700 truncate mt-0.5 dark:text-cyan-400/70 dark:font-mono"
+             title={monitoredEmail}>
+            {monitoredEmail}
+          </p>
         </div>
       )}
 
-      {/* User Profile */}
-      <div className="p-4 m-4 bg-white/50 backdrop-blur-sm rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group dark:bg-[#1e293b] dark:border-[#334155] dark:backdrop-blur-none dark:hover:border-[#334155] dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.12)]">
+      {/* ── User Profile ───────────────────────────────────── */}
+      <div className="px-3 py-3 border-t border-slate-100 dark:border-[#0f2a4a]">
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="w-full flex items-center space-x-3 p-2 rounded-xl transition-colors outline-none"
+            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors
+                       hover:bg-slate-50 dark:hover:bg-white/[0.03] group"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500 rounded-full blur-md opacity-0 group-hover:opacity-20 transition-opacity duration-300 dark:group-hover:opacity-[0.15]"></div>
-              <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-100 to-white rounded-full flex items-center justify-center text-slate-700 font-bold border-2 border-white shadow-sm overflow-hidden ring-1 ring-slate-100 dark:from-[#243247] dark:to-[#1e293b] dark:border-[#334155] dark:ring-[#334155] dark:text-[#cbd5e1]">
-                <img 
-                  src={profile.avatar} 
-                  alt="User" 
-                  className="w-full h-full object-cover"
-                />
+            <div className="relative flex-shrink-0">
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm
+                              dark:border-[#0f2a4a]">
+                <img src={profile.avatar} alt="User" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full shadow-sm ring-1 ring-emerald-50 dark:border-[#1e293b]"></div>
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full dark:border-[#060f1e]" />
             </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors tracking-tight dark:text-[#f8fafc] dark:group-hover:text-blue-400">{profile.name}</p>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-500 transition-colors dark:text-[#94a3b8] dark:group-hover:text-[#cbd5e1]">
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-xs font-semibold text-slate-800 truncate group-hover:text-blue-700
+                            dark:text-[#e2e8f0] dark:group-hover:text-cyan-300">
+                {profile.name}
+              </p>
+              <p className="text-[9px] font-mono uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a]">
                 {ROLE_LABELS[role]}
               </p>
             </div>
-            <div className={`w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-500 transition-all duration-300 dark:bg-[#243247] dark:text-[#94a3b8] dark:group-hover:bg-blue-950/50 dark:group-hover:text-blue-400 ${showDropdown ? 'rotate-180 bg-blue-50 text-blue-500 dark:bg-blue-950/50 dark:text-blue-400' : ''}`}>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            <svg
+              className={`w-3.5 h-3.5 text-slate-300 transition-transform dark:text-[#2a4a6a] ${showDropdown ? 'rotate-180' : ''}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
 
-          {/* Dropdown Menu */}
-          <div className={`absolute bottom-full left-0 right-0 mb-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 rounded-xl shadow-xl shadow-slate-200/50 overflow-hidden transition-all duration-300 origin-bottom dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-xl dark:shadow-black/40 dark:backdrop-blur-none ${showDropdown ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'}`}>
+          {/* Dropdown */}
+          <div className={`absolute bottom-full left-0 right-0 mb-1 rounded-lg border shadow-xl overflow-hidden transition-all duration-200 origin-bottom
+                          bg-white border-slate-200 shadow-slate-200/60
+                          dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-black/60
+                          ${showDropdown ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
             <div className="p-1">
               <button
-                onClick={() => {
-                  setShowDropdown(false);
-                  navigate('/account');
-                }}
-                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors group/item dark:text-[#cbd5e1] dark:hover:bg-[#243247]"
-              >                <RiUserLine className="w-4 h-4 text-slate-400 group-hover/item:text-blue-500 transition-colors dark:text-[#94a3b8] dark:group-hover/item:text-blue-400" />
+                onClick={() => { setShowDropdown(false); navigate('/account'); }}
+                className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors
+                           dark:text-[#94a3b8] dark:hover:bg-white/[0.04] dark:hover:text-[#e2e8f0]"
+              >
+                <RiUserLine className="w-3.5 h-3.5 text-slate-400 dark:text-[#2a4a6a]" />
                 <span className="font-medium">My Profile</span>
               </button>
-              <div className="h-px bg-slate-100 my-1 dark:bg-[#334155]"></div>
+              <div className="h-px my-0.5 bg-slate-100 dark:bg-[#0f2a4a]" />
               <button
-                onClick={async () => {
-                  await signOut();
-                  navigate('/login');
-                }}
-                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-red-50 text-sm text-red-600 transition-colors group/item"
+                onClick={async () => { await signOut(); navigate('/login'); }}
+                className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors dark:hover:bg-red-950/30"
               >
-                <RiLogoutBoxLine className="w-4 h-4 text-red-400 group-hover/item:text-red-500 transition-colors" />
+                <RiLogoutBoxLine className="w-3.5 h-3.5" />
                 <span className="font-medium">Sign Out</span>
               </button>
             </div>

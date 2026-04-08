@@ -34,240 +34,166 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: 1,
-      title: 'New Incident Reported',
-      message: 'A suspicious email request was escalated for review.',
-      type: 'incident',
-      link: '/incidents',
-      read: false,
-      time: '2 min ago',
-    },
-    {
-      id: 2,
-      title: 'Inbox Activity Detected',
-      message: '12 new monitored emails have been received.',
-      type: 'inbox',
-      link: '/inbox',
-      read: false,
-      time: '8 min ago',
-    },
-    {
-      id: 3,
-      title: 'Email Flagged',
-      message: 'A high-risk email was added to the flagged queue.',
-      type: 'flagged',
-      link: '/flagged-emails',
-      read: false,
-      time: '15 min ago',
-    },
-    {
-      id: 4,
-      title: 'Keyword Match Found',
-      message: 'A monitored keyword triggered a new alert.',
-      type: 'monitoring',
-      link: '/keyword-monitoring',
-      read: true,
-      time: '1 hour ago',
-    },
-    {
-      id: 5,
-      title: 'Access Policy Updated',
-      message: 'A new privacy control setting requires review.',
-      type: 'privacy',
-      link: '/privacy-access-control',
-      read: true,
-      time: 'Today',
-    },
+    { id: 1, title: 'New Incident Reported', message: 'A suspicious email request was escalated for review.', type: 'incident', link: '/incidents', read: false, time: '2 min ago' },
+    { id: 2, title: 'Inbox Activity Detected', message: '12 new monitored emails have been received.', type: 'inbox', link: '/inbox', read: false, time: '8 min ago' },
+    { id: 3, title: 'Email Flagged', message: 'A high-risk email was added to the flagged queue.', type: 'flagged', link: '/flagged-emails', read: false, time: '15 min ago' },
+    { id: 4, title: 'Keyword Match Found', message: 'A monitored keyword triggered a new alert.', type: 'monitoring', link: '/keyword-monitoring', read: true, time: '1 hour ago' },
+    { id: 5, title: 'Access Policy Updated', message: 'A new privacy control setting requires review.', type: 'privacy', link: '/privacy-access-control', read: true, time: 'Today' },
   ]);
 
-  const unreadCount = notifications.filter((item) => !item.read).length;
-
-  const handleExportPDF = () => {
-    if (onExportPDF) {
-      onExportPDF();
-    }
-  };
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = (notification: NotificationItem) => {
-    setNotifications((prev) =>
-      prev.map((item) =>
-        item.id === notification.id ? { ...item, read: true } : item
-      )
-    );
-
+    setNotifications((prev) => prev.map((n) => n.id === notification.id ? { ...n, read: true } : n));
     setShowDropdown(false);
     navigate(notification.link);
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
-  };
+  const markAllAsRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
   const getNotificationIcon = (type: NotificationItem['type']) => {
     switch (type) {
-      case 'incident':
-        return <RiAlertLine className="w-4 h-4 text-red-500" />;
-      case 'inbox':
-        return <RiInboxLine className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
-      case 'flagged':
-        return <RiShieldCheckLine className="w-4 h-4 text-amber-500 dark:text-amber-400" />;
-      case 'monitoring':
-        return <RiSearchEyeLine className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />;
-      case 'privacy':
-        return <RiLockLine className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />;
-      default:
-        return <RiBellLine className="w-4 h-4 text-slate-500 dark:text-[#94a3b8]" />;
+      case 'incident':   return <RiAlertLine className="w-3.5 h-3.5 text-red-400" />;
+      case 'inbox':      return <RiInboxLine className="w-3.5 h-3.5 text-blue-400 dark:text-cyan-400" />;
+      case 'flagged':    return <RiShieldCheckLine className="w-3.5 h-3.5 text-amber-400" />;
+      case 'monitoring': return <RiSearchEyeLine className="w-3.5 h-3.5 text-indigo-400" />;
+      case 'privacy':    return <RiLockLine className="w-3.5 h-3.5 text-emerald-400" />;
     }
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <div className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-sm shadow-slate-200/40 px-8 py-4 transition-all duration-300 dark:bg-[#1e293b]/95 dark:border-[#334155] dark:shadow-md dark:shadow-black/25 dark:backdrop-blur-none">
+    <div className="sticky top-0 z-40 px-8 py-3.5 transition-all duration-200
+                    bg-white/95 border-b border-slate-200 shadow-sm
+                    dark:bg-[#060f1e]/95 dark:border-[#0f2a4a] dark:shadow-none dark:backdrop-blur-none">
+
+      {/* Dark mode: subtle top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-px hidden dark:block
+                      bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+
       <div className="flex items-center justify-between gap-4">
-        {/* Page Title & Breadcrumbs */}
-        <div className="flex flex-col">
-          <div className="flex items-center space-x-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 dark:text-[#94a3b8]">
+        {/* Page Title */}
+        <div>
+          <div className="flex items-center space-x-2 mb-0.5">
             <button
               onClick={() => navigate('/dashboard')}
-              className="hover:text-blue-500 transition-colors dark:hover:text-blue-400"
+              className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 hover:text-blue-600 transition-colors
+                         dark:text-[#2a4a6a] dark:hover:text-cyan-400 dark:font-mono"
             >
               Home
             </button>
-            <span className="text-slate-300 dark:text-[#64748b]">/</span>
-            <span className="text-blue-600 dark:text-blue-400">{title}</span>
+            <span className="text-slate-300 dark:text-[#1a3554] text-[10px]">/</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-cyan-400 dark:font-mono">
+              {title}
+            </span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-display dark:text-[#f8fafc]">{title}</h1>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none dark:text-[#e2e8f0]">
+            {title}
+          </h1>
         </div>
 
-        {/* Right Side Actions */}
-        <div className="flex items-center space-x-2">
+        {/* Right actions */}
+        <div className="flex items-center space-x-1.5">
           {showActions && (
             <button
-              onClick={handleExportPDF}
-              className="hidden md:flex items-center space-x-2 px-3.5 py-2 bg-slate-900 text-white hover:bg-blue-600 rounded-xl transition-all duration-300 shadow-lg shadow-slate-900/20 hover:shadow-blue-600/30 active:scale-95 text-sm font-medium group mr-1 dark:bg-[#243247] dark:hover:bg-blue-600 dark:shadow-[0_0_20px_rgba(59,130,246,0.12)]"
+              onClick={onExportPDF}
+              className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                         bg-slate-900 text-white hover:bg-slate-700 shadow-sm
+                         dark:bg-[#0f2040] dark:text-[#94a3b8] dark:border dark:border-[#0f2a4a] dark:hover:text-[#e2e8f0] dark:hover:border-cyan-500/30"
             >
-              <RiFileDownloadLine className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
-              <span>Export Report</span>
+              <RiFileDownloadLine className="w-3.5 h-3.5" />
+              <span>Export PDF</span>
             </button>
           )}
+
           {/* Notification Bell */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown((prev) => !prev)}
-              className="relative p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group dark:text-[#94a3b8] dark:hover:bg-[#243247] dark:hover:text-blue-400"
+              className="relative p-2 rounded-lg transition-all duration-200
+                         text-slate-500 hover:text-slate-900 hover:bg-slate-100
+                         dark:text-[#4a6080] dark:hover:text-[#e2e8f0] dark:hover:bg-white/[0.04]"
             >
-            <RiBellLine className="w-5 h-5 transition-transform group-hover:rotate-12" />
+              <RiBellLine className="w-4.5 h-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white shadow-sm dark:border-[#1e293b]">
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 flex items-center justify-center text-[9px] font-bold text-white bg-red-500 rounded-full border border-white dark:border-[#060f1e]">
                   {unreadCount}
                 </span>
               )}
             </button>
 
-            <div
-              className={`absolute right-0 mt-3 w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-slate-200/50 overflow-hidden z-50 transition-all duration-200 dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-black/40 ${
-                showDropdown
-                  ? 'opacity-100 translate-y-0 pointer-events-auto'
-                  : 'opacity-0 -translate-y-2 pointer-events-none'
-              }`}
-            >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/70 dark:border-[#334155] dark:bg-[#243247]">
+            {/* Notification dropdown */}
+            <div className={`absolute right-0 mt-2 w-88 rounded-xl border shadow-2xl overflow-hidden z-50 transition-all duration-200
+                            bg-white border-slate-200 shadow-slate-200/60
+                            dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-black/60
+                            ${showDropdown ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+                 style={{ width: '360px' }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-[#0f2a4a] dark:bg-[#060f1e]">
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-[#f8fafc]">
-                    Notifications
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-[#94a3b8]">
-                    {unreadCount} unread
-                  </p>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-[#e2e8f0]">Alerts</h3>
+                  <p className="text-[10px] font-mono text-slate-400 dark:text-[#2a4a6a] mt-px">{unreadCount} unread</p>
                 </div>
-
                 {unreadCount > 0 && (
-                  <button
-                    onClick={markAllAsRead}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Mark all as read
+                  <button onClick={markAllAsRead} className="text-[11px] font-medium text-blue-600 hover:text-blue-700 dark:text-cyan-400 dark:hover:text-cyan-300">
+                    Mark all read
                   </button>
                 )}
               </div>
 
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-80 overflow-y-auto">
                 {notifications.map((notification) => (
                   <button
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`w-full text-left px-4 py-4 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition-colors dark:border-[#334155] dark:hover:bg-[#243247] ${
-                      !notification.read
-                        ? 'bg-blue-50/40 dark:bg-blue-950/30'
-                        : 'bg-white dark:bg-[#1e293b]'
-                    }`}
+                    className={`w-full text-left px-4 py-3 border-b last:border-b-0 transition-colors
+                               border-slate-100 hover:bg-slate-50
+                               dark:border-[#0f2a4a] dark:hover:bg-white/[0.02]
+                               ${!notification.read ? 'bg-blue-50/40 dark:bg-cyan-500/[0.04]' : 'bg-white dark:bg-transparent'}`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="mt-0.5 p-2 rounded-xl bg-slate-100 dark:bg-[#243247]">
+                      <div className="mt-0.5 p-1.5 rounded-md flex-shrink-0 bg-slate-100 dark:bg-[#0f2040]">
                         {getNotificationIcon(notification.type)}
                       </div>
-
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-semibold text-slate-900 dark:text-[#f8fafc]">
-                            {notification.title}
-                          </p>
-                          <span className="text-[11px] text-slate-400 whitespace-nowrap dark:text-[#94a3b8]">
-                            {notification.time}
-                          </span>
+                          <p className="text-xs font-semibold text-slate-900 dark:text-[#e2e8f0] truncate">{notification.title}</p>
+                          <span className="text-[10px] text-slate-400 whitespace-nowrap dark:text-[#2a4a6a] font-mono">{notification.time}</span>
                         </div>
-
-                        <p className="text-sm text-slate-600 mt-1 dark:text-[#cbd5e1]">
-                          {notification.message}
-                        </p>
-
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-blue-600 font-medium dark:text-blue-400">
-                            Open page
-                          </span>
-
-                          {!notification.read && (
-                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                          )}
+                        <p className="text-xs text-slate-500 mt-0.5 dark:text-[#4a6080] line-clamp-1">{notification.message}</p>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <span className="text-[10px] text-blue-600 font-medium dark:text-cyan-400">View →</span>
+                          {!notification.read && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-cyan-400" />}
                         </div>
                       </div>
-                    </div>           
-          </button>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="h-8 w-px bg-slate-200/60 dark:bg-[#334155]"></div>
+          <div className="h-5 w-px bg-slate-200 dark:bg-[#0f2a4a]" />
 
-          {/* User Profile Mini */}
-          <div className="relative group">
-            <button
-              onClick={() => navigate('/account')}
-              className="flex items-center space-x-2 p-1 rounded-full border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200 dark:hover:border-[#334155] dark:hover:bg-[#243247]"            >
-              <img 
-                src={profile.avatar} 
-                alt="Profile" 
-                className="w-9 h-9 rounded-full shadow-sm ring-2 ring-white object-cover dark:ring-[#334155]"
-              />
-            </button>
-          </div>
+          {/* Profile avatar */}
+          <button
+            onClick={() => navigate('/account')}
+            className="p-0.5 rounded-full border border-transparent hover:border-slate-200 transition-colors dark:hover:border-[#0f2a4a]"
+          >
+            <img
+              src={profile.avatar}
+              alt="Profile"
+              className="w-7 h-7 rounded-full object-cover ring-2 ring-white dark:ring-[#0f2a4a]"
+            />
+          </button>
         </div>
       </div>
     </div>

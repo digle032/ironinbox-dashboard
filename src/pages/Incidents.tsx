@@ -174,18 +174,18 @@ useEffect(() => {
      <>
     <Header title={'Incidents'} /> 
 
-       <div className="p-8 space-y-6 bg-slate-50 min-h-screen max-w-7xl mx-auto dark:bg-[#0f172a]">
+       <div className="p-6 space-y-4 bg-slate-50 min-h-screen max-w-7xl mx-auto dark:bg-[#040c18]">
       {/* Top section */}
       <div className="flex items-start justify-between gap-4">
         <div>
-         <h1 className="text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">Incident Response Desk</h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-[#94a3b8]">
+         <h1 className="text-3xl font-bold text-slate-900 dark:text-[#e2e8f0]">Incident Response Desk</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-[#4a6080]">
             Manage and track security incidents and requests.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#243247]">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0f2040]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-4 w-4"
@@ -217,7 +217,7 @@ useEffect(() => {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-[#1e293b] dark:border-[#334155]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]">
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
@@ -236,8 +236,8 @@ useEffect(() => {
               </div>
 
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-[#94a3b8]">Total Amount of Requests</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">
+                <p className="text-sm font-medium text-slate-500 dark:text-[#4a6080]">Total Amount of Requests</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#e2e8f0]">
                   {totalRequestsDisplay}
                 </p>
               </div>
@@ -260,7 +260,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-[#1e293b] dark:border-[#334155]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]">
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
@@ -281,8 +281,8 @@ useEffect(() => {
               </div>
 
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-[#94a3b8]">Requests Pending</p>
-                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#f8fafc]">
+                <p className="text-sm font-medium text-slate-500 dark:text-[#4a6080]">Requests Pending</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-[#e2e8f0]">
                   {pendingRequestsDisplay}
                 </p>
               </div>
@@ -309,30 +309,30 @@ useEffect(() => {
       </div>
 
       {/* Table card */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:bg-[#1e293b] dark:border-[#334155]">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="border-b border-slate-200 bg-slate-50 dark:border-[#334155] dark:bg-[#243247]">
+            <thead className="border-b border-slate-200 bg-slate-50 dark:border-[#0f2a4a] dark:bg-[#0f2040]">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Incident ID
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Subject
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Reporter
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Priority
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Due Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
                   Actions
                 </th>
               </tr>
@@ -342,15 +342,15 @@ useEffect(() => {
   {displayedIncidents.map((incident) => (
     <tr
       key={incident.id}
-      className="cursor-pointer hover:bg-slate-50 transition dark:hover:bg-[#243247]"
+      className="cursor-pointer hover:bg-slate-50 transition dark:hover:bg-[#0f2040]"
       onClick={() => openIncidentModal(incident)}
     >
       <td className="px-6 py-5 align-top">
-        <div className="font-semibold text-slate-900 dark:text-[#f8fafc]">{incident.id}</div>
-        <div className="mt-1 text-sm text-slate-500 dark:text-[#94a3b8]">{incident.createdTime}</div>
+        <div className="font-semibold text-slate-900 dark:text-[#e2e8f0]">{incident.id}</div>
+        <div className="mt-1 text-sm text-slate-500 dark:text-[#4a6080]">{incident.createdTime}</div>
       </td>
 
-      <td className="px-6 py-5 align-top font-semibold text-slate-900 dark:text-[#f8fafc]">
+      <td className="px-6 py-5 align-top font-semibold text-slate-900 dark:text-[#e2e8f0]">
         {incident.subject}
         {incident.sourceEmailId && (
           <span className="ml-2 inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/45 dark:text-blue-300">
@@ -361,10 +361,10 @@ useEffect(() => {
 
       <td className="px-6 py-5 align-top">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-[#243247] dark:text-[#94a3b8]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-[#0f2040] dark:text-[#4a6080]">
             <User className="h-4 w-4" />
           </div>
-          <span className="text-slate-700 dark:text-[#cbd5e1]">{incident.reporter}</span>
+          <span className="text-slate-700 dark:text-[#94a3b8]">{incident.reporter}</span>
         </div>
       </td>
 
@@ -383,7 +383,7 @@ useEffect(() => {
         </span>
       </td>
 
-      <td className="px-6 py-5 align-top text-slate-700 dark:text-[#cbd5e1]">{incident.dueDate}</td>
+      <td className="px-6 py-5 align-top text-slate-700 dark:text-[#94a3b8]">{incident.dueDate}</td>
 
       <td className="px-6 py-5 align-top">
         <span
@@ -406,29 +406,29 @@ useEffect(() => {
         </span>
       </td>
 
-      <td className="px-6 py-5 align-top text-slate-400 dark:text-[#94a3b8]">•••</td>
+      <td className="px-6 py-5 align-top text-slate-400 dark:text-[#4a6080]">•••</td>
     </tr>
   ))}
 </tbody>
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-[#334155]">
-          <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
+        <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-[#0f2a4a]">
+          <p className="text-sm text-slate-500 dark:text-[#4a6080]">
             Showing{' '}
-            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">{pageFrom}</span> to{' '}
-            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">{pageTo}</span> of{' '}
-            <span className="font-semibold text-slate-700 dark:text-[#cbd5e1]">
+            <span className="font-semibold text-slate-700 dark:text-[#94a3b8]">{pageFrom}</span> to{' '}
+            <span className="font-semibold text-slate-700 dark:text-[#94a3b8]">{pageTo}</span> of{' '}
+            <span className="font-semibold text-slate-700 dark:text-[#94a3b8]">
               {totalRequestsDisplay}
             </span>{' '}
             results
           </p>
 
           <div className="flex items-center gap-2">
-            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 dark:bg-[#243247] dark:border-[#334155] dark:text-[#94a3b8] dark:hover:bg-[#1e293b]">
+            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#4a6080] dark:hover:bg-[#0a1628]">
               ‹
             </button>
-            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]">
+            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]">
               ›
             </button>
           </div>
@@ -437,16 +437,16 @@ useEffect(() => {
     </div>
     {isModalOpen && draftIncident && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 dark:bg-black/60">
-    <div className="w-full max-w-4xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:bg-[#1e293b] dark:border-[#334155]">
-      <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5 dark:border-[#334155]">
+    <div className="w-full max-w-4xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:bg-[#0a1628] dark:border-[#0f2a4a]">
+      <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5 dark:border-[#0f2a4a]">
         <div>
           <p className="text-sm font-semibold text-blue-600">{draftIncident.id}</p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-[#94a3b8]">{draftIncident.createdTime}</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-[#4a6080]">{draftIncident.createdTime}</p>
         </div>
 
         <button
           onClick={closeIncidentModal}
-          className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-[#94a3b8] dark:hover:bg-[#243247] dark:hover:text-[#cbd5e1]"
+          className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-[#4a6080] dark:hover:bg-[#0f2040] dark:hover:text-[#cbd5e1]"
         >
           ✕
         </button>
@@ -454,39 +454,39 @@ useEffect(() => {
 
       <div className="max-h-[80vh] overflow-y-auto px-6 py-6 space-y-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Subject</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900 dark:text-[#f8fafc]">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Subject</p>
+          <h2 className="mt-2 text-2xl font-bold text-slate-900 dark:text-[#e2e8f0]">
             {draftIncident.subject}
           </h2>
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Description</p>
-          <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-[#334155] dark:bg-[#243247]">
-            <p className="leading-7 text-slate-700 dark:text-[#cbd5e1]">{draftIncident.description}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Description</p>
+          <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-[#0f2a4a] dark:bg-[#0f2040]">
+            <p className="leading-7 text-slate-700 dark:text-[#94a3b8]">{draftIncident.description}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Reporter</p>
-            <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-[#334155] dark:bg-[#243247]">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-[#1e293b] dark:text-[#94a3b8]"> 
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Reporter</p>
+            <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-[#0f2a4a] dark:bg-[#0f2040]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-[#0a1628] dark:text-[#4a6080]"> 
                 <User className="h-4 w-4" />
               </div>
-              <span className="font-medium text-slate-800 dark:text-[#cbd5e1]">{draftIncident.reporter}</span>
+              <span className="font-medium text-slate-800 dark:text-[#94a3b8]">{draftIncident.reporter}</span>
             </div>
           </div>
 
           <div>
-           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Due Date</p>
-            <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-[#334155] dark:bg-[#243247]">
-              <Calendar className="h-4 w-4 text-slate-400 dark:text-[#94a3b8]" />
+           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Due Date</p>
+            <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-[#0f2a4a] dark:bg-[#0f2040]">
+              <Calendar className="h-4 w-4 text-slate-400 dark:text-[#4a6080]" />
               <input
                 type="text"
                 value={draftIncident.dueDate}
                 onChange={(e) => setDraftIncident({ ...draftIncident, dueDate: e.target.value })}
-                className="w-full bg-transparent font-medium text-slate-800 outline-none dark:text-[#cbd5e1]"
+                className="w-full bg-transparent font-medium text-slate-800 outline-none dark:text-[#94a3b8]"
               />
             </div>
           </div>
@@ -494,29 +494,29 @@ useEffect(() => {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Category</p>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Category</p>
+            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#0f2a4a] dark:bg-[#0f2040] dark:text-[#94a3b8]">
               {draftIncident.category || 'General'}
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Assigned To</p>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Assigned To</p>
+            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#0f2a4a] dark:bg-[#0f2040] dark:text-[#94a3b8]">
               {draftIncident.assignedTo || 'Unassigned'}
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Source</p>
-            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Source</p>
+            <div className="mt-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 dark:border-[#0f2a4a] dark:bg-[#0f2040] dark:text-[#94a3b8]">
               {draftIncident.source || 'Unknown'}
             </div>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Priority</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Priority</p>
           <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
             {(['Critical', 'High', 'Medium', 'Low'] as Incident['priority'][]).map((priority) => (
               <button
@@ -528,7 +528,7 @@ useEffect(() => {
                   'rounded-xl border px-4 py-3 text-sm font-semibold transition',
                   draftIncident.priority === priority
                     ? 'border-blue-600 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/45 dark:text-blue-300'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-[#0f2a4a] dark:bg-[#0f2040] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]'
                 )}
               >
                 {priority}
@@ -538,7 +538,7 @@ useEffect(() => {
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#94a3b8]">Status</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-[#4a6080]">Status</p>
           <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
             {(['Open', 'In Progress', 'Resolved'] as Incident['status'][]).map((status) => (
               <button
@@ -550,7 +550,7 @@ useEffect(() => {
                   'rounded-xl border px-4 py-3 text-sm font-semibold transition',
                   draftIncident.status === status
                     ? 'border-blue-600 bg-blue-600 text-white'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-[#0f2a4a] dark:bg-[#0f2040] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]'
                 )}
               >
                 {status}
@@ -560,10 +560,10 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4 dark:border-[#334155]">
+      <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4 dark:border-[#0f2a4a]">
         <button
           onClick={closeIncidentModal}
-          className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 font-medium text-slate-700 hover:bg-slate-50 dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]"
+          className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 font-medium text-slate-700 hover:bg-slate-50 dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]"
         >
           Close
         </button>

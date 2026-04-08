@@ -5,42 +5,76 @@ interface StatCardProps {
   value: number;
   icon: React.ReactNode;
   iconColor: string;
-  trend?: string; // Optional: Adds a percentage trend
-  trendUp?: boolean; // Optional: Green or Red trend
+  trend?: string;
+  trendUp?: boolean;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, iconColor, trend = "+2.4%", trendUp = true }) => {
-  return (
-    <div className="relative group overflow-hidden bg-white rounded-2xl border border-slate-100 p-6 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:border-blue-100 transition-all duration-500 cursor-default dark:bg-[#1e293b] dark:border-[#334155] dark:shadow-lg dark:shadow-black/30 dark:hover:shadow-[0_8px_32px_rgba(59,130,246,0.18)] dark:hover:border-[#334155]">
-      {/* Decorative Background Blob */}
-      <div className={`absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br ${iconColor.replace('text-', 'from-').replace('600', '100').replace('500', '100')} to-transparent rounded-full blur-3xl opacity-30 group-hover:opacity-60 transition-opacity duration-500 group-hover:scale-110 dark:opacity-[0.15] dark:group-hover:opacity-[0.25]`}></div>
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
+  iconColor,
+  trend = '+2.4%',
+  trendUp = true,
+}) => {
+  const borderAccent =
+    iconColor.includes('red')     ? 'dark:border-l-red-500/60'     :
+    iconColor.includes('orange')  ? 'dark:border-l-orange-500/60'  :
+    iconColor.includes('yellow')  ? 'dark:border-l-amber-500/60'   :
+    iconColor.includes('emerald') ? 'dark:border-l-emerald-500/60' :
+    iconColor.includes('purple')  ? 'dark:border-l-purple-500/60'  :
+    'dark:border-l-cyan-500/60';
 
-      <div className="relative flex justify-between items-start z-10">
-        <div>
-          <p className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-2 dark:text-[#94a3b8]">{title}</p>
-          <h3 className="text-4xl font-black text-slate-900 tracking-tighter group-hover:scale-105 transition-transform origin-left duration-300 font-display dark:text-[#f8fafc]">
-            {value.toLocaleString()}
-          </h3>
-          
-          {/* Trend Indicator (Visual Only) */}
-          <div className="flex items-center mt-3 space-x-2">
-            <span className={`flex items-center text-xs font-bold px-2.5 py-1 rounded-full ${trendUp ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-800' : 'bg-red-50 text-red-600 ring-1 ring-red-100 dark:bg-red-950/40 dark:text-red-400 dark:ring-red-800'}`}>
-              {trendUp ? '↑' : '↓'} {trend}
-            </span>
-            <span className="text-xs text-slate-400 font-medium dark:text-[#94a3b8]">vs last week</span>
+  const iconBg =
+    iconColor.includes('red')     ? 'dark:bg-red-950/50 dark:text-red-400'     :
+    iconColor.includes('orange')  ? 'dark:bg-orange-950/50 dark:text-orange-400':
+    iconColor.includes('yellow')  ? 'dark:bg-amber-950/50 dark:text-amber-400' :
+    iconColor.includes('emerald') ? 'dark:bg-emerald-950/50 dark:text-emerald-400':
+    iconColor.includes('purple')  ? 'dark:bg-purple-950/50 dark:text-purple-400':
+    'dark:bg-cyan-950/50 dark:text-cyan-400';
+
+  return (
+    <div className={`relative group overflow-hidden rounded-xl border-l-4 transition-all duration-300 cursor-default
+                     bg-white border border-slate-200 border-l-blue-500 shadow-sm hover:shadow-md hover:-translate-y-0.5
+                     dark:bg-[#0a1628] dark:border-[#0f2a4a] ${borderAccent} dark:hover:border-[#1a3554]`}>
+
+      {/* Light mode subtle gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white to-slate-50/50 dark:hidden" />
+
+      <div className="relative p-5">
+        <div className="flex items-start justify-between">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500 mb-2
+                          dark:text-[#2a4a6a] dark:font-mono">
+              {title}
+            </p>
+            <h3 className="text-3xl font-black text-slate-900 tracking-tight leading-none
+                           dark:text-[#e2e8f0] dark:font-mono dark:tabular-nums">
+              {value.toLocaleString()}
+            </h3>
+
+            {/* Trend */}
+            <div className="flex items-center mt-3 space-x-2">
+              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded
+                               ${trendUp
+                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'
+                                 : 'bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400'}`}>
+                {trendUp ? '↑' : '↓'} {trend}
+              </span>
+              <span className="text-[10px] text-slate-400 dark:text-[#2a4a6a]">vs last week</span>
+            </div>
+          </div>
+
+          <div className={`p-2.5 rounded-lg ml-3 flex-shrink-0 ${iconColor.includes('red') ? 'bg-red-50 text-red-500' : iconColor.includes('orange') ? 'bg-orange-50 text-orange-500' : iconColor.includes('yellow') ? 'bg-amber-50 text-amber-500' : iconColor.includes('emerald') ? 'bg-emerald-50 text-emerald-500' : iconColor.includes('purple') ? 'bg-purple-50 text-purple-500' : 'bg-blue-50 text-blue-500'} ${iconBg}`}>
+            {React.cloneElement(icon as React.ReactElement<{ className?: string }>, {
+              className: 'w-5 h-5',
+            })}
           </div>
         </div>
-        
-        <div className={`p-3.5 rounded-2xl bg-gradient-to-br ${iconColor.replace('text-', 'from-').replace('600', '50')} to-white shadow-lg shadow-slate-100 border border-slate-100 group-hover:rotate-6 group-hover:scale-110 transition-all duration-300 ring-1 ring-white dark:border-[#334155] dark:bg-[#243247] dark:shadow-none dark:ring-0 dark:[background-image:none]`}>
-          {React.cloneElement(icon as React.ReactElement<any>, { 
-            className: `w-7 h-7 ${iconColor} drop-shadow-sm` 
-          })}
-        </div>
-      </div>
-      
-      {/* Bottom Progress Bar (Visual) */}
-      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-slate-50 dark:bg-[#0f172a]/80">
-        <div className={`h-full bg-gradient-to-r ${iconColor.replace('text-', 'from-')} to-white opacity-40 w-2/3 group-hover:w-full transition-all duration-700 ease-out dark:opacity-60 dark:to-[#243247]`}></div>
+
+        {/* Bottom accent bar (light mode) */}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 dark:hidden
+                        bg-gradient-to-r from-blue-400/30 via-blue-300/20 to-transparent" />
       </div>
     </div>
   );

@@ -28,12 +28,10 @@ const EngagementLog: React.FC<EngagementLogProps> = ({ skipRoleGate }) => {
     const refresh = () => {
       const all = readLog();
       const sorted = [...all].sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
       setEntries(sorted.slice(0, 50));
     };
-
     refresh();
     window.addEventListener('storage', refresh);
     window.addEventListener(ENGAGEMENT_LOG_UPDATED_EVENT, refresh);
@@ -44,67 +42,64 @@ const EngagementLog: React.FC<EngagementLogProps> = ({ skipRoleGate }) => {
   }, []);
 
   const panel = (
+    <div className="rounded-xl border overflow-hidden
+                    bg-white border-slate-200 shadow-sm
+                    dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-none">
 
-      <div className="rounded-2xl border border-slate-100 bg-white shadow-xl shadow-slate-200/40 overflow-hidden ring-1 ring-slate-900/[0.04] dark:border-[#334155] dark:bg-[#1e293b] dark:shadow-lg dark:shadow-black/30 dark:ring-white/[0.06]">
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 dark:border-[#334155] dark:bg-[#0f172a]/80">
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest dark:text-[#94a3b8]">
-            Engagement log
-          </h3>
-          <p className="text-[11px] text-slate-500 mt-1 dark:text-[#94a3b8]">
-            Last 50 visits (unique per user, page, day)
-          </p>
-        </div>
+      <div className="px-5 py-3 border-b bg-white dark:bg-[#060f1e] dark:border-[#0f2a4a] border-slate-100">
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+          Engagement Log
+        </h3>
+        <p className="text-[10px] text-slate-400 mt-0.5 dark:text-[#1a3554]">
+          Last 50 visits (unique per user, page, day)
+        </p>
+      </div>
 
-        <div className="overflow-x-auto bg-white dark:bg-[#1e293b]">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 dark:border-[#334155] dark:bg-[#0f172a]/60">
-                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider dark:text-[#94a3b8]">
-                  User email
-                </th>
-                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider dark:text-[#94a3b8]">
-                  Page
-                </th>
-                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider dark:text-[#94a3b8]">
-                  Date & time
-                </th>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-100 bg-slate-50/80 dark:border-[#0f2a4a] dark:bg-[#060f1e]">
+              <th className="px-5 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+                User Email
+              </th>
+              <th className="px-5 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+                Page
+              </th>
+              <th className="px-5 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+                Date & Time
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-[#0f2a4a]">
+            {entries.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-5 py-10 text-center text-sm text-slate-400 dark:text-[#2a4a6a]">
+                  No engagement entries yet.
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-[#334155]">
-              {entries.length === 0 ? (
-                <tr className="bg-white dark:bg-[#1e293b]">
-                  <td
-                    colSpan={3}
-                    className="px-6 py-10 text-center text-slate-500 text-sm dark:text-[#94a3b8]"
-                  >
-                    No engagement entries yet.
+            ) : (
+              entries.map((row, idx) => (
+                <tr key={`${row.uid}-${row.page}-${row.timestamp}-${idx}`}
+                    className="transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                  <td className="px-5 py-2.5 font-medium text-slate-800 truncate max-w-[200px] dark:text-[#94a3b8] dark:font-mono text-xs">
+                    {row.email || '—'}
+                  </td>
+                  <td className="px-5 py-2.5 text-slate-600 text-xs dark:text-[#4a6080]">
+                    {row.page}
+                  </td>
+                  <td className="px-5 py-2.5 text-slate-400 tabular-nums whitespace-nowrap text-xs dark:text-[#2a4a6a] dark:font-mono">
+                    {new Date(row.timestamp).toLocaleString()}
                   </td>
                 </tr>
-              ) : (
-                entries.map((row, idx) => (
-                  <tr
-                    key={`${row.uid}-${row.page}-${row.timestamp}-${idx}`}
-                    className="transition-colors hover:bg-slate-50 dark:hover:bg-[#243247]"
-                  >
-                    <td className="px-6 py-3 text-slate-900 font-medium truncate max-w-[200px] dark:text-[#f8fafc]">
-                      {row.email || '—'}
-                    </td>
-                    <td className="px-6 py-3 text-slate-700 dark:text-[#cbd5e1]">{row.page}</td>
-                    <td className="px-6 py-3 text-slate-500 tabular-nums whitespace-nowrap dark:text-[#94a3b8]">
-                      {new Date(row.timestamp).toLocaleString()}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
+    </div>
   );
 
-  if (skipRoleGate) {
-    return panel;
-  }
+  if (skipRoleGate) return panel;
 
   return (
     <RoleGate permission="canViewEngagementLog">

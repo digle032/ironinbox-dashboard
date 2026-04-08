@@ -28,192 +28,158 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
 
   const visibleSignals = getVisibleSignals(email, keywords);
 
-  const handleRelease = () => {
-    releaseEmail(email.id);
-    onClose();
-  };
+  const handleRelease = () => { releaseEmail(email.id); onClose(); };
 
   const handleCreateIncident = () => {
     if (!dueDate) return;
     const parsed = new Date(dueDate);
     if (Number.isNaN(parsed.getTime())) return;
     const now = new Date();
-    const sameDay = parsed.toDateString() === now.toDateString();
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
+    const sameDay   = parsed.toDateString() === now.toDateString();
     const isTomorrow = parsed.toDateString() === tomorrow.toDateString();
-    const timePart = parsed.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    const datePart = parsed.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    const friendlyDueDate = sameDay
-      ? `Today, ${timePart}`
-      : isTomorrow
-        ? `Tomorrow, ${timePart}`
-        : `${datePart}, ${timePart}`;
-    createIncidentFromFlaggedEmail(email, {
-      dueDate: friendlyDueDate,
-      assignedTo: assignedTo.trim() || 'SOC Team'
-    });
+    const timePart  = parsed.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const datePart  = parsed.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const friendlyDueDate = sameDay ? `Today, ${timePart}` : isTomorrow ? `Tomorrow, ${timePart}` : `${datePart}, ${timePart}`;
+    createIncidentFromFlaggedEmail(email, { dueDate: friendlyDueDate, assignedTo: assignedTo.trim() || 'SOC Team' });
     setShowCreateIncidentPanel(false);
     onClose();
     navigate('/incidents');
   };
 
-  const getRiskColor = (risk: string) => {
+  const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'Critical':
-        return 'text-red-700 bg-red-50 border-red-200 ring-red-500/30 dark:text-red-300 dark:bg-red-950/45 dark:border-red-900/60 dark:ring-red-700/40';
-      case 'High':
-        return 'text-orange-700 bg-orange-50 border-orange-200 ring-orange-500/30 dark:text-orange-300 dark:bg-orange-950/45 dark:border-orange-900/60 dark:ring-orange-700/40';
-      case 'Medium':
-        return 'text-yellow-700 bg-yellow-50 border-yellow-200 ring-yellow-500/30 dark:text-yellow-300 dark:bg-yellow-950/45 dark:border-yellow-900/60 dark:ring-yellow-700/40';
-      default:
-        return 'text-blue-700 bg-blue-50 border-blue-200 ring-blue-500/30 dark:text-blue-300 dark:bg-blue-950/45 dark:border-blue-900/60 dark:ring-blue-700/40';
+      case 'Critical': return 'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800/60';
+      case 'High':     return 'text-orange-700 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/40 dark:border-orange-800/60';
+      case 'Medium':   return 'text-amber-700 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/40 dark:border-amber-800/60';
+      default:         return 'text-blue-700 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/40 dark:border-blue-800/60';
     }
   };
 
+  const inputCls = 'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-all bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[#0f2040] dark:border-[#1a3554] dark:text-[#e2e8f0] dark:focus:border-cyan-500/40';
+
   return (
     <Modal isOpen={!!email} onClose={onClose} title="Email Analysis Report">
-      <div className="space-y-8 animate-fade-in">
-        {/* Email Header Info */}
-        <div className="bg-slate-50/80 rounded-2xl p-6 border border-slate-100 dark:bg-[#243247] dark:border-[#334155]">
-          <div className="flex items-start justify-between mb-4">
-            <h3 className="text-xl font-bold text-slate-900 leading-tight max-w-xl dark:text-[#f8fafc]">{email.subject}</h3>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border shadow-sm ring-4 ${getRiskColor(email.riskLevel)}`}>
-              {email.riskLevel.toUpperCase()} RISK
+      <div className="space-y-6 animate-fade-in">
+
+        {/* Email header */}
+        <div className="rounded-lg border p-4 bg-slate-50/80 border-slate-200 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
+          <div className="flex items-start justify-between mb-4 gap-4">
+            <h3 className="text-sm font-bold text-slate-900 leading-tight dark:text-[#e2e8f0]">{email.subject}</h3>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold border flex-shrink-0 font-mono ${getRiskBadge(email.riskLevel)}`}>
+              {email.riskLevel.toUpperCase()}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm dark:bg-[#1e293b] dark:border-[#334155]">
-                <RiUser3Line className="w-5 h-5 text-slate-500 dark:text-[#94a3b8]" /> 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { icon: <RiUser3Line className="w-4 h-4" />, label: 'Sender',   value: email.sender },
+              { icon: <RiTimeLine className="w-4 h-4" />,  label: 'Received', value: email.received },
+            ].map(({ icon, label, value }) => (
+              <div key={label} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 dark:bg-[#0a1628] dark:border-[#0f2a4a] text-slate-400 dark:text-[#2a4a6a]">
+                  {icon}
+                </div>
+                <div>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a]">{label}</p>
+                  <p className="text-xs font-medium text-slate-800 dark:text-[#94a3b8]">{value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide dark:text-[#94a3b8]">Sender</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-[#f8fafc]">{email.sender}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm dark:bg-[#1e293b] dark:border-[#334155]">
-                <RiTimeLine className="w-5 h-5 text-slate-500 dark:text-[#94a3b8]" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide dark:text-[#94a3b8]">Received</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-[#f8fafc]">{email.received}</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Detection Signals */}
+        {/* Detection signals */}
         <div>
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center dark:text-[#f8fafc]">
-            <RiAlertLine className="w-5 h-5 mr-2 text-slate-400 dark:text-[#94a3b8]" />
-            Detection Signals
-            <span className="ml-2 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs dark:bg-[#243247] dark:text-[#cbd5e1]">{visibleSignals.length}</span>
-          </h3>
-          <div className="grid gap-3">
+          <div className="flex items-center gap-2 mb-3">
+            <RiAlertLine className="w-4 h-4 text-slate-400 dark:text-[#2a4a6a]" />
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+              Detection Signals
+            </h3>
+            <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded dark:bg-[#0f2040] dark:text-[#4a6080]">
+              {visibleSignals.length}
+            </span>
+          </div>
+
+          <div className="space-y-2">
             {visibleSignals.length === 0 ? (
-              <p className="text-sm text-slate-500 dark:text-[#94a3b8]">
-                No active detection signals for this email based on your current keyword settings.
+              <p className="text-xs text-slate-400 dark:text-[#2a4a6a]">
+                No active detection signals based on your current keyword settings.
               </p>
-            ) : (
-            visibleSignals.map((signal, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-xl border transition-all duration-300 hover:shadow-md ${
-                  signal.type === 'keyword'
-                    ? 'bg-amber-50/50 border-amber-200 hover:border-amber-300 dark:bg-amber-950/40 dark:border-amber-900/60 dark:hover:border-amber-800'
-                    : 'bg-indigo-50/50 border-indigo-200 hover:border-indigo-300 dark:bg-indigo-950/40 dark:border-indigo-900/60 dark:hover:border-indigo-800'
-                }`}
-              >
-                <div className="flex items-start space-x-4">
-                  <div className={`p-2 rounded-lg ${
-                    signal.type === 'keyword' ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300' : 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300'
-                  }`}>
-                    {signal.type === 'keyword' ? <RiKeyLine className="w-5 h-5" /> : <BiEnvelope className="w-5 h-5" />}
+            ) : visibleSignals.map((signal, index) => (
+              <div key={index}
+                   className={`p-3 rounded-lg border transition-colors
+                               ${signal.type === 'keyword'
+                                 ? 'bg-amber-50/50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900/50'
+                                 : 'bg-indigo-50/50 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-900/50'}`}>
+                <div className="flex items-start gap-3">
+                  <div className={`p-1.5 rounded-md ${signal.type === 'keyword' ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400' : 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400'}`}>
+                    {signal.type === 'keyword' ? <RiKeyLine className="w-4 h-4" /> : <BiEnvelope className="w-4 h-4" />}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className={`text-xs font-bold uppercase tracking-wide ${
-                        signal.type === 'keyword' ? 'text-amber-700 dark:text-amber-300' : 'text-indigo-700 dark:text-indigo-300'
-                      }`}>
-                        {signal.type === 'keyword' ? 'Keyword Detected' : 'Suspicious Domain'}
-                      </span>
-                    </div>
-                    <p className="text-sm text-slate-700 font-medium dark:text-[#cbd5e1]">{signal.description}</p>
-                    <div className="mt-2 inline-flex items-center px-2 py-1 rounded text-xs font-mono font-medium border bg-white/50 dark:bg-[#1e293b] dark:border-[#334155] dark:text-[#cbd5e1]">
+                    <span className={`text-[10px] font-bold uppercase tracking-wide ${signal.type === 'keyword' ? 'text-amber-700 dark:text-amber-400' : 'text-indigo-700 dark:text-indigo-400'}`}>
+                      {signal.type === 'keyword' ? 'Keyword Detected' : 'Suspicious Domain'}
+                    </span>
+                    <p className="text-xs text-slate-700 font-medium mt-0.5 dark:text-[#94a3b8]">{signal.description}</p>
+                    <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border bg-white/70 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:text-[#94a3b8]">
                       {signal.value}
                     </div>
                   </div>
                 </div>
               </div>
-            )))}
+            ))}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-8 dark:border-[#334155]">
-          <p className="text-xs text-slate-400 dark:text-[#94a3b8]">Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}</p>
-          <div className="flex space-x-3">
-            <button
-              onClick={() => setShowCreateIncidentPanel(prev => !prev)}
-              className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl transition-all duration-200 font-medium text-sm dark:bg-[#243247] dark:border-[#334155] dark:text-[#cbd5e1] dark:hover:bg-[#1e293b]"
-            >
-              {showCreateIncidentPanel ? 'Cancel Incident Draft' : 'Create Incident'}
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[#0f2a4a]">
+          <p className="text-[10px] font-mono text-slate-400 dark:text-[#2a4a6a]">
+            Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}
+          </p>
+          <div className="flex gap-2">
+            <button onClick={() => setShowCreateIncidentPanel(prev => !prev)}
+              className="px-4 py-2 text-xs font-semibold rounded-lg border transition-colors
+                         bg-white border-slate-200 text-slate-700 hover:bg-slate-50
+                         dark:bg-[#0f2040] dark:border-[#1a3554] dark:text-[#94a3b8] dark:hover:bg-[#132843]">
+              {showCreateIncidentPanel ? 'Cancel' : 'Create Incident'}
             </button>
-            <button
-              onClick={onClose}
-              className="px-5 py-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-200 font-medium text-sm dark:text-[#cbd5e1] dark:hover:text-[#f8fafc] dark:hover:bg-[#243247]"
-            >
-              Cancel
+            <button onClick={onClose}
+              className="px-4 py-2 text-xs font-semibold rounded-lg transition-colors
+                         text-slate-600 hover:bg-slate-50 dark:text-[#4a6080] dark:hover:bg-white/[0.03] dark:hover:text-[#e2e8f0]">
+              Close
             </button>
-            <button
-              onClick={handleRelease}
-              className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform active:scale-95 transition-all duration-200 font-semibold text-sm flex items-center dark:from-emerald-700 dark:to-teal-700 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:shadow-[0_0_20px_rgba(16,185,129,0.18)]"
-            >
-              <RiShieldCheckLine className="mr-2 w-4 h-4" />
+            <button onClick={handleRelease}
+              className="px-4 py-2 text-xs font-semibold rounded-lg transition-all
+                         bg-emerald-600 text-white hover:bg-emerald-700 flex items-center gap-1.5">
+              <RiShieldCheckLine className="w-3.5 h-3.5" />
               Release Email
             </button>
           </div>
         </div>
+
+        {/* Create incident panel */}
         {showCreateIncidentPanel && (
-          <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-5 dark:border-blue-900/60 dark:bg-blue-950/30">
-            <h4 className="text-sm font-bold text-blue-700 dark:text-blue-300">Create Linked Incident</h4>
-            <p className="mt-1 text-xs text-slate-600 dark:text-[#94a3b8]">
+          <div className="rounded-lg border p-4 bg-blue-50/50 border-blue-200 dark:bg-cyan-500/[0.05] dark:border-cyan-500/20">
+            <h4 className="text-xs font-bold text-blue-700 dark:text-cyan-300 mb-1">Create Linked Incident</h4>
+            <p className="text-xs text-slate-500 mb-4 dark:text-[#2a4a6a]">
               Review these fields, then confirm to avoid accidental incident creation.
             </p>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-[#94a3b8]">
-                  Due Date
-                </label>
-                <input
-                  type="datetime-local"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]"
-                />
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[#2a4a6a]">Due Date</label>
+                <input type="datetime-local" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={inputCls} />
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-[#94a3b8]">
-                  Assigned To
-                </label>
-                <input
-                  type="text"
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  placeholder="SOC Team"
-                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 dark:border-[#334155] dark:bg-[#243247] dark:text-[#cbd5e1]"
-                />
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[#2a4a6a]">Assigned To</label>
+                <input type="text" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} placeholder="SOC Team" className={inputCls} />
               </div>
             </div>
             <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleCreateIncident}
-                disabled={!dueDate}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400 dark:bg-blue-700 dark:hover:bg-blue-800"
-              >
+              <button onClick={handleCreateIncident} disabled={!dueDate}
+                className="px-4 py-2 text-xs font-semibold rounded-lg transition-colors
+                           bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed
+                           dark:bg-cyan-500 dark:text-[#040c18] dark:hover:bg-cyan-400">
                 Confirm & Create Incident
               </button>
             </div>
