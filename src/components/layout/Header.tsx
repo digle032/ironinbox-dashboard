@@ -15,6 +15,7 @@ interface HeaderProps {
   title: string;
   showActions?: boolean;
   onExportPDF?: () => void;
+  actionNode?: React.ReactNode;
 }
 
 interface NotificationItem {
@@ -27,7 +28,7 @@ interface NotificationItem {
   time: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF }) => {
+const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF, actionNode }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { profile } = useSettings();
   const navigate = useNavigate();
@@ -114,6 +115,8 @@ const Header: React.FC<HeaderProps> = ({ title, showActions = false, onExportPDF
               <span>Export PDF</span>
             </button>
           )}
+
+          {actionNode}
 
           {/* Notification Bell */}
           <div className="relative" ref={dropdownRef}>
