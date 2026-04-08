@@ -15,7 +15,6 @@ import {
   RiAlarmWarningLine,
   RiSettings3Line,
 } from 'react-icons/ri';
-import { SiMinutemailer } from 'react-icons/si';
 
 interface NavItem {
   name: string;
@@ -66,10 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className="px-5 py-4 border-b border-slate-100 dark:border-[#0f2a4a]">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0
-                          bg-blue-600 shadow-lg shadow-blue-600/30
-                          dark:bg-transparent dark:border dark:border-cyan-500/30 dark:shadow-[0_0_16px_rgba(6,182,212,0.2)]">
-            <SiMinutemailer className="w-5 h-5 text-white dark:text-cyan-400" />
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden bg-[#0a1628]">
+            <img src="/logo.png" alt="IronInbox" className="w-8 h-8 object-contain" />
           </div>
           <div>
             <h1 className="text-sm font-bold text-slate-900 tracking-tight dark:text-white">IronInbox</h1>

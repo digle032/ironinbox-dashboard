@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { User, Calendar, AlertTriangle, Clock, CheckCircle, Layers } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -37,15 +37,12 @@ const EMPTY_INCIDENT: Omit<Incident, 'id' | 'createdTime'> = {
   source: 'Manual',
 };
 
+const PRIORITIES = ['All', 'Critical', 'High', 'Medium', 'Low'] as const;
+const STATUSES = ['All', 'Open', 'In Progress', 'Resolved'] as const;
+
 const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalIncidents }) => {
   const { linkedIncidents, isWiped } = useApp();
-  const [, setOpenDropdownId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleClickOutside = () => setOpenDropdownId(null);
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, []);
+  const filterRef = useRef<HTMLDivElement>(null);
 
   const [incidents, setIncidents] = useState<Incident[]>([
     {
@@ -57,7 +54,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
       status: 'Open',
       dueDate: 'Today, 2:00 PM',
       description:
-        'Our automated scanning system detected a malicious executable file disguised as a PDF document in an email from an unknown sender. The file has been quarantined and the email has been moved to a secure sandbox environment. Immediate investigation is required to determine if this is part of a larger attack campaign.',
+        'Our automated scanning system detected a malicious executable file disguised as a PDF document in an email from an unknown sender. The file has been quarantined and moved to a secure sandbox environment.',
       category: 'Email Security',
       assignedTo: 'SOC Team',
       source: 'Mail Gateway',
@@ -125,6 +122,19 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   const [, setSelectedIncident] = useState<Incident | null>(null);
   const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
   const [incidentPage, setIncidentPage] = useState(1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterPriority, setFilterPriority] = useState<string>('All');
+  const [filterStatus, setFilterStatus] = useState<string>('All');
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setFilterOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   useEffect(() => {
     if (linkedIncidents.length === 0) return;
@@ -149,11 +159,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
     const nextId = `INC-${new Date().getFullYear()}-${String(incidents.length + 1).padStart(3, '0')}`;
     setIsCreating(true);
     setSelectedIncident(null);
-    setDraftIncident({
-      ...EMPTY_INCIDENT,
-      id: nextId,
-      createdTime: 'Just now',
-    });
+    setDraftIncident({ ...EMPTY_INCIDENT, id: nextId, createdTime: 'Just now' });
     setIsModalOpen(true);
   };
 
@@ -190,7 +196,13 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
     }
   }, [isWiped]);
 
-  const allIncidents = isWiped ? [] : incidents;
+  const baseIncidents = isWiped ? [] : incidents;
+  const allIncidents = baseIncidents.filter((i) => {
+    if (filterPriority !== 'All' && i.priority !== filterPriority) return false;
+    if (filterStatus !== 'All' && i.status !== filterStatus) return false;
+    return true;
+  });
+
   const totalIncidentPages = Math.max(1, Math.ceil(allIncidents.length / INCIDENT_PAGE_SIZE));
   const displayedIncidents = allIncidents.slice(
     (incidentPage - 1) * INCIDENT_PAGE_SIZE,
@@ -199,10 +211,12 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   const pageFrom = allIncidents.length === 0 ? 0 : (incidentPage - 1) * INCIDENT_PAGE_SIZE + 1;
   const pageTo = Math.min(incidentPage * INCIDENT_PAGE_SIZE, allIncidents.length);
 
-  const countOpen = allIncidents.filter((i) => i.status === 'Open').length;
-  const countInProgress = allIncidents.filter((i) => i.status === 'In Progress').length;
-  const countResolved = allIncidents.filter((i) => i.status === 'Resolved').length;
-  const countCritical = allIncidents.filter((i) => i.priority === 'Critical').length;
+  const countOpen = baseIncidents.filter((i) => i.status === 'Open').length;
+  const countInProgress = baseIncidents.filter((i) => i.status === 'In Progress').length;
+  const countResolved = baseIncidents.filter((i) => i.status === 'Resolved').length;
+  const countCritical = baseIncidents.filter((i) => i.priority === 'Critical').length;
+
+  const hasActiveFilter = filterPriority !== 'All' || filterStatus !== 'All';
 
   return (
     <>
@@ -210,32 +224,92 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
 
       <div className="p-6 space-y-4 bg-slate-50 min-h-screen max-w-7xl mx-auto dark:bg-[#040c18]">
 
-        {/* Page header */}
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-[#e2e8f0]">Incident Response Desk</h1>
-            <p className="mt-0.5 text-sm text-slate-500 dark:text-[#4a6080]">
-              Manage and track security incidents and requests.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0f2040]">
+        {/* Action bar */}
+        <div className="flex items-center justify-end gap-2">
+          <div className="relative" ref={filterRef}>
+            <button
+              onClick={() => setFilterOpen((o) => !o)}
+              className={clsx(
+                'inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium shadow-sm transition',
+                hasActiveFilter
+                  ? 'border-blue-400 bg-blue-50 text-blue-700 dark:border-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
+                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0f2040]'
+              )}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18l-7 8v6l-4 2v-8L3 4z" />
               </svg>
               Filter
+              {hasActiveFilter && (
+                <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
+                  {(filterPriority !== 'All' ? 1 : 0) + (filterStatus !== 'All' ? 1 : 0)}
+                </span>
+              )}
             </button>
-            <button
-              onClick={openCreateIncidentModal}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 dark:shadow-[0_0_20px_rgba(59,130,246,0.18)]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Create Incident
-            </button>
+
+            {filterOpen && (
+              <div className="absolute right-0 top-full mt-2 z-40 w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:bg-[#0a1628] dark:border-[#0f2a4a]">
+                <div className="mb-3">
+                  <p className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a]">Priority</p>
+                  <div className="flex flex-wrap gap-1">
+                    {PRIORITIES.map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => { setFilterPriority(p); setIncidentPage(1); }}
+                        className={clsx(
+                          'rounded-md px-2 py-1 text-xs font-medium transition',
+                          filterPriority === p
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-[#0f2040] dark:text-[#94a3b8] dark:hover:bg-[#162040]'
+                        )}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <p className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a]">Status</p>
+                  <div className="flex flex-wrap gap-1">
+                    {STATUSES.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => { setFilterStatus(s); setIncidentPage(1); }}
+                        className={clsx(
+                          'rounded-md px-2 py-1 text-xs font-medium transition',
+                          filterStatus === s
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-[#0f2040] dark:text-[#94a3b8] dark:hover:bg-[#162040]'
+                        )}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {hasActiveFilter && (
+                  <button
+                    onClick={() => { setFilterPriority('All'); setFilterStatus('All'); setIncidentPage(1); }}
+                    className="w-full rounded-lg border border-slate-200 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 dark:border-[#0f2a4a] dark:text-[#4a6080] dark:hover:bg-[#0f2040]"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            )}
           </div>
+
+          <button
+            onClick={openCreateIncidentModal}
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 dark:shadow-[0_0_20px_rgba(59,130,246,0.18)]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Incident
+          </button>
         </div>
 
         {/* Compact stat cards */}
@@ -245,7 +319,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
               <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a]">Total</p>
               <Layers className="h-4 w-4 text-slate-300 dark:text-[#1a3a5a]" />
             </div>
-            <p className="text-2xl font-black text-slate-900 dark:text-[#e2e8f0] dark:font-mono">{allIncidents.length}</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-[#e2e8f0] dark:font-mono">{baseIncidents.length}</p>
             <p className="text-[11px] text-slate-400 dark:text-[#2a4a6a] mt-0.5">{countCritical} critical</p>
           </div>
 
@@ -292,7 +366,13 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
               </thead>
 
               <tbody className="divide-y divide-slate-100 dark:divide-[#0f2a4a]">
-                {displayedIncidents.map((incident) => (
+                {displayedIncidents.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center text-sm text-slate-400 dark:text-[#4a6080]">
+                      No incidents match the current filters.
+                    </td>
+                  </tr>
+                ) : displayedIncidents.map((incident) => (
                   <tr
                     key={incident.id}
                     className="cursor-pointer hover:bg-slate-50 transition dark:hover:bg-[#0f2040]"
@@ -417,7 +497,6 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
             </div>
 
             <div className="max-h-[72vh] overflow-y-auto px-6 py-5 space-y-4">
-
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#4a6080]">Subject</label>
                 <input

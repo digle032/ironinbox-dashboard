@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { RiMailLine, RiLockPasswordLine, RiGoogleFill, RiShieldLine } from 'react-icons/ri';
+import { RiMailLine, RiLockPasswordLine, RiGoogleFill } from 'react-icons/ri';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -77,10 +77,8 @@ const Login: React.FC = () => {
 
           {/* Brand */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4
-                            bg-blue-600 shadow-lg shadow-blue-600/30
-                            dark:bg-transparent dark:border dark:border-cyan-500/40 dark:shadow-[0_0_24px_rgba(6,182,212,0.25)]">
-              <RiShieldLine className="w-6 h-6 text-white dark:text-cyan-400" />
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 overflow-hidden bg-[#0a1628] shadow-lg shadow-blue-900/30">
+              <img src="/logo.png" alt="IronInbox" className="w-14 h-14 object-contain" />
             </div>
             <h1 className="text-xl font-bold text-slate-900 tracking-tight dark:text-[#e2e8f0]">
               IronInbox
