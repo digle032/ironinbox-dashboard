@@ -115,6 +115,8 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
 const [, setSelectedIncident] = useState<Incident | null>(null);
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
+const [incidentPage, setIncidentPage] = useState(1);
+const INCIDENT_PAGE_SIZE = 5;
 
 useEffect(() => {
   if (linkedIncidents.length === 0) return;
@@ -154,11 +156,13 @@ const handleSaveIncident = () => {
   setDraftIncident(null);
 };
 
-const displayedIncidents = isWiped ? [] : incidents;
+const allIncidents = isWiped ? [] : incidents;
 const totalRequestsDisplay = isWiped ? 0 : MOCK_TOTAL_REQUESTS;
 const pendingRequestsDisplay = isWiped ? 0 : MOCK_PENDING_REQUESTS;
-const pageFrom = displayedIncidents.length === 0 ? 0 : 1;
-const pageTo = displayedIncidents.length;
+const totalIncidentPages = Math.max(1, Math.ceil(allIncidents.length / INCIDENT_PAGE_SIZE));
+const displayedIncidents = allIncidents.slice((incidentPage - 1) * INCIDENT_PAGE_SIZE, incidentPage * INCIDENT_PAGE_SIZE);
+const pageFrom = allIncidents.length === 0 ? 0 : (incidentPage - 1) * INCIDENT_PAGE_SIZE + 1;
+const pageTo = Math.min(incidentPage * INCIDENT_PAGE_SIZE, allIncidents.length);
 
 useEffect(() => {
   if (isWiped) {
@@ -310,29 +314,29 @@ useEffect(() => {
 
       {/* Table card */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
           <table className="min-w-full">
             <thead className="border-b border-slate-200 bg-slate-50 dark:border-[#0f2a4a] dark:bg-[#0f2040]">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Incident ID
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Subject
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Reporter
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Priority
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Due Date
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#4a6080]">
+                <th className="px-4 py-2.5 text-left text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
                   Actions
                 </th>
               </tr>
@@ -345,12 +349,12 @@ useEffect(() => {
       className="cursor-pointer hover:bg-slate-50 transition dark:hover:bg-[#0f2040]"
       onClick={() => openIncidentModal(incident)}
     >
-      <td className="px-6 py-5 align-top">
+      <td className="px-4 py-2.5 align-middle">
         <div className="font-semibold text-slate-900 dark:text-[#e2e8f0]">{incident.id}</div>
         <div className="mt-1 text-sm text-slate-500 dark:text-[#4a6080]">{incident.createdTime}</div>
       </td>
 
-      <td className="px-6 py-5 align-top font-semibold text-slate-900 dark:text-[#e2e8f0]">
+      <td className="px-4 py-2.5 align-middle font-semibold text-slate-900 dark:text-[#e2e8f0]">
         {incident.subject}
         {incident.sourceEmailId && (
           <span className="ml-2 inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/45 dark:text-blue-300">
@@ -359,7 +363,7 @@ useEffect(() => {
         )}
       </td>
 
-      <td className="px-6 py-5 align-top">
+      <td className="px-4 py-2.5 align-middle">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-[#0f2040] dark:text-[#4a6080]">
             <User className="h-4 w-4" />
@@ -368,7 +372,7 @@ useEffect(() => {
         </div>
       </td>
 
-      <td className="px-6 py-5 align-top">
+      <td className="px-4 py-2.5 align-middle">
         <span
           className={clsx(
             'inline-flex rounded-full px-3 py-1 text-xs font-semibold border',
@@ -383,9 +387,9 @@ useEffect(() => {
         </span>
       </td>
 
-      <td className="px-6 py-5 align-top text-slate-700 dark:text-[#94a3b8]">{incident.dueDate}</td>
+      <td className="px-4 py-2.5 align-middle text-slate-700 dark:text-[#94a3b8]">{incident.dueDate}</td>
 
-      <td className="px-6 py-5 align-top">
+      <td className="px-4 py-2.5 align-middle">
         <span
           className={clsx(
             'inline-flex items-center gap-2 text-sm font-medium',
@@ -406,7 +410,7 @@ useEffect(() => {
         </span>
       </td>
 
-      <td className="px-6 py-5 align-top text-slate-400 dark:text-[#4a6080]">•••</td>
+      <td className="px-4 py-2.5 align-middle text-slate-400 dark:text-[#4a6080]">•••</td>
     </tr>
   ))}
 </tbody>
@@ -425,10 +429,11 @@ useEffect(() => {
           </p>
 
           <div className="flex items-center gap-2">
-            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-slate-50 dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#4a6080] dark:hover:bg-[#0a1628]">
+            <button onClick={() => setIncidentPage(p => Math.max(1, p - 1))} disabled={incidentPage <= 1} className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#4a6080] dark:hover:bg-[#0a1628]">
               ‹
             </button>
-            <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]">
+            <span className="text-xs font-mono text-slate-400 dark:text-[#2a4a6a]">{incidentPage}/{totalIncidentPages}</span>
+            <button onClick={() => setIncidentPage(p => Math.min(totalIncidentPages, p + 1))} disabled={incidentPage >= totalIncidentPages} className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed dark:bg-[#0f2040] dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-[#0a1628]">
               ›
             </button>
           </div>

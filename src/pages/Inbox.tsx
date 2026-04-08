@@ -164,7 +164,7 @@ const Inbox: React.FC = () => {
                 <p className="text-xs text-slate-400 mt-1 dark:text-[#2a4a6a]">Try adjusting your filters or search terms.</p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-[#0f2a4a]">
+              <div className="divide-y divide-slate-100 dark:divide-[#0f2a4a] max-h-[480px] overflow-y-auto">
                 {paginated.map((released) => {
                   const isSelected = selectedIds.has(released.id);
                   const isActive   = selectedEmail?.id === released.id;

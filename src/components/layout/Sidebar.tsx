@@ -14,7 +14,6 @@ import {
   RiUserLine,
   RiAlarmWarningLine,
   RiSettings3Line,
-  RiShieldCheckLine,
 } from 'react-icons/ri';
 import { SiMinutemailer } from 'react-icons/si';
 
@@ -78,22 +77,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               Security Dashboard
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* ── System Status ──────────────────────────────────── */}
-      <div className="px-5 py-2 border-b border-slate-100 bg-emerald-50/50 dark:border-[#0f2a4a] dark:bg-emerald-500/5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-            </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400/80 dark:font-mono">
-              All Systems Operational
-            </span>
-          </div>
-          <RiShieldCheckLine className="w-3.5 h-3.5 text-emerald-500/60" />
         </div>
       </div>
 

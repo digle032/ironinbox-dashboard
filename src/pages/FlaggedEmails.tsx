@@ -172,7 +172,7 @@ const FlaggedEmails: React.FC = () => {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[420px]">
               <table className="w-full table-fixed">
                 <colgroup>
                   <col className="w-[110px]" /><col className="w-[170px]" /><col className="w-[220px]" />
