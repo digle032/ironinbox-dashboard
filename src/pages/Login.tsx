@@ -77,8 +77,8 @@ const Login: React.FC = () => {
 
           {/* Brand */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 overflow-hidden bg-[#0a1628] shadow-lg shadow-blue-900/30">
-              <img src="/logo.png" alt="IronInbox" className="w-14 h-14 object-contain" />
+            <div className="w-24 h-24 flex items-center justify-center mb-2">
+              <img src="/logo.png" alt="IronInbox" className="w-24 h-24 object-contain" />
             </div>
             <h1 className="text-xl font-bold text-slate-900 tracking-tight dark:text-[#e2e8f0]">
               IronInbox

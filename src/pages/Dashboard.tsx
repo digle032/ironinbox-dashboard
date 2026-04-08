@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { filterVisibleFlaggedEmails } from '../utils/keywordSignals';
 import { useSettings } from '../contexts/SettingsContext';
+import { useRole } from '../utils/useRole';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import RoleGate from '../components/common/RoleGate';
@@ -15,12 +16,14 @@ import {
   RiFireLine,
   RiTimeLine,
   RiUserLine,
-  RiTrophyLine
+  RiTrophyLine,
+  RiInformationLine,
 } from 'react-icons/ri';
 
 const Dashboard: React.FC = () => {
   const { flaggedEmails, releasedEmails, keywords } = useApp();
   const { advanced } = useSettings();
+  const { role } = useRole();
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
   useEngagementTracker('dashboard');
@@ -75,6 +78,89 @@ const Dashboard: React.FC = () => {
   const card = 'bg-white border border-slate-200 rounded-xl shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]';
   const cardHead = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono flex items-center gap-2';
 
+  const viewerDashboard = (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StatCard title="Total Processed"  value={stats.totalProcessed}  icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
+        <StatCard title="Emails Released"  value={stats.totalReleased}   icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
+      </div>
+
+      <div className={`${card} p-6`}>
+        <div className="flex items-start gap-4">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-950/40 dark:text-blue-400">
+            <RiInformationLine className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-800 dark:text-[#e2e8f0]">Viewer Access</p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-[#4a6080]">
+              Your account has read-only access to general email statistics. Contact your administrator to request expanded permissions such as flagged email review, keyword monitoring, or inbox access.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+              {[
+                { label: 'Inbox', locked: true },
+                { label: 'Flagged Emails', locked: true },
+                { label: 'Keyword Monitoring', locked: true },
+                { label: 'Incidents', locked: false },
+              ].map(({ label, locked }) => (
+                <div key={label} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium
+                  ${locked
+                    ? 'border-slate-200 bg-slate-50 text-slate-400 dark:border-[#0f2a4a] dark:bg-[#060f1e] dark:text-[#2a4a6a]'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400'
+                  }`}
+                >
+                  <span>{locked ? '🔒' : '✓'}</span>
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`${card} p-6`}>
+        <p className={cardHead}>
+          <RiTimeLine className="w-3.5 h-3.5" />
+          Recent Activity
+        </p>
+        {stats.recentReleased.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-[#2a4a6a]">
+            <RiMailLine className="w-10 h-10 mb-3 text-slate-300 dark:text-[#0f2040]" />
+            <p className="text-sm font-medium">No released emails yet</p>
+          </div>
+        ) : (
+          <div className="space-y-2 mt-5">
+            {stats.recentReleased.map((released) => (
+              <div key={released.id}
+                   className="flex items-start space-x-3 px-3 py-3 rounded-lg border transition-colors
+                              bg-slate-50 border-slate-100 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
+                <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0
+                                bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  <RiShieldCheckLine className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-800 truncate dark:text-[#e2e8f0]">
+                    {released.originalEmail.subject}
+                  </p>
+                  <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[#2a4a6a]">
+                    {released.originalEmail.sender}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="flex items-center text-[10px] text-slate-400 dark:text-[#2a4a6a]">
+                      <RiUserLine className="w-3 h-3 mr-1" />{released.releasedBy}
+                    </span>
+                    <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[#2a4a6a]">
+                      <RiTimeLine className="w-3 h-3 mr-1" />{released.releasedAt}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
       <Header title="Dashboard Overview" />
@@ -95,20 +181,98 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Viewer-only compact dashboard */}
+        {role === 'viewer' ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <StatCard title="Total Processed"  value={stats.totalProcessed}  icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
+              <StatCard title="Emails Released"  value={stats.totalReleased}   icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
+            </div>
+
+            <div className={`${card} p-6`}>
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-950/40 dark:text-blue-400">
+                  <RiInformationLine className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-[#e2e8f0]">Viewer Access</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-[#4a6080]">
+                    Your account has read-only access to general email statistics. Contact your administrator to request expanded permissions such as flagged email review, keyword monitoring, or inbox access.
+                  </p>
+                  <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+                    {[
+                      { label: 'Inbox', locked: true },
+                      { label: 'Flagged Emails', locked: true },
+                      { label: 'Keyword Monitoring', locked: true },
+                      { label: 'Incidents', locked: false },
+                    ].map(({ label, locked }) => (
+                      <div key={label} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium
+                        ${locked
+                          ? 'border-slate-200 bg-slate-50 text-slate-400 dark:border-[#0f2a4a] dark:bg-[#060f1e] dark:text-[#2a4a6a]'
+                          : 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400'
+                        }`}
+                      >
+                        <span>{locked ? '🔒' : '✓'}</span>
+                        {label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity — viewers can see this */}
+            <div className={`${card} p-6`}>
+              <p className={cardHead}>
+                <RiTimeLine className="w-3.5 h-3.5" />
+                Recent Activity
+              </p>
+              {stats.recentReleased.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-[#2a4a6a]">
+                  <RiMailLine className="w-10 h-10 mb-3 text-slate-300 dark:text-[#0f2040]" />
+                  <p className="text-sm font-medium">No released emails yet</p>
+                </div>
+              ) : (
+                <div className="space-y-2 mt-5">
+                  {stats.recentReleased.map((released) => (
+                    <div key={released.id}
+                         className="flex items-start space-x-3 px-3 py-3 rounded-lg border transition-colors
+                                    bg-slate-50 border-slate-100 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
+                      <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0
+                                      bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                        <RiShieldCheckLine className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-slate-800 truncate dark:text-[#e2e8f0]">
+                          {released.originalEmail.subject}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[#2a4a6a]">
+                          {released.originalEmail.sender}
+                        </p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="flex items-center text-[10px] text-slate-400 dark:text-[#2a4a6a]">
+                            <RiUserLine className="w-3 h-3 mr-1" />{released.releasedBy}
+                          </span>
+                          <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[#2a4a6a]">
+                            <RiTimeLine className="w-3 h-3 mr-1" />{released.releasedAt}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+        <div className="space-y-6">
+
         {/* Hero Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Total Processed"    value={stats.totalProcessed}    icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
-          <RoleGate permission="canViewFlaggedEmails">
-            <div className="contents">
-              <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     trend="+12%"  trendUp={false} />
-            </div>
-          </RoleGate>
+          <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     trend="+12%"  trendUp={false} />
           <StatCard title="Emails Released"    value={stats.totalReleased}     icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
-          <RoleGate permission="canViewFlaggedEmails">
-            <div className="contents">
-              <StatCard title="Active Keywords"    value={stats.activeKeywords}    icon={<RiSpamLine />}        iconColor="text-purple-600"  trend="+2"    trendUp={true} />
-            </div>
-          </RoleGate>
+          <StatCard title="Active Keywords"    value={stats.activeKeywords}    icon={<RiSpamLine />}        iconColor="text-purple-600"  trend="+2"    trendUp={true} />
         </div>
 
         <RoleGate permission="canViewFlaggedEmails">
@@ -293,6 +457,9 @@ const Dashboard: React.FC = () => {
         </RoleGate>
 
         <EngagementLog />
+        </div>
+        )}
+
       </div>
     </div>
   );

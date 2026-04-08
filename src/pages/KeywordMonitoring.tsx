@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
-import RoleGate from '../components/common/RoleGate';
+import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { RiAddLine, RiMoreLine, RiDeleteBinLine } from 'react-icons/ri';
 
@@ -30,7 +30,7 @@ const KeywordMonitoring: React.FC = () => {
   const checkboxRow = 'flex items-start space-x-3 py-3 border-b border-slate-100 last:border-b-0 dark:border-[#0f2a4a]';
 
   return (
-    <RoleGate permission="canViewKeywordMonitoring">
+    <RoleGate permission="canViewKeywordMonitoring" fallback={<div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#040c18]"><AccessRestrictedBlock /></div>}>
       <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
         <Header title="Keyword Monitoring" />
 

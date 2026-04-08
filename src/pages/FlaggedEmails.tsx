@@ -3,7 +3,7 @@ import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import EmailDetailModal from '../components/dashboard/EmailDetailModal';
-import RoleGate from '../components/common/RoleGate';
+import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { generatePDFReport } from '../utils/pdfExport';
 import {
@@ -113,7 +113,7 @@ const FlaggedEmails: React.FC = () => {
   };
 
   return (
-    <RoleGate permission="canViewFlaggedEmails">
+    <RoleGate permission="canViewFlaggedEmails" fallback={<div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#040c18]"><AccessRestrictedBlock /></div>}>
       <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
         <Header title="Flagged Emails" showActions onExportPDF={() => generatePDFReport(filteredEmails, keywords)} />
 

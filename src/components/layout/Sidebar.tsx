@@ -65,8 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* ── Brand ─────────────────────────────────────────── */}
       <div className="px-5 py-4 border-b border-slate-100 dark:border-[#0f2a4a]">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden bg-[#0a1628]">
-            <img src="/logo.png" alt="IronInbox" className="w-8 h-8 object-contain" />
+          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+            <img src="/logo.png" alt="IronInbox" className="w-10 h-10 object-contain" />
           </div>
           <div>
             <h1 className="text-sm font-bold text-slate-900 tracking-tight dark:text-white">IronInbox</h1>

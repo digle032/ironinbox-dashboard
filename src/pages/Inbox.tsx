@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
-import RoleGate from '../components/common/RoleGate';
+import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
 import {
   RiMailLine,
@@ -81,7 +81,7 @@ const Inbox: React.FC = () => {
   const sectionHead = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono';
 
   return (
-    <RoleGate permission="canViewInbox">
+    <RoleGate permission="canViewInbox" fallback={<div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#040c18]"><AccessRestrictedBlock /></div>}>
       <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
         <Header title="Inbox" />
 
