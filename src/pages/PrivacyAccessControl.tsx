@@ -35,34 +35,34 @@ const PrivacyAccessControl: React.FC = () => {
     window.setTimeout(() => setWipeMessage(null), 6000);
   };
 
-  const panel = 'bg-white border border-slate-200 rounded-xl p-5 dark:bg-[#0a1628] dark:border-[#0f2a4a]';
-  const sectionHead = 'text-sm font-semibold text-slate-800 dark:text-[#e2e8f0] mb-4 flex items-center gap-2';
+  const panel = 'bg-white border border-slate-200 rounded-xl p-5 dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)]';
+  const sectionHead = 'text-sm font-semibold text-slate-800 dark:text-[var(--dm-text-primary)] mb-4 flex items-center gap-2';
 
   return (
-    <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
+    <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[var(--dm-bg-page)]">
       <Header title="Privacy & Access Control" />
 
-      <div className="w-full max-w-3xl mx-auto px-6 py-6 space-y-4">
+      <div className="w-full max-w-7xl mx-auto p-6 space-y-4">
 
-        <p className="text-xs text-center text-slate-400 dark:text-[#2a4a6a] pb-1">
+        <p className="text-xs text-center text-slate-400 dark:text-[var(--dm-text-muted)] pb-1">
           Your data is protected. We only access what is required for monitoring.
         </p>
 
         {/* What IronInbox Can Access */}
         <div className={panel}>
           <h2 className={sectionHead}>
-            <RiLockLine className="w-4 h-4 text-blue-500 dark:text-cyan-400" />
+            <RiLockLine className="w-4 h-4 text-blue-500 dark:text-blue-400" />
             What IronInbox Can Access
           </h2>
           <ul className="space-y-2.5">
             {ACCESS_ITEMS.map((item) => (
-              <li key={item.label} className="flex items-center gap-3 py-2 border-b border-slate-100 last:border-b-0 dark:border-[#0f2a4a]">
+              <li key={item.label} className="flex items-center gap-3 py-2 border-b border-slate-100 last:border-b-0 dark:border-[var(--dm-border)]">
                 <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${item.allowed ? 'bg-emerald-50 dark:bg-emerald-950/40' : 'bg-red-50 dark:bg-red-950/40'}`}>
                   {item.allowed
                     ? <RiCheckLine className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     : <RiCloseLine className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />}
                 </div>
-                <span className="text-sm text-slate-700 dark:text-[#94a3b8]">{item.label}</span>
+                <span className="text-sm text-slate-700 dark:text-[var(--dm-text-secondary)]">{item.label}</span>
                 <span className={`ml-auto text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded
                                  ${item.allowed
                                    ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40'
@@ -77,13 +77,13 @@ const PrivacyAccessControl: React.FC = () => {
         {/* Security Measures */}
         <div className={panel}>
           <h2 className={sectionHead}>
-            <RiShieldLine className="w-4 h-4 text-blue-500 dark:text-cyan-400" />
+            <RiShieldLine className="w-4 h-4 text-blue-500 dark:text-blue-400" />
             Security Measures
           </h2>
           <ul className="space-y-3">
             {SECURITY_MEASURES.map((item) => (
-              <li key={item} className="flex items-center gap-3 text-sm text-slate-700 dark:text-[#94a3b8]">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 flex-shrink-0" />
+              <li key={item} className="flex items-center gap-3 text-sm text-slate-700 dark:text-[var(--dm-text-secondary)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
                 {item}
               </li>
             ))}
@@ -110,7 +110,7 @@ const PrivacyAccessControl: React.FC = () => {
                 {wipeMessage}
               </p>
             )}
-            <p className="text-xs text-slate-400 dark:text-[#2a4a6a]">
+            <p className="text-xs text-slate-400 dark:text-[var(--dm-text-muted)]">
               Wipe applies to this session only; a full page reload restores data.
             </p>
           </div>
@@ -119,7 +119,7 @@ const PrivacyAccessControl: React.FC = () => {
 
       <Modal isOpen={showWipeModal} onClose={() => setShowWipeModal(false)} title="Wipe All Stored Monitoring Data">
         <div className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-[#94a3b8]">
+          <p className="text-sm text-slate-600 dark:text-[var(--dm-text-secondary)]">
             This clears monitoring data and the incidents desk view for this browser session only.
             Refreshing or reopening the app restores the original demo data. Nothing is written to permanent storage.
           </p>
@@ -127,7 +127,7 @@ const PrivacyAccessControl: React.FC = () => {
             <button onClick={() => setShowWipeModal(false)}
               className="px-4 py-2 text-sm font-medium rounded-lg border transition-colors
                          border-slate-200 text-slate-700 hover:bg-slate-50
-                         dark:border-[#0f2a4a] dark:text-[#94a3b8] dark:hover:bg-white/[0.03]">
+                         dark:border-[var(--dm-border)] dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.03]">
               Cancel
             </button>
             <button onClick={handleWipeData} disabled={isWiping}

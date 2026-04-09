@@ -2,32 +2,61 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Design Tokens ─────────────────────────────────────────── */
+/* ── Design Tokens ───────────────────────── */
 :root {
-  --bg-base:    #040c18;
-  --bg-panel:   #060f1e;
-  --bg-card:    #0a1628;
-  --bg-surface: #0f2040;
-  --border:     #0f2a4a;
-  --border-hi:  #1a4a7a;
-  --cyan:       #06b6d4;
-  --cyan-dim:   rgba(6,182,212,0.15);
-  --text-1:     #e2e8f0;
-  --text-2:     #94a3b8;
-  --text-3:     #4a6080;
+  --bg-base:    #0d182b;
+  --bg-panel:   #1b2a3f;
+  --bg-card:    #1f3148;
+  --bg-surface: #223854;
+  --border:     #4d5e74;
+  --border-hi:  #5b6b82;
+  --cyan:       #3b82f6;
+  --cyan-dim:   rgba(59,130,246,0.12);
+  --text-1:     #f8fafc;
+  --text-2:     #cbd5e1;
+  --text-3:     #8b9eb4;
+}
+
+/* ── Dark mode UI─ */
+html.dark {
+  --dm-bg-sidebar: #03071a;
+  /* Main canvas */
+  --dm-bg-page: #0d182b;
+  /* Title bar */
+  --dm-bg-header: #060d20;
+  --dm-bg-elevated: #132033;
+  --dm-surface-popover: #1b2a3f;
+  --dm-surface-card: #1b2a3f;
+  --dm-chrome: #1c2e45;
+  --dm-inset: #223854;
+  --dm-inset-hover: #284368;
+  --dm-border: #4d5e74;
+  --dm-border-input: #223754;
+  --dm-text-primary: #f8fafc;
+  --dm-text-secondary: #cbd5e1;
+  --dm-text-muted: #8b9eb4;
+  --dm-text-mono: #7a8fa3;
+  --dm-text-faint: #6b7c94;
+  --dm-placeholder: #6b7c94;
+  --dm-accent: #93c5fd;
+  --dm-accent-soft: rgba(59, 130, 246, 0.14);
+  --dm-accent-ring: rgba(59, 130, 246, 0.5);
+  --dm-btn-primary: #2563eb;
+  --dm-btn-primary-hover: #3b82f6;
+  --dm-on-btn: #f8fafc;
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
 body {
-  @apply bg-slate-50 text-slate-800 antialiased dark:text-[#e2e8f0];
+  @apply bg-slate-50 text-slate-800 antialiased dark:text-[var(--dm-text-secondary)];
   background-color: #f8fafc;
 }
 
 html.dark body {
-  background-color: var(--bg-base);
+  background-color: var(--dm-bg-page);
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(6,182,212,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 100%, rgba(59,130,246,0.03) 0%, transparent 60%);
+    radial-gradient(ellipse at 18% 0%, rgba(59, 130, 246, 0.045) 0%, transparent 58%),
+    radial-gradient(ellipse at 82% 100%, rgba(30, 58, 138, 0.055) 0%, transparent 55%);
 }
 
 /* ── Subtle grid pattern for dark mode ─────────────────────── */
@@ -37,8 +66,8 @@ html.dark body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(6,182,212,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6,182,212,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(100, 116, 139, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 116, 139, 0.06) 1px, transparent 1px);
   background-size: 40px 40px;
   z-index: 0;
 }
@@ -59,7 +88,7 @@ html.dark body > * {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors dark:bg-[#1a3554] dark:hover:bg-[#1e4060];
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors dark:bg-[#4d5e74] dark:hover:bg-[#5b6b82];
 }
 
 /* ── Glassmorphism Utilities (light mode only) ─────────────── */
@@ -69,7 +98,7 @@ html.dark body > * {
 
 .glass-card {
   @apply bg-white border border-slate-200 shadow-lg rounded-xl
-         dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] dark:rounded-xl dark:backdrop-blur-none;
+         dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.35)] dark:rounded-xl dark:backdrop-blur-none;
 }
 
 .glass-panel {
@@ -79,12 +108,12 @@ html.dark body > * {
 /* ── Cybersecurity card style ──────────────────────────────── */
 .sec-card {
   @apply bg-white border border-slate-200 rounded-xl shadow-sm
-         dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:rounded-lg;
+         dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] dark:rounded-lg;
 }
 
 .sec-panel {
   @apply bg-white border border-slate-200 rounded-xl
-         dark:bg-[#060f1e] dark:border-[#0f2a4a] dark:rounded-lg;
+         dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:rounded-lg;
 }
 
 /* ── Monospace data elements ───────────────────────────────── */
@@ -99,7 +128,7 @@ html.dark body > * {
 
 /* ── Scan-line accent ──────────────────────────────────────── */
 .accent-line {
-  @apply border-l-2 border-cyan-500;
+  @apply border-l-2 border-blue-500;
 }
 
 /* ── Animations ────────────────────────────────────────────── */
@@ -115,8 +144,8 @@ html.dark body > * {
 }
 
 @keyframes pulse-cyan {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.4); }
-  50%       { box-shadow: 0 0 0 6px rgba(6,182,212,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35); }
+  50%       { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
 }
 
 .animate-fade-in {
@@ -145,7 +174,7 @@ html.dark .data-table tbody tr {
 }
 
 html.dark .data-table tbody tr:hover {
-  background: rgba(6, 182, 212, 0.03);
+  background: rgba(59, 130, 246, 0.045);
 }
 
 /* ── Risk level colors ─────────────────────────────────────── */

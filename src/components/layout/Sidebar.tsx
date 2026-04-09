@@ -60,17 +60,17 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="w-72 h-screen flex flex-col fixed left-0 top-0 z-50
                     bg-white border-r border-slate-200 shadow-xl
-                    dark:bg-[#060f1e] dark:border-[#0f2a4a] dark:shadow-none">
+                    dark:bg-[var(--dm-bg-sidebar)] dark:border-[var(--dm-border)] dark:shadow-none">
 
       {/* ── Brand ─────────────────────────────────────────── */}
-      <div className="px-5 py-4 border-b border-slate-100 dark:border-[#0f2a4a]">
+      <div className="px-5 py-4 border-b border-slate-100 dark:border-[var(--dm-border)]">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
             <img src="/logo.png" alt="IronInbox" className="w-10 h-10 object-contain" />
           </div>
           <div>
             <h1 className="text-sm font-bold text-slate-900 tracking-tight dark:text-white">IronInbox</h1>
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-cyan-500/60 dark:font-mono mt-px">
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-blue-400/55 dark:font-mono mt-px">
               Security Dashboard
             </p>
           </div>
@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* ── Navigation ─────────────────────────────────────── */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400 px-3 mb-3
-                      dark:text-[#2a4a6a] dark:font-mono">
+                      dark:text-[var(--dm-text-muted)] dark:font-mono">
           Navigation
         </p>
         {visibleNavItems.map((item) => {
@@ -91,26 +91,26 @@ const Sidebar: React.FC<SidebarProps> = ({
               to={item.path}
               className={`group flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative text-sm
                 ${isActive
-                  ? 'bg-blue-50 text-blue-700 font-semibold dark:bg-cyan-500/10 dark:text-cyan-300 dark:font-medium'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium dark:text-[#4a6080] dark:hover:text-slate-200 dark:hover:bg-white/[0.03]'
+                  ? 'bg-blue-50 text-blue-700 font-semibold dark:bg-blue-500/10 dark:text-blue-300 dark:font-medium'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium dark:text-[var(--dm-text-muted)] dark:hover:text-slate-200 dark:hover:bg-white/[0.03]'
                 }`}
             >
               {/* Active indicator bar */}
               {isActive && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full
-                                bg-blue-600 dark:bg-cyan-400" />
+                                bg-blue-600 dark:bg-blue-500" />
               )}
 
               <span className={`flex-shrink-0 transition-colors duration-200
                 ${isActive
-                  ? 'text-blue-600 dark:text-cyan-400'
-                  : 'text-slate-400 group-hover:text-slate-600 dark:text-[#2a4a6a] dark:group-hover:text-slate-400'
+                  ? 'text-blue-600 dark:text-blue-400'
+                  : 'text-slate-400 group-hover:text-slate-600 dark:text-[var(--dm-text-muted)] dark:group-hover:text-slate-400'
                 }`}>
                 {item.icon}
               </span>
               <span className="tracking-wide">{item.name}</span>
               {isActive && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-cyan-400 dark:shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-500 dark:shadow-[0_0_6px_rgba(59,130,246,0.55)]" />
               )}
             </Link>
           );
@@ -121,11 +121,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       {monitoredEmail && (
         <div className="mx-3 mb-2 px-3 py-2 rounded-lg
                         bg-blue-50 border border-blue-100
-                        dark:bg-[#0a1f35] dark:border-[#0f2a4a]">
-          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+                        dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border)]">
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[var(--dm-text-muted)] dark:font-mono">
             Monitoring
           </p>
-          <p className="text-xs font-medium text-slate-700 truncate mt-0.5 dark:text-cyan-400/70 dark:font-mono"
+          <p className="text-xs font-medium text-slate-700 truncate mt-0.5 dark:text-blue-400/65 dark:font-mono"
              title={monitoredEmail}>
             {monitoredEmail}
           </p>
@@ -133,7 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* ── User Profile ───────────────────────────────────── */}
-      <div className="px-3 py-3 border-t border-slate-100 dark:border-[#0f2a4a]">
+      <div className="px-3 py-3 border-t border-slate-100 dark:border-[var(--dm-border)]">
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -142,22 +142,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="relative flex-shrink-0">
               <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm
-                              dark:border-[#0f2a4a]">
+                              dark:border-[var(--dm-border)]">
                 <img src={profile.avatar} alt="User" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full dark:border-[#060f1e]" />
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full dark:border-[var(--dm-bg-sidebar)]" />
             </div>
             <div className="flex-1 text-left min-w-0">
               <p className="text-xs font-semibold text-slate-800 truncate group-hover:text-blue-700
-                            dark:text-[#e2e8f0] dark:group-hover:text-cyan-300">
+                            dark:text-[var(--dm-text-primary)] dark:group-hover:text-blue-300">
                 {profile.name}
               </p>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a]">
+              <p className="text-[9px] font-mono uppercase tracking-widest text-slate-400 dark:text-[var(--dm-text-muted)]">
                 {ROLE_LABELS[role]}
               </p>
             </div>
             <svg
-              className={`w-3.5 h-3.5 text-slate-300 transition-transform dark:text-[#2a4a6a] ${showDropdown ? 'rotate-180' : ''}`}
+              className={`w-3.5 h-3.5 text-slate-300 transition-transform dark:text-[var(--dm-text-muted)] ${showDropdown ? 'rotate-180' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
@@ -167,18 +167,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Dropdown */}
           <div className={`absolute bottom-full left-0 right-0 mb-1 rounded-lg border shadow-xl overflow-hidden transition-all duration-200 origin-bottom
                           bg-white border-slate-200 shadow-slate-200/60
-                          dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-black/60
+                          dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] dark:shadow-black/60
                           ${showDropdown ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
             <div className="p-1">
               <button
                 onClick={() => { setShowDropdown(false); navigate('/account'); }}
                 className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors
-                           dark:text-[#94a3b8] dark:hover:bg-white/[0.04] dark:hover:text-[#e2e8f0]"
+                           dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04] dark:hover:text-[var(--dm-text-primary)]"
               >
-                <RiUserLine className="w-3.5 h-3.5 text-slate-400 dark:text-[#2a4a6a]" />
+                <RiUserLine className="w-3.5 h-3.5 text-slate-400 dark:text-[var(--dm-text-muted)]" />
                 <span className="font-medium">My Profile</span>
               </button>
-              <div className="h-px my-0.5 bg-slate-100 dark:bg-[#0f2a4a]" />
+              <div className="h-px my-0.5 bg-slate-100 dark:bg-[var(--dm-border)]" />
               <button
                 onClick={async () => { await signOut(); navigate('/login'); }}
                 className="w-full flex items-center space-x-2.5 px-3 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors dark:hover:bg-red-950/30"

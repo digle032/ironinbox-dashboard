@@ -57,16 +57,16 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
     }
   };
 
-  const inputCls = 'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-all bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[#0f2040] dark:border-[#1a3554] dark:text-[#e2e8f0] dark:focus:border-cyan-500/40';
+  const inputCls = 'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-all bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-primary)] dark:focus:border-blue-500/40';
 
   return (
     <Modal isOpen={!!email} onClose={onClose} title="Email Analysis Report">
       <div className="space-y-6 animate-fade-in">
 
         {/* Email header */}
-        <div className="rounded-lg border p-4 bg-slate-50/80 border-slate-200 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
+        <div className="rounded-lg border p-4 bg-slate-50/80 border-slate-200 dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border)]">
           <div className="flex items-start justify-between mb-4 gap-4">
-            <h3 className="text-sm font-bold text-slate-900 leading-tight dark:text-[#e2e8f0]">{email.subject}</h3>
+            <h3 className="text-sm font-bold text-slate-900 leading-tight dark:text-[var(--dm-text-primary)]">{email.subject}</h3>
             <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold border flex-shrink-0 font-mono ${getRiskBadge(email.riskLevel)}`}>
               {email.riskLevel.toUpperCase()}
             </span>
@@ -78,12 +78,12 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
               { icon: <RiTimeLine className="w-4 h-4" />,  label: 'Received', value: email.received },
             ].map(({ icon, label, value }) => (
               <div key={label} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 dark:bg-[#0a1628] dark:border-[#0f2a4a] text-slate-400 dark:text-[#2a4a6a]">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] text-slate-400 dark:text-[var(--dm-text-muted)]">
                   {icon}
                 </div>
                 <div>
-                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a]">{label}</p>
-                  <p className="text-xs font-medium text-slate-800 dark:text-[#94a3b8]">{value}</p>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 dark:text-[var(--dm-text-muted)]">{label}</p>
+                  <p className="text-xs font-medium text-slate-800 dark:text-[var(--dm-text-secondary)]">{value}</p>
                 </div>
               </div>
             ))}
@@ -93,18 +93,18 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
         {/* Detection signals */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <RiAlertLine className="w-4 h-4 text-slate-400 dark:text-[#2a4a6a]" />
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono">
+            <RiAlertLine className="w-4 h-4 text-slate-400 dark:text-[var(--dm-text-muted)]" />
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[var(--dm-text-muted)] dark:font-mono">
               Detection Signals
             </h3>
-            <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded dark:bg-[#0f2040] dark:text-[#4a6080]">
+            <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded dark:bg-[var(--dm-chrome)] dark:text-[var(--dm-text-muted)]">
               {visibleSignals.length}
             </span>
           </div>
 
           <div className="space-y-2">
             {visibleSignals.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-[#2a4a6a]">
+              <p className="text-xs text-slate-400 dark:text-[var(--dm-text-muted)]">
                 No active detection signals based on your current keyword settings.
               </p>
             ) : visibleSignals.map((signal, index) => (
@@ -121,8 +121,8 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
                     <span className={`text-[10px] font-bold uppercase tracking-wide ${signal.type === 'keyword' ? 'text-amber-700 dark:text-amber-400' : 'text-indigo-700 dark:text-indigo-400'}`}>
                       {signal.type === 'keyword' ? 'Keyword Detected' : 'Suspicious Domain'}
                     </span>
-                    <p className="text-xs text-slate-700 font-medium mt-0.5 dark:text-[#94a3b8]">{signal.description}</p>
-                    <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border bg-white/70 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:text-[#94a3b8]">
+                    <p className="text-xs text-slate-700 font-medium mt-0.5 dark:text-[var(--dm-text-secondary)]">{signal.description}</p>
+                    <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border bg-white/70 dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-secondary)]">
                       {signal.value}
                     </div>
                   </div>
@@ -133,20 +133,20 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[#0f2a4a]">
-          <p className="text-[10px] font-mono text-slate-400 dark:text-[#2a4a6a]">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[var(--dm-border)]">
+          <p className="text-[10px] font-mono text-slate-400 dark:text-[var(--dm-text-muted)]">
             Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}
           </p>
           <div className="flex gap-2">
             <button onClick={() => setShowCreateIncidentPanel(prev => !prev)}
               className="px-4 py-2 text-xs font-semibold rounded-lg border transition-colors
                          bg-white border-slate-200 text-slate-700 hover:bg-slate-50
-                         dark:bg-[#0f2040] dark:border-[#1a3554] dark:text-[#94a3b8] dark:hover:bg-[#132843]">
+                         dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-secondary)] dark:hover:bg-[var(--dm-inset-hover)]">
               {showCreateIncidentPanel ? 'Cancel' : 'Create Incident'}
             </button>
             <button onClick={onClose}
               className="px-4 py-2 text-xs font-semibold rounded-lg transition-colors
-                         text-slate-600 hover:bg-slate-50 dark:text-[#4a6080] dark:hover:bg-white/[0.03] dark:hover:text-[#e2e8f0]">
+                         text-slate-600 hover:bg-slate-50 dark:text-[var(--dm-text-muted)] dark:hover:bg-white/[0.03] dark:hover:text-[var(--dm-text-primary)]">
               Close
             </button>
             <button onClick={handleRelease}
@@ -160,18 +160,18 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
 
         {/* Create incident panel */}
         {showCreateIncidentPanel && (
-          <div className="rounded-lg border p-4 bg-blue-50/50 border-blue-200 dark:bg-cyan-500/[0.05] dark:border-cyan-500/20">
-            <h4 className="text-xs font-bold text-blue-700 dark:text-cyan-300 mb-1">Create Linked Incident</h4>
-            <p className="text-xs text-slate-500 mb-4 dark:text-[#2a4a6a]">
+          <div className="rounded-lg border p-4 bg-blue-50/50 border-blue-200 dark:bg-blue-500/[0.05] dark:border-blue-500/20">
+            <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">Create Linked Incident</h4>
+            <p className="text-xs text-slate-500 mb-4 dark:text-[var(--dm-text-muted)]">
               Review these fields, then confirm to avoid accidental incident creation.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[#2a4a6a]">Due Date</label>
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[var(--dm-text-muted)]">Due Date</label>
                 <input type="datetime-local" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={inputCls} />
               </div>
               <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[#2a4a6a]">Assigned To</label>
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5 dark:text-[var(--dm-text-muted)]">Assigned To</label>
                 <input type="text" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} placeholder="SOC Team" className={inputCls} />
               </div>
             </div>
@@ -179,7 +179,7 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
               <button onClick={handleCreateIncident} disabled={!dueDate}
                 className="px-4 py-2 text-xs font-semibold rounded-lg transition-colors
                            bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed
-                           dark:bg-cyan-500 dark:text-[#040c18] dark:hover:bg-cyan-400">
+                           dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500">
                 Confirm & Create Incident
               </button>
             </div>

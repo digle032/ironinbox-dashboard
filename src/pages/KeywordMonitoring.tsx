@@ -24,17 +24,17 @@ const KeywordMonitoring: React.FC = () => {
   const commitEdit    = (id: string) => { updateKeyword(id, editValue); setEditingKeywordId(null); setEditValue(''); };
   const cancelEdit    = () => { setEditingKeywordId(null); setEditValue(''); };
 
-  const panel = 'bg-white border border-slate-200 rounded-xl dark:bg-[#0a1628] dark:border-[#0f2a4a]';
-  const sectionHead = 'text-sm font-semibold text-slate-800 dark:text-[#e2e8f0]';
-  const input = 'w-full px-3 py-2 text-sm rounded-lg border outline-none transition-all bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[#0f2040] dark:border-[#1a3554] dark:text-[#e2e8f0] dark:placeholder:text-[#2a4a6a] dark:focus:border-cyan-500/40';
-  const checkboxRow = 'flex items-start space-x-3 py-3 border-b border-slate-100 last:border-b-0 dark:border-[#0f2a4a]';
+  const panel = 'bg-white border border-slate-200 rounded-xl dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)]';
+  const sectionHead = 'text-sm font-semibold text-slate-800 dark:text-[var(--dm-text-primary)]';
+  const input = 'w-full px-3 py-2 text-sm rounded-lg border outline-none transition-all bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border-input)] dark:text-[var(--dm-text-primary)] dark:placeholder:text-[var(--dm-placeholder)] dark:focus:border-blue-500/40';
+  const checkboxRow = 'flex items-start space-x-3 py-3 border-b border-slate-100 last:border-b-0 dark:border-[var(--dm-border)]';
 
   return (
-    <RoleGate permission="canViewKeywordMonitoring" fallback={<div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[#040c18]"><AccessRestrictedBlock /></div>}>
-      <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
+    <RoleGate permission="canViewKeywordMonitoring" fallback={<div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-[var(--dm-bg-page)]"><AccessRestrictedBlock /></div>}>
+      <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[var(--dm-bg-page)]">
         <Header title="Keyword Monitoring" />
 
-        <div className="w-full max-w-4xl mx-auto px-6 py-6">
+        <div className="w-full max-w-7xl mx-auto p-6">
           <div className="space-y-4">
 
             {/* Active Keywords */}
@@ -50,7 +50,7 @@ const KeywordMonitoring: React.FC = () => {
                   className={input}
                 />
                 <button onClick={handleAddKeyword} disabled={!newKeyword.trim()}
-                  className="p-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-200 disabled:cursor-not-allowed dark:bg-cyan-500 dark:text-[#040c18] dark:hover:bg-cyan-400 dark:disabled:bg-[#0f2040] dark:disabled:text-[#2a4a6a]">
+                  className="p-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-200 disabled:cursor-not-allowed dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 dark:disabled:bg-[var(--dm-chrome)] dark:disabled:text-[var(--dm-text-muted)]">
                   <RiAddLine className="w-5 h-5" />
                 </button>
               </div>
@@ -58,29 +58,29 @@ const KeywordMonitoring: React.FC = () => {
               {/* Keyword tags */}
               <div className="flex flex-wrap gap-2">
                 {keywords.length === 0 ? (
-                  <p className="text-xs text-slate-400 dark:text-[#2a4a6a]">No keywords added yet</p>
+                  <p className="text-xs text-slate-400 dark:text-[var(--dm-text-muted)]">No keywords added yet</p>
                 ) : keywords.map((keyword) => {
                   const isEditing = editingKeywordId === keyword.id;
                   return (
                     <div key={keyword.id}
                          className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors
                                      ${keyword.enabled
-                                       ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-cyan-500/10 dark:text-cyan-300 dark:border-cyan-500/30'
-                                       : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-[#0f2040] dark:text-[#4a6080] dark:border-[#1a3554]'}`}>
+                                       ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30'
+                                       : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-[var(--dm-chrome)] dark:text-[var(--dm-text-faint)] dark:border-[var(--dm-border-input)]'}`}>
                       {isEditing ? (
                         <div className="flex items-center space-x-1.5">
                           <input value={editValue} onChange={e => setEditValue(e.target.value)}
                             onKeyDown={e => { if (e.key === 'Enter') commitEdit(keyword.id); if (e.key === 'Escape') cancelEdit(); }}
-                            className="w-32 px-2 py-0.5 text-xs rounded border outline-none bg-white border-slate-300 text-slate-800 dark:bg-[#060f1e] dark:border-[#1a3554] dark:text-[#e2e8f0]"
+                            className="w-32 px-2 py-0.5 text-xs rounded border outline-none bg-white border-slate-300 text-slate-800 dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border-input)] dark:text-[var(--dm-text-primary)]"
                             autoFocus />
-                          <button onClick={() => commitEdit(keyword.id)} className="px-2 py-0.5 text-xs rounded bg-blue-600 text-white dark:bg-cyan-500 dark:text-[#040c18]">Save</button>
-                          <button onClick={cancelEdit} className="px-2 py-0.5 text-xs rounded border border-slate-200 text-slate-600 dark:border-[#1a3554] dark:text-[#4a6080]">Cancel</button>
+                          <button onClick={() => commitEdit(keyword.id)} className="px-2 py-0.5 text-xs rounded bg-blue-600 text-white dark:bg-blue-600 dark:text-white">Save</button>
+                          <button onClick={cancelEdit} className="px-2 py-0.5 text-xs rounded border border-slate-200 text-slate-600 dark:border-[var(--dm-border-input)] dark:text-[var(--dm-text-faint)]">Cancel</button>
                         </div>
                       ) : (
                         <>
                           <span>{keyword.value}</span>
                           {!keyword.enabled && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded dark:bg-[#0f2040] dark:text-[#2a4a6a]">off</span>
+                            <span className="text-[9px] font-mono uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded dark:bg-[var(--dm-chrome)] dark:text-[var(--dm-text-muted)]">off</span>
                           )}
                         </>
                       )}
@@ -93,13 +93,13 @@ const KeywordMonitoring: React.FC = () => {
                         </button>
                         {activeMenu === keyword.id && !isEditing && (
                           <div className="absolute right-0 top-full mt-1 z-10 min-w-[140px] rounded-lg border shadow-lg overflow-hidden
-                                          bg-white border-slate-200 dark:bg-[#0a1628] dark:border-[#0f2a4a] dark:shadow-black/60">
+                                          bg-white border-slate-200 dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)] dark:shadow-black/60">
                             <button onClick={() => startEditing(keyword.id, keyword.value)}
-                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[#94a3b8] dark:hover:bg-white/[0.04]">
+                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]">
                               Edit
                             </button>
                             <button onClick={() => { toggleKeyword(keyword.id); setActiveMenu(null); }}
-                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[#94a3b8] dark:hover:bg-white/[0.04]">
+                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]">
                               {keyword.enabled ? 'Disable' : 'Enable'}
                             </button>
                             <button onClick={() => { deleteKeyword(keyword.id); setActiveMenu(null); }}
@@ -118,7 +118,7 @@ const KeywordMonitoring: React.FC = () => {
             {/* Detection Options */}
             <div className={`${panel} p-5`}>
               <h2 className={`${sectionHead} mb-1`}>Detection Options</h2>
-              <p className="text-xs text-slate-400 mb-4 dark:text-[#2a4a6a]">Configure how keyword matching operates across emails.</p>
+              <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">Configure how keyword matching operates across emails.</p>
               <div>
                 {[
                   { key: 'caseInsensitive', label: 'Case-insensitive matching',  desc: 'Ignore case when matching (e.g., "Urgent" matches "urgent")' },
@@ -129,12 +129,12 @@ const KeywordMonitoring: React.FC = () => {
                   <label key={opt.key} className={`${checkboxRow} cursor-pointer group`}>
                     <input type="checkbox" checked={detectionOptions[opt.key as keyof typeof detectionOptions]}
                       onChange={e => updateDetectionOptions({ [opt.key]: e.target.checked })}
-                      className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-[#1a3554]" />
+                      className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--dm-border-input)]" />
                     <div>
-                      <span className="text-sm font-medium text-slate-800 group-hover:text-blue-600 transition-colors dark:text-[#94a3b8] dark:group-hover:text-cyan-400">
+                      <span className="text-sm font-medium text-slate-800 group-hover:text-blue-600 transition-colors dark:text-[var(--dm-text-secondary)] dark:group-hover:text-blue-400">
                         {opt.label}
                       </span>
-                      <p className="text-xs text-slate-400 mt-0.5 dark:text-[#2a4a6a]">{opt.desc}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 dark:text-[var(--dm-text-muted)]">{opt.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -144,7 +144,7 @@ const KeywordMonitoring: React.FC = () => {
             {/* Detection Actions */}
             <div className={`${panel} p-5`}>
               <h2 className={`${sectionHead} mb-1`}>Detection Actions</h2>
-              <p className="text-xs text-slate-400 mb-4 dark:text-[#2a4a6a]">Define what happens when a keyword is detected.</p>
+              <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">Define what happens when a keyword is detected.</p>
               <div>
                 {[
                   { key: 'flagEmail',        label: 'Flag the email',              desc: 'Automatically flag emails containing keywords' },
@@ -154,12 +154,12 @@ const KeywordMonitoring: React.FC = () => {
                   <label key={act.key} className={`${checkboxRow} cursor-pointer group`}>
                     <input type="checkbox" checked={detectionActions[act.key as keyof typeof detectionActions]}
                       onChange={e => updateDetectionActions({ [act.key]: e.target.checked })}
-                      className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-[#1a3554]" />
+                      className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--dm-border-input)]" />
                     <div>
-                      <span className="text-sm font-medium text-slate-800 group-hover:text-blue-600 transition-colors dark:text-[#94a3b8] dark:group-hover:text-cyan-400">
+                      <span className="text-sm font-medium text-slate-800 group-hover:text-blue-600 transition-colors dark:text-[var(--dm-text-secondary)] dark:group-hover:text-blue-400">
                         {act.label}
                       </span>
-                      <p className="text-xs text-slate-400 mt-0.5 dark:text-[#2a4a6a]">{act.desc}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 dark:text-[var(--dm-text-muted)]">{act.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -169,7 +169,7 @@ const KeywordMonitoring: React.FC = () => {
             <div className="flex justify-end">
               <button className="px-5 py-2 text-sm font-semibold rounded-lg transition-colors
                                  bg-blue-600 text-white hover:bg-blue-700 shadow-sm
-                                 dark:bg-cyan-500 dark:text-[#040c18] dark:hover:bg-cyan-400">
+                                 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500">
                 Save Changes
               </button>
             </div>

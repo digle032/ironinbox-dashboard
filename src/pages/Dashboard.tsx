@@ -18,6 +18,7 @@ import {
   RiUserLine,
   RiTrophyLine,
   RiInformationLine,
+  RiEqualizerLine,
 } from 'react-icons/ri';
 
 const Dashboard: React.FC = () => {
@@ -66,103 +67,20 @@ const Dashboard: React.FC = () => {
   }, [flaggedEmails, releasedEmails, keywords]);
 
   const getRiskInfo = (score: number) => {
-    if (score >= 75) return { level: 'Critical', color: 'text-red-500',    stroke: '#ef4444', bg: 'bg-red-950/40',    border: 'border-red-800/60',    badge: 'bg-red-950/50 text-red-400 border-red-800/60' };
-    if (score >= 50) return { level: 'High',     color: 'text-orange-500',  stroke: '#f97316', bg: 'bg-orange-950/40', border: 'border-orange-800/60', badge: 'bg-orange-950/50 text-orange-400 border-orange-800/60' };
-    if (score >= 25) return { level: 'Medium',   color: 'text-amber-500',   stroke: '#f59e0b', bg: 'bg-amber-950/40',  border: 'border-amber-800/60',  badge: 'bg-amber-950/50 text-amber-400 border-amber-800/60' };
-    return              { level: 'Low',      color: 'text-emerald-500', stroke: '#10b981', bg: 'bg-emerald-950/40', border: 'border-emerald-800/60', badge: 'bg-emerald-950/50 text-emerald-400 border-emerald-800/60' };
+    if (score >= 75) return { level: 'Critical', color: 'text-red-500', stroke: '#ef4444', bg: 'bg-red-950/40', border: 'border-red-800/60', badge: 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-900' };
+    if (score >= 50) return { level: 'High', color: 'text-orange-500', stroke: '#f97316', bg: 'bg-orange-950/40', border: 'border-orange-800/60', badge: 'bg-orange-50 text-orange-900 border border-orange-200 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-900' };
+    if (score >= 25) return { level: 'Medium', color: 'text-amber-500', stroke: '#f59e0b', bg: 'bg-amber-950/40', border: 'border-amber-800/60', badge: 'bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-900' };
+    return { level: 'Low', color: 'text-emerald-500', stroke: '#10b981', bg: 'bg-emerald-950/40', border: 'border-emerald-800/60', badge: 'bg-emerald-50 text-emerald-900 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-900' };
   };
 
   const riskInfo = getRiskInfo(stats.overallRiskScore);
 
   /* shared card class */
-  const card = 'bg-white border border-slate-200 rounded-xl shadow-sm dark:bg-[#0a1628] dark:border-[#0f2a4a]';
-  const cardHead = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[#2a4a6a] dark:font-mono flex items-center gap-2';
-
-  const viewerDashboard = (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StatCard title="Total Processed"  value={stats.totalProcessed}  icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
-        <StatCard title="Emails Released"  value={stats.totalReleased}   icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
-      </div>
-
-      <div className={`${card} p-6`}>
-        <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-950/40 dark:text-blue-400">
-            <RiInformationLine className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-800 dark:text-[#e2e8f0]">Viewer Access</p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-[#4a6080]">
-              Your account has read-only access to general email statistics. Contact your administrator to request expanded permissions such as flagged email review, keyword monitoring, or inbox access.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
-              {[
-                { label: 'Inbox', locked: true },
-                { label: 'Flagged Emails', locked: true },
-                { label: 'Keyword Monitoring', locked: true },
-                { label: 'Incidents', locked: false },
-              ].map(({ label, locked }) => (
-                <div key={label} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium
-                  ${locked
-                    ? 'border-slate-200 bg-slate-50 text-slate-400 dark:border-[#0f2a4a] dark:bg-[#060f1e] dark:text-[#2a4a6a]'
-                    : 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400'
-                  }`}
-                >
-                  <span>{locked ? '🔒' : '✓'}</span>
-                  {label}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={`${card} p-6`}>
-        <p className={cardHead}>
-          <RiTimeLine className="w-3.5 h-3.5" />
-          Recent Activity
-        </p>
-        {stats.recentReleased.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-[#2a4a6a]">
-            <RiMailLine className="w-10 h-10 mb-3 text-slate-300 dark:text-[#0f2040]" />
-            <p className="text-sm font-medium">No released emails yet</p>
-          </div>
-        ) : (
-          <div className="space-y-2 mt-5">
-            {stats.recentReleased.map((released) => (
-              <div key={released.id}
-                   className="flex items-start space-x-3 px-3 py-3 rounded-lg border transition-colors
-                              bg-slate-50 border-slate-100 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
-                <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0
-                                bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                  <RiShieldCheckLine className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-800 truncate dark:text-[#e2e8f0]">
-                    {released.originalEmail.subject}
-                  </p>
-                  <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[#2a4a6a]">
-                    {released.originalEmail.sender}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="flex items-center text-[10px] text-slate-400 dark:text-[#2a4a6a]">
-                      <RiUserLine className="w-3 h-3 mr-1" />{released.releasedBy}
-                    </span>
-                    <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[#2a4a6a]">
-                      <RiTimeLine className="w-3 h-3 mr-1" />{released.releasedAt}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const card = 'bg-white border border-slate-200 rounded-xl shadow-sm dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)]';
+  const cardHead = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-[var(--dm-text-muted)] dark:font-mono flex items-center gap-2';
 
   return (
-    <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[#040c18]">
+    <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[var(--dm-bg-page)]">
       <Header title="Dashboard Overview" />
 
       <div className="p-6 space-y-6 animate-fade-in max-w-7xl mx-auto">
@@ -170,12 +88,12 @@ const Dashboard: React.FC = () => {
         {/* Auto-refresh indicator */}
         {advanced.autoRefresh && (
           <div className="flex items-center justify-between px-4 py-2.5 rounded-lg border text-xs
-                          bg-blue-50 border-blue-200 dark:bg-cyan-500/5 dark:border-[#0f2a4a]">
+                          bg-blue-50 border-blue-200 dark:bg-blue-500/5 dark:border-[var(--dm-border)]">
             <div className="flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-              <span className="text-blue-700 font-medium dark:text-cyan-400 dark:font-mono">Live — Auto-refresh active</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <span className="text-blue-700 font-medium dark:text-blue-400 dark:font-mono">Live — Auto-refresh active</span>
             </div>
-            <span className="text-blue-500 font-mono dark:text-[#2a4a6a]">
+            <span className="text-blue-500 font-mono dark:text-[var(--dm-text-muted)]">
               Updated {lastRefresh.toLocaleTimeString()}
             </span>
           </div>
@@ -195,8 +113,8 @@ const Dashboard: React.FC = () => {
                   <RiInformationLine className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-800 dark:text-[#e2e8f0]">Viewer Access</p>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-[#4a6080]">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-[var(--dm-text-primary)]">Viewer Access</p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-[var(--dm-text-muted)]">
                     Your account has read-only access to general email statistics. Contact your administrator to request expanded permissions such as flagged email review, keyword monitoring, or inbox access.
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -208,7 +126,7 @@ const Dashboard: React.FC = () => {
                     ].map(({ label, locked }) => (
                       <div key={label} className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium
                         ${locked
-                          ? 'border-slate-200 bg-slate-50 text-slate-400 dark:border-[#0f2a4a] dark:bg-[#060f1e] dark:text-[#2a4a6a]'
+                          ? 'border-slate-200 bg-slate-50 text-slate-400 dark:border-[var(--dm-border)] dark:bg-[var(--dm-bg-elevated)] dark:text-[var(--dm-text-muted)]'
                           : 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400'
                         }`}
                       >
@@ -228,8 +146,8 @@ const Dashboard: React.FC = () => {
                 Recent Activity
               </p>
               {stats.recentReleased.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-[#2a4a6a]">
-                  <RiMailLine className="w-10 h-10 mb-3 text-slate-300 dark:text-[#0f2040]" />
+                <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-[var(--dm-text-muted)]">
+                  <RiMailLine className="w-10 h-10 mb-3 text-slate-300 dark:text-[var(--dm-chrome)]" />
                   <p className="text-sm font-medium">No released emails yet</p>
                 </div>
               ) : (
@@ -237,23 +155,23 @@ const Dashboard: React.FC = () => {
                   {stats.recentReleased.map((released) => (
                     <div key={released.id}
                          className="flex items-start space-x-3 px-3 py-3 rounded-lg border transition-colors
-                                    bg-slate-50 border-slate-100 dark:bg-[#060f1e] dark:border-[#0f2a4a]">
+                                    bg-slate-50 border-slate-100 dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border)]">
                       <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0
                                       bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                         <RiShieldCheckLine className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-slate-800 truncate dark:text-[#e2e8f0]">
+                        <p className="text-xs font-semibold text-slate-800 truncate dark:text-[var(--dm-text-primary)]">
                           {released.originalEmail.subject}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[#2a4a6a]">
+                        <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[var(--dm-text-muted)]">
                           {released.originalEmail.sender}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="flex items-center text-[10px] text-slate-400 dark:text-[#2a4a6a]">
+                          <span className="flex items-center text-[10px] text-slate-400 dark:text-[var(--dm-text-muted)]">
                             <RiUserLine className="w-3 h-3 mr-1" />{released.releasedBy}
                           </span>
-                          <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[#2a4a6a]">
+                          <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[var(--dm-text-muted)]">
                             <RiTimeLine className="w-3 h-3 mr-1" />{released.releasedAt}
                           </span>
                         </div>
@@ -290,21 +208,25 @@ const Dashboard: React.FC = () => {
                 <div className="flex flex-col items-center mt-6">
                   <div className="relative w-40 h-40">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8"
-                              className="text-slate-100 dark:text-[#0f2040]" />
+                      <circle
+                        cx="50" cy="50" r="40" fill="none"
+                        stroke={riskInfo.stroke}
+                        strokeWidth="8"
+                        strokeOpacity={0.2}
+                      />
                       <circle
                         cx="50" cy="50" r="40" fill="none"
                         stroke={riskInfo.stroke}
                         strokeWidth="6" strokeLinecap="round"
                         strokeDasharray={`${(stats.overallRiskScore / 100) * 251.2} 251.2`}
-                        style={{ transition: 'stroke-dasharray 1s ease-in-out', filter: `drop-shadow(0 0 6px ${riskInfo.stroke}60)` }}
+                        style={{ transition: 'stroke-dasharray 1s ease-in-out' }}
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className={`text-4xl font-black tracking-tight dark:font-mono ${riskInfo.color}`}>
                         {stats.overallRiskScore}
                       </span>
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a] mt-1">
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-slate-400 dark:text-[var(--dm-text-muted)] mt-1">
                         Score
                       </span>
                     </div>
@@ -315,7 +237,7 @@ const Dashboard: React.FC = () => {
                     {riskInfo.level} Risk
                   </div>
 
-                  <p className="text-[11px] text-slate-400 text-center mt-3 dark:text-[#2a4a6a]">
+                  <p className="text-[11px] text-slate-400 text-center mt-3 dark:text-[var(--dm-text-muted)]">
                     {stats.totalFlagged} flagged emails analyzed
                   </p>
                 </div>
@@ -323,26 +245,29 @@ const Dashboard: React.FC = () => {
 
               {/* Threat Distribution */}
               <div className={`${card} p-6 lg:col-span-2`}>
-                <p className={cardHead}>Threat Distribution</p>
+                <p className={cardHead}>
+                  <RiEqualizerLine className="w-3.5 h-3.5" />
+                  Threat Distribution
+                </p>
 
                 <div className="space-y-5 mt-6">
                   {[
-                    { label: 'Critical', count: stats.criticalCount, color: 'bg-red-500',    track: 'bg-red-950/30 dark:bg-red-950/40' },
-                    { label: 'High',     count: stats.highCount,     color: 'bg-orange-500',  track: 'bg-orange-950/30 dark:bg-orange-950/40' },
-                    { label: 'Medium',   count: stats.mediumCount,   color: 'bg-amber-500',   track: 'bg-amber-950/30 dark:bg-amber-950/40' },
-                    { label: 'Low',      count: stats.lowCount,      color: 'bg-emerald-500', track: 'bg-emerald-950/30 dark:bg-emerald-950/40' },
-                  ].map(({ label, count, color, track }) => (
+                    { label: 'Critical', count: stats.criticalCount, color: 'bg-red-500',    trackTint: 'bg-red-500/12 dark:bg-red-500/22' },
+                    { label: 'High',     count: stats.highCount,     color: 'bg-orange-500', trackTint: 'bg-orange-500/12 dark:bg-orange-500/22' },
+                    { label: 'Medium',   count: stats.mediumCount,   color: 'bg-amber-500',  trackTint: 'bg-amber-500/12 dark:bg-amber-500/22' },
+                    { label: 'Low',      count: stats.lowCount,      color: 'bg-emerald-500', trackTint: 'bg-emerald-500/12 dark:bg-emerald-500/22' },
+                  ].map(({ label, count, color, trackTint }) => (
                     <div key={label}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-slate-600 flex items-center gap-2 dark:text-[#94a3b8]">
+                        <span className="text-xs font-semibold text-slate-600 flex items-center gap-2 dark:text-[var(--dm-text-secondary)]">
                           <span className={`w-2 h-2 rounded-full ${color}`} />
                           {label}
                         </span>
-                        <span className="text-xs font-mono font-bold text-slate-700 dark:text-[#e2e8f0]">
+                        <span className="text-xs font-mono font-bold text-slate-700 dark:text-[var(--dm-text-primary)]">
                           {count} email{count !== 1 ? 's' : ''}
                         </span>
                       </div>
-                      <div className={`w-full h-1.5 rounded-full ${track}`}>
+                      <div className={`w-full h-1.5 rounded-full overflow-hidden ${trackTint}`}>
                         <div
                           className={`${color} h-full rounded-full transition-all duration-1000`}
                           style={{ width: `${stats.totalFlagged > 0 ? (count / stats.totalFlagged) * 100 : 0}%` }}
@@ -351,14 +276,14 @@ const Dashboard: React.FC = () => {
                     </div>
                   ))}
 
-                  <div className="pt-4 mt-2 border-t border-slate-100 dark:border-[#0f2a4a] flex items-center justify-between">
+                  <div className="pt-4 mt-2 border-t border-slate-100 dark:border-[var(--dm-border)] flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-[#2a4a6a]">Detection Rate</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5 dark:text-[#2a4a6a]">
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-[var(--dm-text-muted)]">Detection Rate</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5 dark:text-[var(--dm-text-muted)]">
                         {stats.totalFlagged} of {stats.totalProcessed} emails
                       </p>
                     </div>
-                    <span className="text-2xl font-black font-mono text-blue-600 dark:text-cyan-400">
+                    <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">
                       {stats.detectionRate}%
                     </span>
                   </div>
@@ -377,7 +302,7 @@ const Dashboard: React.FC = () => {
                 </p>
 
                 {stats.topThreats.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-[#2a4a6a]">
+                  <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-[var(--dm-text-muted)]">
                     <RiShieldCheckLine className="w-12 h-12 mb-3 text-emerald-400/50" />
                     <p className="text-sm font-medium">No threats detected</p>
                   </div>
@@ -387,19 +312,19 @@ const Dashboard: React.FC = () => {
                       <div key={domain}
                            className="flex items-center space-x-3 px-3 py-3 rounded-lg border transition-colors
                                       bg-slate-50 border-slate-100 hover:border-slate-200
-                                      dark:bg-[#060f1e] dark:border-[#0f2a4a] dark:hover:border-[#1a3554]">
+                                      dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border)] dark:hover:border-[var(--dm-border)]">
                         <div className={`w-7 h-7 rounded flex items-center justify-center text-xs font-bold font-mono flex-shrink-0
                                         ${index === 0 ? 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400' :
                                           index === 1 ? 'bg-orange-100 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400' :
                                           index === 2 ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400' :
-                                          'bg-slate-200 text-slate-600 dark:bg-[#0f2040] dark:text-[#4a6080]'}`}>
+                                          'bg-slate-200 text-slate-600 dark:bg-[var(--dm-chrome)] dark:text-[var(--dm-text-muted)]'}`}>
                           {index + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-800 font-mono truncate dark:text-[#e2e8f0]">{domain}</p>
-                          <p className="text-[10px] text-slate-400 dark:text-[#2a4a6a]">{count} threat{count !== 1 ? 's' : ''}</p>
+                          <p className="text-xs font-semibold text-slate-800 font-mono truncate dark:text-[var(--dm-text-primary)]">{domain}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-[var(--dm-text-muted)]">{count} threat{count !== 1 ? 's' : ''}</p>
                         </div>
-                        <span className="text-xs font-mono font-bold text-slate-300 dark:text-[#1a3554]">
+                        <span className="text-xs font-mono font-bold text-slate-300 dark:text-[var(--dm-text-mono)]">
                           {Math.round((count / stats.totalFlagged) * 100)}%
                         </span>
                       </div>
@@ -416,8 +341,8 @@ const Dashboard: React.FC = () => {
                 </p>
 
                 {stats.recentReleased.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-[#2a4a6a]">
-                    <RiMailLine className="w-12 h-12 mb-3 text-slate-300 dark:text-[#0f2040]" />
+                  <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-[var(--dm-text-muted)]">
+                    <RiMailLine className="w-12 h-12 mb-3 text-slate-300 dark:text-[var(--dm-chrome)]" />
                     <p className="text-sm font-medium">No released emails yet</p>
                   </div>
                 ) : (
@@ -426,23 +351,23 @@ const Dashboard: React.FC = () => {
                       <div key={released.id}
                            className="flex items-start space-x-3 px-3 py-3 rounded-lg border transition-colors group
                                       bg-slate-50 border-slate-100 hover:border-emerald-200
-                                      dark:bg-[#060f1e] dark:border-[#0f2a4a] dark:hover:border-emerald-900/60">
+                                      dark:bg-[var(--dm-bg-elevated)] dark:border-[var(--dm-border)] dark:hover:border-emerald-900/60">
                         <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0
                                         bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                           <RiShieldCheckLine className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-800 truncate dark:text-[#e2e8f0]">
+                          <p className="text-xs font-semibold text-slate-800 truncate dark:text-[var(--dm-text-primary)]">
                             {released.originalEmail.subject}
                           </p>
-                          <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[#2a4a6a]">
+                          <p className="text-[10px] text-slate-400 font-mono truncate mt-0.5 dark:text-[var(--dm-text-muted)]">
                             {released.originalEmail.sender}
                           </p>
                           <div className="flex items-center space-x-3 mt-1.5">
-                            <span className="flex items-center text-[10px] text-slate-400 dark:text-[#2a4a6a]">
+                            <span className="flex items-center text-[10px] text-slate-400 dark:text-[var(--dm-text-muted)]">
                               <RiUserLine className="w-3 h-3 mr-1" />{released.releasedBy}
                             </span>
-                            <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[#2a4a6a]">
+                            <span className="flex items-center text-[10px] text-slate-400 font-mono dark:text-[var(--dm-text-muted)]">
                               <RiTimeLine className="w-3 h-3 mr-1" />{released.releasedAt}
                             </span>
                           </div>
