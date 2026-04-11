@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../contexts/AppContext';
 import Header from '../components/layout/Header';
 import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
 import { RiAddLine, RiMoreLine, RiDeleteBinLine } from 'react-icons/ri';
+
+const KEYWORD_MENU_WIDTH = 160;
+const KEYWORD_MENU_Z = 200;
 
 const KeywordMonitoring: React.FC = () => {
   useEngagementTracker('keyword-monitoring');
@@ -13,16 +17,70 @@ const KeywordMonitoring: React.FC = () => {
   } = useApp();
 
   const [newKeyword, setNewKeyword]             = useState('');
-  const [activeMenu, setActiveMenu]             = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId]               = useState<string | null>(null);
+  const [menuPos, setMenuPos]                     = useState({ top: 0, left: 0 });
   const [editingKeywordId, setEditingKeywordId] = useState<string | null>(null);
   const [editValue, setEditValue]               = useState('');
+  const anchorRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const menuPanelRef = useRef<HTMLDivElement>(null);
 
   const handleAddKeyword = () => {
     if (newKeyword.trim()) { addKeyword(newKeyword.trim()); setNewKeyword(''); }
   };
-  const startEditing  = (id: string, val: string) => { setEditingKeywordId(id); setEditValue(val); setActiveMenu(null); };
+  const startEditing  = (id: string, val: string) => { setEditingKeywordId(id); setEditValue(val); setOpenMenuId(null); };
   const commitEdit    = (id: string) => { updateKeyword(id, editValue); setEditingKeywordId(null); setEditValue(''); };
   const cancelEdit    = () => { setEditingKeywordId(null); setEditValue(''); };
+
+  const updateMenuPosition = useCallback(() => {
+    if (!openMenuId) return;
+    const btn = anchorRefs.current.get(openMenuId);
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const top = r.bottom + 4;
+    let left = r.right - KEYWORD_MENU_WIDTH;
+    left = Math.max(8, Math.min(left, window.innerWidth - KEYWORD_MENU_WIDTH - 8));
+    setMenuPos({ top, left });
+  }, [openMenuId]);
+
+  useLayoutEffect(() => {
+    updateMenuPosition();
+  }, [openMenuId, updateMenuPosition]);
+
+  useLayoutEffect(() => {
+    if (!openMenuId) return;
+    const onScrollOrResize = () => updateMenuPosition();
+    window.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
+  }, [openMenuId, updateMenuPosition]);
+
+  useEffect(() => {
+    if (!openMenuId) return;
+    const onPointerDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (menuPanelRef.current?.contains(t)) return;
+      if (anchorRefs.current.get(openMenuId)?.contains(t)) return;
+      setOpenMenuId(null);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenMenuId(null);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [openMenuId]);
+
+  useEffect(() => {
+    if (openMenuId && !keywords.some((k) => k.id === openMenuId)) setOpenMenuId(null);
+  }, [keywords, openMenuId]);
+
+  const openKeyword = openMenuId ? keywords.find((k) => k.id === openMenuId) : undefined;
 
   const panel = 'bg-white border border-slate-200 rounded-xl dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)]';
   const sectionHead = 'text-sm font-semibold text-slate-800 dark:text-[var(--dm-text-primary)]';
@@ -86,28 +144,23 @@ const KeywordMonitoring: React.FC = () => {
                       )}
 
                       <div className="relative">
-                        <button onClick={() => setActiveMenu(activeMenu === keyword.id ? null : keyword.id)}
+                        <button
+                          type="button"
+                          ref={(el) => {
+                            if (el) anchorRefs.current.set(keyword.id, el);
+                            else anchorRefs.current.delete(keyword.id);
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(openMenuId === keyword.id ? null : keyword.id);
+                          }}
                           disabled={isEditing}
-                          className="p-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                          aria-expanded={openMenuId === keyword.id}
+                          aria-haspopup="menu"
+                          className="p-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                        >
                           <RiMoreLine className="w-3.5 h-3.5" />
                         </button>
-                        {activeMenu === keyword.id && !isEditing && (
-                          <div className="absolute right-0 top-full mt-1 z-10 min-w-[140px] rounded-lg border shadow-lg overflow-hidden
-                                          bg-white border-slate-200 dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)] dark:shadow-black/60">
-                            <button onClick={() => startEditing(keyword.id, keyword.value)}
-                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]">
-                              Edit
-                            </button>
-                            <button onClick={() => { toggleKeyword(keyword.id); setActiveMenu(null); }}
-                              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]">
-                              {keyword.enabled ? 'Disable' : 'Enable'}
-                            </button>
-                            <button onClick={() => { deleteKeyword(keyword.id); setActiveMenu(null); }}
-                              className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-950/30">
-                              <RiDeleteBinLine className="w-3.5 h-3.5" />Delete
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   );
@@ -176,6 +229,50 @@ const KeywordMonitoring: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {openKeyword &&
+        editingKeywordId !== openKeyword.id &&
+        createPortal(
+          <div
+            ref={menuPanelRef}
+            role="menu"
+            style={{
+              position: 'fixed',
+              top: menuPos.top,
+              left: menuPos.left,
+              zIndex: KEYWORD_MENU_Z,
+              minWidth: KEYWORD_MENU_WIDTH,
+            }}
+            className="rounded-lg border shadow-lg overflow-hidden bg-white border-slate-200 dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)] dark:shadow-black/60"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => startEditing(openKeyword.id, openKeyword.value)}
+              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => { toggleKeyword(openKeyword.id); setOpenMenuId(null); }}
+              className="w-full flex items-center px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors dark:text-[var(--dm-text-secondary)] dark:hover:bg-white/[0.04]"
+            >
+              {openKeyword.enabled ? 'Disable' : 'Enable'}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => { deleteKeyword(openKeyword.id); setOpenMenuId(null); }}
+              className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors dark:text-red-400 dark:hover:bg-red-950/30"
+            >
+              <RiDeleteBinLine className="w-3.5 h-3.5" aria-hidden />
+              Delete
+            </button>
+          </div>,
+          document.body
+        )}
     </RoleGate>
   );
 };
