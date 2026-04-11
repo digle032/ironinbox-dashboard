@@ -23,7 +23,7 @@ import {
 
 const Dashboard: React.FC = () => {
   const { flaggedEmails, releasedEmails, keywords } = useApp();
-  const { advanced } = useSettings();
+  const { advanced, alertBehavior } = useSettings();
   const { role } = useRole();
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
@@ -96,6 +96,29 @@ const Dashboard: React.FC = () => {
             <span className="text-blue-500 font-mono dark:text-[var(--dm-text-muted)]">
               Updated {lastRefresh.toLocaleTimeString()}
             </span>
+          </div>
+        )}
+
+        {alertBehavior.showDashboardAlerts &&
+          alertBehavior.highlightFlaggedInbox &&
+          stats.criticalCount > 0 && (
+          <div
+            className="flex items-start gap-3 px-4 py-3 rounded-xl border border-red-200 bg-red-50/90
+                       dark:bg-red-950/25 dark:border-red-900/50"
+            role="status"
+          >
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
+              <RiAlertLine className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 pt-0.5">
+              <p className="text-sm font-semibold text-red-900 dark:text-red-200">Critical risk on the dashboard</p>
+              <p className="text-xs text-red-800/80 dark:text-red-300/90 mt-0.5">
+                {stats.criticalCount} flagged message{stats.criticalCount !== 1 ? 's are' : ' is'} rated Critical.
+                {role === 'viewer'
+                  ? ' Your security team reviews these items.'
+                  : ' Review them in Flagged Emails.'}
+              </p>
+            </div>
           </div>
         )}
 
@@ -188,14 +211,23 @@ const Dashboard: React.FC = () => {
         {/* Hero Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Total Processed"    value={stats.totalProcessed}    icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
-          <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     trend="+12%"  trendUp={false} />
+          <div
+            className={
+              alertBehavior.highlightFlaggedInbox && stats.totalFlagged > 0
+                ? 'rounded-xl ring-2 ring-amber-400/80 ring-offset-2 ring-offset-slate-50 dark:ring-amber-500/50 dark:ring-offset-[var(--dm-bg-page)]'
+                : undefined
+            }
+          >
+            <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     trend="+12%"  trendUp={false} />
+          </div>
           <StatCard title="Emails Released"    value={stats.totalReleased}     icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
           <StatCard title="Active Keywords"    value={stats.activeKeywords}    icon={<RiSpamLine />}        iconColor="text-purple-600"  trend="+2"    trendUp={true} />
         </div>
 
         <RoleGate permission="canViewFlaggedEmails">
           <>
-            {/* Risk Score + Threat Distribution */}
+            {/* Risk Score + Threat Distribution — gated by Settings → Alert behavior → Dashboard alerts */}
+            {alertBehavior.showDashboardAlerts && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
               {/* Risk Score */}
@@ -290,11 +322,13 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Top Threats + Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className={`grid grid-cols-1 gap-4 ${alertBehavior.showDashboardAlerts ? 'lg:grid-cols-2' : ''}`}>
 
               {/* Top Threat Sources */}
+              {alertBehavior.showDashboardAlerts && (
               <div className={`${card} p-6`}>
                 <p className={cardHead}>
                   <RiTrophyLine className="w-3.5 h-3.5" />
@@ -332,6 +366,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Recent Activity */}
               <div className={`${card} p-6`}>

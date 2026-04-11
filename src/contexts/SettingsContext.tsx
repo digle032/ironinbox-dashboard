@@ -5,6 +5,7 @@ interface UserProfile {
   email: string;
   role: string;
   avatar: string;
+  phone?: string;
 }
 
 interface AppearanceSettings {
@@ -29,17 +30,32 @@ interface AdvancedSettings {
   refreshInterval: number;
 }
 
+export interface AlertBehaviorSettings {
+  showDashboardAlerts: boolean;
+  emailCriticalRisk: boolean;
+  highlightFlaggedInbox: boolean;
+}
+
+export type DataRetentionChoice = '7' | '30' | 'until_user_deletes';
+
 interface SettingsContextType {
   profile: UserProfile;
   appearance: AppearanceSettings;
   notifications: NotificationSettings;
   security: SecuritySettings;
   advanced: AdvancedSettings;
+  alertBehavior: AlertBehaviorSettings;
+  /** Emails with riskScore >= this value appear in Flagged (lower = more sensitive). */
+  riskFlagThreshold: number;
+  dataRetention: DataRetentionChoice;
   updateProfile: (profile: Partial<UserProfile>) => void;
   updateAppearance: (settings: Partial<AppearanceSettings>) => void;
   updateNotifications: (settings: Partial<NotificationSettings>) => void;
   updateSecurity: (settings: Partial<SecuritySettings>) => void;
   updateAdvanced: (settings: Partial<AdvancedSettings>) => void;
+  updateAlertBehavior: (settings: Partial<AlertBehaviorSettings>) => void;
+  setRiskFlagThreshold: (value: number) => void;
+  setDataRetention: (value: DataRetentionChoice) => void;
   resetToDefaults: () => void;
   exportSettings: () => void;
   clearCache: () => void;
@@ -48,9 +64,10 @@ interface SettingsContextType {
 const defaultSettings = {
   profile: {
     name: 'John Doe',
-    email: 'john.doe@company.com',
+    email: 'johndoe@gmail.com',
     role: 'Administrator',
-    avatar: 'https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff'
+    avatar: 'https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff',
+    phone: '505-662-8435'
   },
   appearance: {
     darkMode: false,
@@ -71,7 +88,14 @@ const defaultSettings = {
   advanced: {
     autoRefresh: true,
     refreshInterval: 30000 // 30 seconds
-  }
+  },
+  alertBehavior: {
+    showDashboardAlerts: true,
+    emailCriticalRisk: true,
+    highlightFlaggedInbox: true
+  },
+  riskFlagThreshold: 50,
+  dataRetention: '30' as DataRetentionChoice
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -103,6 +127,24 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     return saved ? JSON.parse(saved) : defaultSettings.advanced;
   });
 
+  const [alertBehavior, setAlertBehavior] = useState<AlertBehaviorSettings>(() => {
+    const saved = localStorage.getItem('ironinbox_alert_behavior');
+    return saved ? { ...defaultSettings.alertBehavior, ...JSON.parse(saved) } : defaultSettings.alertBehavior;
+  });
+
+  const [riskFlagThreshold, setRiskFlagThresholdState] = useState<number>(() => {
+    const saved = localStorage.getItem('ironinbox_risk_threshold');
+    if (saved === null) return defaultSettings.riskFlagThreshold;
+    const n = Number(saved);
+    return Number.isFinite(n) ? Math.min(75, Math.max(25, Math.round(n))) : defaultSettings.riskFlagThreshold;
+  });
+
+  const [dataRetention, setDataRetentionState] = useState<DataRetentionChoice>(() => {
+    const saved = localStorage.getItem('ironinbox_data_retention');
+    if (saved === '7' || saved === '30' || saved === 'until_user_deletes') return saved;
+    return defaultSettings.dataRetention;
+  });
+
   // Save to localStorage whenever settings change
   useEffect(() => {
     localStorage.setItem('ironinbox_profile', JSON.stringify(profile));
@@ -123,6 +165,18 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
   useEffect(() => {
     localStorage.setItem('ironinbox_advanced', JSON.stringify(advanced));
   }, [advanced]);
+
+  useEffect(() => {
+    localStorage.setItem('ironinbox_alert_behavior', JSON.stringify(alertBehavior));
+  }, [alertBehavior]);
+
+  useEffect(() => {
+    localStorage.setItem('ironinbox_risk_threshold', String(riskFlagThreshold));
+  }, [riskFlagThreshold]);
+
+  useEffect(() => {
+    localStorage.setItem('ironinbox_data_retention', dataRetention);
+  }, [dataRetention]);
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...updates }));
@@ -161,12 +215,28 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     setAdvanced(prev => ({ ...prev, ...updates }));
   };
 
+  const updateAlertBehavior = (updates: Partial<AlertBehaviorSettings>) => {
+    setAlertBehavior(prev => ({ ...prev, ...updates }));
+  };
+
+  const setRiskFlagThreshold = (value: number) => {
+    const n = Math.round(value);
+    setRiskFlagThresholdState(Math.min(75, Math.max(25, n)));
+  };
+
+  const setDataRetention = (value: DataRetentionChoice) => {
+    setDataRetentionState(value);
+  };
+
   const resetToDefaults = () => {
     setProfile(defaultSettings.profile);
     setAppearance(defaultSettings.appearance);
     setNotifications(defaultSettings.notifications);
     setSecurity(defaultSettings.security);
     setAdvanced(defaultSettings.advanced);
+    setAlertBehavior(defaultSettings.alertBehavior);
+    setRiskFlagThresholdState(defaultSettings.riskFlagThreshold);
+    setDataRetentionState(defaultSettings.dataRetention);
     
     // Clear localStorage
     localStorage.removeItem('ironinbox_profile');
@@ -174,6 +244,9 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     localStorage.removeItem('ironinbox_notifications');
     localStorage.removeItem('ironinbox_security');
     localStorage.removeItem('ironinbox_advanced');
+    localStorage.removeItem('ironinbox_alert_behavior');
+    localStorage.removeItem('ironinbox_risk_threshold');
+    localStorage.removeItem('ironinbox_data_retention');
     
     alert('✅ Settings reset to defaults');
   };
@@ -185,6 +258,9 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
       notifications,
       security,
       advanced,
+      alertBehavior,
+      riskFlagThreshold,
+      dataRetention,
       exportDate: new Date().toISOString()
     };
     
@@ -216,11 +292,17 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         notifications,
         security,
         advanced,
+        alertBehavior,
+        riskFlagThreshold,
+        dataRetention,
         updateProfile,
         updateAppearance,
         updateNotifications,
         updateSecurity,
         updateAdvanced,
+        updateAlertBehavior,
+        setRiskFlagThreshold,
+        setDataRetention,
         resetToDefaults,
         exportSettings,
         clearCache

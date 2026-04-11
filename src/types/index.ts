@@ -1,3 +1,5 @@
+export type EmailSourceProvider = 'gmail' | 'outlook' | 'slack';
+
 export type FlaggedEmail = {
   id: string;
   received: string;
@@ -5,6 +7,8 @@ export type FlaggedEmail = {
   subject: string;
   signals: Signal[];
   riskLevel: 'Critical' | 'High' | 'Medium' | 'Low';
+  riskScore: number;
+  sourceProvider: EmailSourceProvider;
   content: string;
 }
 

@@ -1,6 +1,23 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { FlaggedEmail, ReleasedEmail, Keyword, DetectionOptions, DetectionActions } from '../types';
+import React, { createContext, useContext, useState, useMemo, useEffect, useRef, ReactNode } from 'react';
+import {
+  FlaggedEmail,
+  ReleasedEmail,
+  Keyword,
+  DetectionOptions,
+  DetectionActions,
+  EmailSourceProvider
+} from '../types';
 import { mockFlaggedEmails, mockReleasedEmails, mockKeywords } from '../data/mockData';
+import { useSettings } from './SettingsContext';
+import { useAuth } from './AuthContext';
+
+const cloneEmailMocks = () => ({
+  flagged: mockFlaggedEmails.map((e) => ({ ...e })),
+  released: mockReleasedEmails.map((r) => ({
+    ...r,
+    originalEmail: { ...r.originalEmail }
+  }))
+});
 
 const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
 const EMPTY_KEYWORDS: Keyword[] = [];
@@ -51,6 +68,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { riskFlagThreshold } = useSettings();
+  const { user, accountIntegrations } = useAuth();
   const [isWiped, setIsWiped] = useState(false);
   const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>(mockFlaggedEmails);
   const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>(mockReleasedEmails);
@@ -69,9 +88,91 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     showInDashboard: true
   });
 
-  const displayedFlaggedEmails = isWiped ? EMPTY_FLAGGED_EMAILS : flaggedEmails;
+  const connectedProviders = useMemo(() => {
+    const set = new Set<EmailSourceProvider>();
+    accountIntegrations.forEach((i) => {
+      if (i.connected) set.add(i.provider as EmailSourceProvider);
+    });
+    return set;
+  }, [accountIntegrations]);
+
+  const integrationSnapshot = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setFlaggedEmails(EMPTY_FLAGGED_EMAILS);
+      setReleasedEmails(EMPTY_RELEASED_EMAILS);
+      setSelectedEmail(null);
+      setLinkedIncidents([]);
+      setIsWiped(false);
+      integrationSnapshot.current = null;
+      return;
+    }
+    const { flagged, released } = cloneEmailMocks();
+    setFlaggedEmails(flagged);
+    setReleasedEmails(released);
+    setKeywords(mockKeywords);
+    setSelectedEmail(null);
+    setLinkedIncidents([]);
+    setIsWiped(false);
+    integrationSnapshot.current = null;
+  }, [user?.uid]);
+
+  useEffect(() => {
+    if (!user || accountIntegrations.length === 0) return;
+    const connected = new Set(
+      accountIntegrations.filter((i) => i.connected).map((i) => i.provider as EmailSourceProvider)
+    );
+    const key = [...connected].sort().join(',');
+    if (integrationSnapshot.current === null) {
+      integrationSnapshot.current = key;
+      return;
+    }
+    if (integrationSnapshot.current === key) return;
+    const prevProviders = integrationSnapshot.current
+      .split(',')
+      .filter(Boolean) as EmailSourceProvider[];
+    const disconnected = prevProviders.filter((p) => !connected.has(p));
+    integrationSnapshot.current = key;
+    if (disconnected.length === 0) return;
+
+    setFlaggedEmails((prevEmails) => {
+      const removedIds = prevEmails
+        .filter((e) => disconnected.includes(e.sourceProvider))
+        .map((e) => e.id);
+      if (removedIds.length > 0) {
+        queueMicrotask(() => {
+          setLinkedIncidents((li) => li.filter((inc) => !removedIds.includes(inc.sourceEmailId || '')));
+        });
+      }
+      return prevEmails.filter((e) => !disconnected.includes(e.sourceProvider));
+    });
+    setReleasedEmails((prevR) =>
+      prevR.filter((r) => !disconnected.includes(r.originalEmail.sourceProvider))
+    );
+    setSelectedEmail((sel) =>
+      sel && disconnected.includes(sel.sourceProvider) ? null : sel
+    );
+  }, [user, accountIntegrations]);
+
+  const displayedFlaggedEmails = useMemo(() => {
+    const base = isWiped ? EMPTY_FLAGGED_EMAILS : flaggedEmails;
+    const byScore = base.filter((e) => e.riskScore >= riskFlagThreshold);
+    if (!user) return byScore;
+    if (accountIntegrations.length === 0) return [];
+    if (connectedProviders.size === 0) return [];
+    return byScore.filter((e) => connectedProviders.has(e.sourceProvider));
+  }, [isWiped, flaggedEmails, riskFlagThreshold, user, accountIntegrations.length, connectedProviders]);
+
   const displayedKeywords = isWiped ? EMPTY_KEYWORDS : keywords;
-  const displayedReleasedEmails = isWiped ? EMPTY_RELEASED_EMAILS : releasedEmails;
+  const displayedReleasedEmails = useMemo(() => {
+    const base = isWiped ? EMPTY_RELEASED_EMAILS : releasedEmails;
+    if (!user) return base;
+    if (accountIntegrations.length === 0) return [];
+    if (connectedProviders.size === 0) return [];
+    return base.filter((r) => connectedProviders.has(r.originalEmail.sourceProvider));
+  }, [isWiped, releasedEmails, user, accountIntegrations.length, connectedProviders]);
+
   const displayedSelectedEmail = isWiped ? null : selectedEmail;
 
   const wipeAllData = () => {

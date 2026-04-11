@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from '../common/Modal';
 import { FlaggedEmail } from '../../types';
 import { useApp } from '../../contexts/AppContext';
+import { useSettings } from '../../contexts/SettingsContext';
 import { getVisibleSignals } from '../../utils/keywordSignals';
 import { RiAlertLine, RiKeyLine, RiShieldCheckLine, RiTimeLine, RiUser3Line } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
@@ -14,6 +15,7 @@ interface EmailDetailModalProps {
 
 const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) => {
   const { releaseEmail, keywords, createIncidentFromFlaggedEmail } = useApp();
+  const { riskFlagThreshold } = useSettings();
   const navigate = useNavigate();
   const [showCreateIncidentPanel, setShowCreateIncidentPanel] = React.useState(false);
   const [assignedTo, setAssignedTo] = React.useState('SOC Team');
@@ -57,6 +59,14 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
     }
   };
 
+  const score = email.riskScore;
+  const elevatedNumeric =
+    score >= 82 || email.riskLevel === 'Critical' || email.riskLevel === 'High';
+  const sensitivityOnlyFlag =
+    (email.riskLevel === 'Low' || email.riskLevel === 'Medium') &&
+    score >= riskFlagThreshold &&
+    score < 72;
+
   const inputCls = 'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-all bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-primary)] dark:focus:border-blue-500/40';
 
   return (
@@ -87,6 +97,43 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Numeric risk (detail analysis only) */}
+        <div
+          className={`rounded-lg border p-4 transition-colors ${
+            elevatedNumeric
+              ? 'border-fuchsia-500/45 bg-fuchsia-50/60 dark:bg-fuchsia-950/25 dark:border-fuchsia-500/35'
+              : 'border-slate-200 bg-white/50 dark:border-[var(--dm-border)] dark:bg-[var(--dm-bg-elevated)]'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <p className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-[var(--dm-text-muted)]">
+                Model risk score
+              </p>
+              <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-[var(--dm-text-primary)] mt-0.5">
+                {score}
+                <span className="text-xs font-medium text-slate-400 dark:text-[var(--dm-text-muted)]"> / 100</span>
+              </p>
+            </div>
+            <div className="text-right text-[10px] font-mono text-slate-500 dark:text-[var(--dm-text-muted)] max-w-[200px]">
+              Current bar: <span className="text-slate-700 dark:text-[var(--dm-text-secondary)]">{riskFlagThreshold}</span>
+              {sensitivityOnlyFlag && (
+                <span className="block mt-1 text-fuchsia-700 dark:text-fuchsia-300">
+                  In queue due to sensitivity threshold
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-slate-200/80 dark:bg-black/30 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${
+                elevatedNumeric ? 'bg-fuchsia-500 dark:bg-fuchsia-400' : 'bg-slate-400 dark:bg-slate-500'
+              }`}
+              style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+            />
           </div>
         </div>
 

@@ -7,6 +7,8 @@ import { setDevRole } from '../utils/devRoleHelper';
 import type { UserRole } from '../types/roles';
 import EngagementLog from '../components/dashboard/EngagementLog';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
+import { useSettings } from '../contexts/SettingsContext';
+import type { DataRetentionChoice } from '../contexts/SettingsContext';
 
 const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
   { value: 'viewer',  label: 'Viewer',  blurb: 'Dashboard only; sensitive areas hidden.' },
@@ -17,6 +19,14 @@ const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
 const Settings: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { role, permissions } = useRole();
+  const {
+    alertBehavior,
+    updateAlertBehavior,
+    riskFlagThreshold,
+    setRiskFlagThreshold,
+    dataRetention,
+    setDataRetention
+  } = useSettings();
 
   useEngagementTracker('settings');
 
@@ -47,6 +57,107 @@ const Settings: React.FC = () => {
               <><RiMoonLine className="w-4 h-4 text-slate-600" /><span>Switch to Dark</span></>
             )}
           </button>
+        </div>
+
+        {/* Alert behavior */}
+        <div className={panel}>
+          <h2 className={sectionHead}>Alert Behavior</h2>
+          <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
+            Dashboard options apply on the overview page. Email is mock-only.
+          </p>
+          <ul className="space-y-4">
+            {(
+              [
+                {
+                  key: 'showDashboardAlerts' as const,
+                  label: 'Show dashboard alerts',
+                  hint: 'Risk score, threat breakdown, top sources on the dashboard.'
+                },
+                {
+                  key: 'emailCriticalRisk' as const,
+                  label: 'Email notifications for critical risk',
+                  hint: 'No email is actually sent in demo mode.'
+                },
+                {
+                  key: 'highlightFlaggedInbox' as const,
+                  label: 'Highlight flagged queue on dashboard',
+                  hint: 'When on, the Currently Flagged stat is ring-highlighted if the count is above zero.'
+                }
+              ] as const
+            ).map(({ key, label, hint }) => (
+              <li key={key}>
+                <div className="flex items-center gap-3">
+                  <input
+                    id={`alert-${key}`}
+                    type="checkbox"
+                    checked={alertBehavior[key]}
+                    onChange={() => updateAlertBehavior({ [key]: !alertBehavior[key] })}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-[var(--dm-border-input)] dark:bg-[var(--dm-chrome)]"
+                  />
+                  <label htmlFor={`alert-${key}`} className="text-sm text-slate-700 dark:text-[var(--dm-text-secondary)]">
+                    {label}
+                  </label>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1.5 ml-7 dark:text-[var(--dm-text-muted)]">{hint}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Risk sensitivity */}
+        <div className={panel}>
+          <h2 className={sectionHead}>Risk Sensitivity</h2>
+          <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
+            Drag toward <span className="text-slate-600 dark:text-[var(--dm-text-secondary)]">High</span> to flag more messages (lower score cutoff). Toward{' '}
+            <span className="text-slate-600 dark:text-[var(--dm-text-secondary)]">Low</span> to only keep stronger signals.
+          </p>
+          <div className="flex justify-between text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-[var(--dm-text-muted)] mb-2">
+            <span>Low</span>
+            <span>High</span>
+          </div>
+          <input
+            type="range"
+            min={25}
+            max={75}
+            value={100 - riskFlagThreshold}
+            onChange={(e) => setRiskFlagThreshold(100 - Number(e.target.value))}
+            className="w-full h-2 rounded-lg appearance-none bg-slate-200 dark:bg-[var(--dm-chrome)] accent-blue-600"
+          />
+          <p className="mt-3 text-sm font-medium text-slate-800 dark:text-[var(--dm-text-primary)]">
+            Flag emails when scores are at least:{' '}
+            <span className="font-mono tabular-nums text-blue-600 dark:text-blue-400">{riskFlagThreshold}</span>
+          </p>
+        </div>
+
+        {/* Data retention */}
+        <div className={panel}>
+          <h2 className={sectionHead}>Data Retention</h2>
+          <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
+            Mock control for how long monitoring artifacts are kept in this demo.
+          </p>
+          <div className="space-y-2">
+            {(
+              [
+                { value: '7' as DataRetentionChoice, label: '7 days' },
+                { value: '30' as DataRetentionChoice, label: '30 days' },
+                { value: 'until_user_deletes' as DataRetentionChoice, label: 'Until user deletes' }
+              ] as const
+            ).map(({ value, label }) => (
+              <label
+                key={value}
+                className="flex items-center gap-3 cursor-pointer text-sm text-slate-700 dark:text-[var(--dm-text-secondary)]"
+              >
+                <input
+                  type="radio"
+                  name="data-retention"
+                  checked={dataRetention === value}
+                  onChange={() => setDataRetention(value)}
+                  className="h-4 w-4 border-slate-300 text-amber-500 focus:ring-amber-500/30 dark:border-[var(--dm-border-input)] dark:bg-[var(--dm-chrome)]"
+                />
+                {label}
+              </label>
+            ))}
+          </div>
         </div>
 
         {/* Role preview */}

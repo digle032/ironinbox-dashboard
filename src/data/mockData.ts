@@ -11,6 +11,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'acme-c0rp.test', description: 'Suspicious domain similar to acme-corp.com' }
     ],
     riskLevel: 'Critical',
+    riskScore: 96,
+    sourceProvider: 'gmail',
     content: 'Your account needs verification immediately. Click here to update your credentials before suspension.'
   },
   {
@@ -23,6 +25,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'paypa1.test', description: 'Suspicious domain similar to paypal.com' }
     ],
     riskLevel: 'Critical',
+    riskScore: 94,
+    sourceProvider: 'gmail',
     content: 'We detected unusual activity on your account. Please verify your information immediately.'
   },
   {
@@ -35,6 +39,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'g00gle.test', description: 'Suspicious domain similar to google.com' }
     ],
     riskLevel: 'Critical',
+    riskScore: 95,
+    sourceProvider: 'gmail',
     content: 'Your security settings need immediate attention. Click to review your account security.'
   },
   {
@@ -47,6 +53,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'bank0famerica.test', description: 'Suspicious domain similar to bankofamerica.com' }
     ],
     riskLevel: 'High',
+    riskScore: 82,
+    sourceProvider: 'gmail',
     content: 'Please update your banking information to continue using our services.'
   },
   {
@@ -59,6 +67,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'micr0soft.test', description: 'Suspicious domain similar to microsoft.com' }
     ],
     riskLevel: 'High',
+    riskScore: 79,
+    sourceProvider: 'gmail',
     content: 'Your subscription is expiring. Renew now to avoid service interruption.'
   },
   {
@@ -71,6 +81,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'amaz0n.test', description: 'Suspicious domain similar to amazon.com' }
     ],
     riskLevel: 'High',
+    riskScore: 84,
+    sourceProvider: 'gmail',
     content: 'Please confirm your recent order of $599.99. If you did not make this purchase, click here immediately.'
   },
   {
@@ -83,6 +95,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'appleid-verify.test', description: 'Suspicious domain pretending to be Apple' }
     ],
     riskLevel: 'Critical',
+    riskScore: 97,
+    sourceProvider: 'gmail',
     content: 'We detected suspicious login attempts on your Apple ID. Verify your identity now.'
   },
   {
@@ -94,6 +108,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'linkedln.test', description: 'Suspicious domain similar to linkedin.com (using "ln" instead of "in")' }
     ],
     riskLevel: 'Medium',
+    riskScore: 64,
+    sourceProvider: 'gmail',
     content: 'You have new connection requests waiting. View them now.'
   },
   {
@@ -106,6 +122,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'netfIix.test', description: 'Suspicious domain similar to netflix.com (using capital I)' }
     ],
     riskLevel: 'High',
+    riskScore: 81,
+    sourceProvider: 'gmail',
     content: 'Your payment method was declined. Update your billing information to continue your subscription.'
   },
   {
@@ -118,6 +136,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'chase-bank.test', description: 'Suspicious domain pretending to be Chase' }
     ],
     riskLevel: 'Critical',
+    riskScore: 93,
+    sourceProvider: 'gmail',
     content: 'We noticed unusual activity on your account. Verify your recent transactions immediately.'
   },
   {
@@ -129,6 +149,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'dropb0x.test', description: 'Suspicious domain similar to dropbox.com' }
     ],
     riskLevel: 'Medium',
+    riskScore: 61,
+    sourceProvider: 'outlook',
     content: 'Someone shared files with you. Click here to view and download.'
   },
   {
@@ -140,6 +162,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'slacck.test', description: 'Suspicious domain similar to slack.com' }
     ],
     riskLevel: 'Medium',
+    riskScore: 58,
+    sourceProvider: 'slack',
     content: 'You were mentioned in a conversation. Click to view the message.'
   },
   {
@@ -152,6 +176,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'faceb00k.test', description: 'Suspicious domain similar to facebook.com' }
     ],
     riskLevel: 'High',
+    riskScore: 80,
+    sourceProvider: 'outlook',
     content: 'We detected a login from an unrecognized device. Was this you?'
   },
   {
@@ -164,6 +190,8 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'we11sfargo.test', description: 'Suspicious domain similar to wellsfargo.com' }
     ],
     riskLevel: 'Critical',
+    riskScore: 96,
+    sourceProvider: 'outlook',
     content: 'For your security, please verify your identity to continue accessing your account.'
   },
   {
@@ -176,7 +204,76 @@ export const mockFlaggedEmails: FlaggedEmail[] = [
       { type: 'typo', value: 'paypa1-secure.test', description: 'Suspicious domain pretending to be PayPal' }
     ],
     riskLevel: 'Critical',
+    riskScore: 95,
+    sourceProvider: 'outlook',
     content: 'Please confirm your recent transaction of $1,250.00. If unauthorized, click here immediately.'
+  },
+  {
+    id: '16',
+    received: 'Mar 15, 2026',
+    sender: 'news@deals-t0day.test',
+    subject: 'Limited-time offer inside',
+    signals: [
+      { type: 'typo', value: 'deals-t0day.test', description: 'Suspicious domain similar to deals-today.com' }
+    ],
+    riskLevel: 'Low',
+    riskScore: 44,
+    sourceProvider: 'outlook',
+    content: 'Open this message to see your personalized deals. Unsubscribe any time.'
+  },
+  {
+    id: '17',
+    received: 'Mar 14, 2026',
+    sender: 'hello@inv0ice-portal.test',
+    subject: 'Invoice #8842 attached',
+    signals: [
+      { type: 'keyword', value: 'account', description: 'Contains sensitive keyword: account' },
+      { type: 'typo', value: 'inv0ice-portal.test', description: 'Suspicious domain pretending to be an invoice portal' }
+    ],
+    riskLevel: 'Low',
+    riskScore: 48,
+    sourceProvider: 'outlook',
+    content: 'Your invoice is ready. Sign in to your account to review payment details.'
+  },
+  {
+    id: '18',
+    received: 'Mar 12, 2026',
+    sender: 'support@cloud-st0rage.test',
+    subject: 'Shared folder invitation',
+    signals: [
+      { type: 'typo', value: 'cloud-st0rage.test', description: 'Suspicious domain similar to cloud-storage.com' }
+    ],
+    riskLevel: 'Low',
+    riskScore: 41,
+    sourceProvider: 'outlook',
+    content: 'A folder was shared with you. Click to accept the invitation.'
+  },
+  {
+    id: '19',
+    received: 'Mar 10, 2026',
+    sender: 'team@meetlng-calendar.test',
+    subject: 'Reschedule: 1:1 sync',
+    signals: [
+      { type: 'typo', value: 'meetlng-calendar.test', description: 'Suspicious domain similar to meeting-calendar.com' }
+    ],
+    riskLevel: 'Low',
+    riskScore: 46,
+    sourceProvider: 'outlook',
+    content: 'Your meeting was updated. Please confirm the new time on the calendar link.'
+  },
+  {
+    id: '20',
+    received: 'Mar 8, 2026',
+    sender: 'billing@saas-renewai.test',
+    subject: 'Renewal reminder',
+    signals: [
+      { type: 'keyword', value: 'expires', description: 'Contains urgency keyword: expires' },
+      { type: 'typo', value: 'saas-renewai.test', description: 'Suspicious domain similar to a SaaS vendor' }
+    ],
+    riskLevel: 'Medium',
+    riskScore: 55,
+    sourceProvider: 'outlook',
+    content: 'Your plan expires soon. Renew to avoid interruption to your workspace.'
   }
 ];
 
@@ -190,6 +287,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Your receipt for Spotify Premium',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 12,
+      sourceProvider: 'gmail',
       content: `Thanks for your payment. This receipt confirms your subscription renewal.`
     },
     releasedAt: '2026-04-05',
@@ -206,6 +305,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Security alert: New sign-in to your account',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `We noticed a new sign-in to your GitHub account from a new device. If this was you, no action is needed.`
     },
     releasedAt: '2026-04-04',
@@ -222,6 +323,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Reminder: NYC React Meetup tonight',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Your event starts at 6:30 PM. Venue details and check-in info inside.`
     },
     releasedAt: '2026-04-03',
@@ -238,6 +341,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Trip itinerary: BOS → JFK',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Your flight details, seat assignment, and baggage policy are included.`
     },
     releasedAt: '2026-04-02',
@@ -254,6 +359,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Today’s headlines',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Here’s a quick read of the top stories for today.`
     },
     releasedAt: '2026-04-01',
@@ -270,6 +377,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Interview schedule confirmation',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Confirming your interview time and meeting link. Reply if you need to reschedule.`
     },
     releasedAt: '2026-03-31',
@@ -286,6 +395,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Your Amazon.com order has shipped',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Tracking number and delivery estimate included.`
     },
     releasedAt: '2026-03-30',
@@ -302,6 +413,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'You were added to #product-updates',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'gmail',
       content: `Welcome! Here are a few tips to get started.`
     },
     releasedAt: '2026-03-29',
@@ -318,6 +431,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Your design is ready to share',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `We saved your latest changes. Share with teammates using this link.`
     },
     releasedAt: '2026-03-28',
@@ -334,6 +449,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Account notice: Statement available',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `Your monthly statement is now available in Online Banking.`
     },
     releasedAt: '2026-03-27',
@@ -350,6 +467,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Product update: New features available',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `We’ve shipped improvements and new capabilities. Learn what’s new.`
     },
     releasedAt: '2026-03-25',
@@ -366,6 +485,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Board activity: Sprint Planning',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `A card you’re watching was updated. View the changes.`
     },
     releasedAt: '2026-03-23',
@@ -382,6 +503,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'New job recommendations for you',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `Here are roles based on your profile and interests.`
     },
     releasedAt: '2026-03-22',
@@ -398,6 +521,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Your order is on the way',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `Your driver is heading to you. Track your delivery in the app.`
     },
     releasedAt: '2026-03-20',
@@ -414,6 +539,8 @@ export const mockReleasedEmails: ReleasedEmail[] = [
       subject: 'Invitation: Weekly sync',
       signals: [],
       riskLevel: 'Low',
+      riskScore: 15,
+      sourceProvider: 'outlook',
       content: `You’ve been invited to an event. View details and RSVP.`
     },
     releasedAt: '2026-03-18',
