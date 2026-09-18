@@ -154,7 +154,7 @@ const Inbox: React.FC = () => {
           {/* Email List */}
           <div className={panel}>
             <div className="px-5 py-3 border-b border-slate-100 dark:border-[var(--dm-border)]">
-              <p className={sectionHead}>Released Emails <span className="ml-1 text-slate-300 dark:text-[var(--dm-text-mono)]">({filteredEmails.length})</span></p>
+              <p className={sectionHead}>Safe Emails <span className="ml-1 text-slate-300 dark:text-[var(--dm-text-mono)]">({filteredEmails.length})</span></p>
             </div>
 
             {filteredEmails.length === 0 ? (

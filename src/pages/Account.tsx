@@ -60,7 +60,7 @@ const Account: React.FC = () => {
             Connected Accounts
           </h2>
           <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
-            Status reflects what is connected in this demo session (stored per user in the browser).
+            Gmail is connected through Google OAuth with read-only mailbox access.
           </p>
           <ul className="space-y-4">
             {sortIntegrations(accountIntegrations).map((int) => (

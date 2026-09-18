@@ -19,10 +19,11 @@ import {
   RiTrophyLine,
   RiInformationLine,
   RiEqualizerLine,
+  RiRefreshLine,
 } from 'react-icons/ri';
 
 const Dashboard: React.FC = () => {
-  const { flaggedEmails, releasedEmails, keywords } = useApp();
+  const { flaggedEmails, releasedEmails, keywords, syncMailbox, mailboxSyncing, mailboxError, lastSyncedAt } = useApp();
   const { advanced, alertBehavior } = useSettings();
   const { role } = useRole();
   const [lastRefresh, setLastRefresh] = useState(new Date());
@@ -33,10 +34,11 @@ const Dashboard: React.FC = () => {
     if (advanced.autoRefresh) {
       const interval = setInterval(() => {
         setLastRefresh(new Date());
+        void syncMailbox();
       }, advanced.refreshInterval);
       return () => clearInterval(interval);
     }
-  }, [advanced.autoRefresh, advanced.refreshInterval]);
+  }, [advanced.autoRefresh, advanced.refreshInterval, syncMailbox]);
 
   const stats = useMemo(() => {
     const visibleFlagged = filterVisibleFlaggedEmails(flaggedEmails, keywords);
@@ -81,7 +83,13 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex-1 overflow-auto bg-slate-50 dark:bg-[var(--dm-bg-page)]">
-      <Header title="Dashboard Overview" />
+      <Header title="Dashboard Overview" actionNode={
+        <button onClick={() => void syncMailbox()} disabled={mailboxSyncing}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">
+          <RiRefreshLine className={`w-3.5 h-3.5 ${mailboxSyncing ? 'animate-spin' : ''}`} />
+          {mailboxSyncing ? 'Syncing…' : 'Sync Gmail'}
+        </button>
+      } />
 
       <div className="p-6 space-y-6 animate-fade-in max-w-7xl mx-auto">
 
@@ -94,8 +102,14 @@ const Dashboard: React.FC = () => {
               <span className="text-blue-700 font-medium dark:text-blue-400 dark:font-mono">Live — Auto-refresh active</span>
             </div>
             <span className="text-blue-500 font-mono dark:text-[var(--dm-text-muted)]">
-              Updated {lastRefresh.toLocaleTimeString()}
+              {lastSyncedAt ? `Mailbox synced ${new Date(lastSyncedAt).toLocaleTimeString()}` : `Waiting to sync • ${lastRefresh.toLocaleTimeString()}`}
             </span>
+          </div>
+        )}
+
+        {mailboxError && (
+          <div role="alert" className="px-4 py-3 rounded-lg border text-xs bg-red-50 border-red-200 text-red-700 dark:bg-red-950/30 dark:border-red-900/50 dark:text-red-300">
+            Gmail sync failed: {mailboxError}
           </div>
         )}
 

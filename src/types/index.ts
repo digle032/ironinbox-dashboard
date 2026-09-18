@@ -25,6 +25,7 @@ export type Signal = {
   type: 'keyword' | 'typo';
   value: string;
   description: string;
+  source?: 'server';
 }
 
 export type Keyword = {
