@@ -6,6 +6,7 @@
   "homepage": "https://digle032.github.io/ironinbox-dashboard",
   "scripts": {
     "dev": "vite",
+    "api": "node server/index.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

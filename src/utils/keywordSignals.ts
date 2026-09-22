@@ -5,6 +5,7 @@ const norm = (s: string) => s.trim().toLowerCase();
 // Keyword signal is shown only when an enabled keyword matches its value.
 export function getVisibleSignals(email: FlaggedEmail, keywords: Keyword[]): Signal[] {
   return email.signals.filter(signal => {
+    if (signal.source === 'server') return true;
     if (signal.type === 'typo') return true;
     return keywords.some(kw => kw.enabled && norm(kw.value) === norm(signal.value));
   });

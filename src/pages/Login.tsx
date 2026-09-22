@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { RiMailLine, RiLockPasswordLine, RiGoogleFill } from 'react-icons/ri';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
+  const { beginGmailSignIn, user } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,33 +13,26 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true });
+  }, [user, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (!email.trim() || !password) { setError('Please enter email and password.'); return; }
     if (mode === 'signup' && password !== confirmPassword) { setError('Passwords do not match.'); return; }
     if (mode === 'signup' && password.length < 6) { setError('Password must be at least 6 characters.'); return; }
-    setLoading(true);
-    try {
-      if (mode === 'signin') {
-        await signInWithEmail(email.trim(), password);
-      } else {
-        await signUpWithEmail(email.trim(), password);
-      }
-      navigate('/dashboard');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Authentication failed.');
-    } finally {
-      setLoading(false);
-    }
+    void email;
+    void password;
+    setError('Email/password sign-in is not enabled yet. Connect Gmail to start monitoring a real inbox.');
   };
 
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
     try {
-      const result = await signInWithGoogle();
-      if (result === 'popup') navigate('/dashboard');
+      beginGmailSignIn();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Google sign-in failed.');
     } finally {
@@ -95,7 +88,7 @@ const Login: React.FC = () => {
               {mode === 'signin' ? 'Sign in to your account' : 'Create an account'}
             </h2>
             <p className="text-xs text-slate-400 mt-1.5 dark:text-[var(--dm-text-muted)]">
-              Demo mode — any credentials will grant access
+              Connect a Gmail inbox to securely monitor and classify its messages.
             </p>
           </div>
 
@@ -109,7 +102,7 @@ const Login: React.FC = () => {
                        dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-secondary)] dark:hover:bg-[var(--dm-inset-hover)] dark:hover:text-[var(--dm-text-primary)] dark:hover:border-blue-500/30"
           >
             <RiGoogleFill className="w-4 h-4 text-red-500" />
-            Continue with Google
+            Connect Gmail
           </button>
 
           {/* Divider */}

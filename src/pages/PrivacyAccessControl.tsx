@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import { RiCheckLine, RiCloseLine, RiShieldLine, RiRefreshLine, RiLockLine } from 'react-icons/ri';
 import Modal from '../components/common/Modal';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const ACCESS_ITEMS = [
   { label: 'Read email subject & body', allowed: true },
@@ -13,14 +14,15 @@ const ACCESS_ITEMS = [
 ];
 
 const SECURITY_MEASURES = [
-  'OAuth-based login (no passwords stored)',
-  'Read-only access',
-  'Encrypted session tokens',
-  'No permanent email storage',
+  'Google OAuth login (no Gmail password is shared with IronInbox)',
+  'Read-only Gmail access',
+  'Encrypted refresh tokens in the monitoring service',
+  'Monitoring records can be deleted from this device',
 ];
 
 const PrivacyAccessControl: React.FC = () => {
   const { wipeAllData } = useApp();
+  const { signOut } = useAuth();
   const [showWipeModal, setShowWipeModal] = useState(false);
   const [isWiping, setIsWiping]           = useState(false);
   const [wipeMessage, setWipeMessage]     = useState<string | null>(null);
@@ -28,7 +30,8 @@ const PrivacyAccessControl: React.FC = () => {
   const handleWipeData = async () => {
     setIsWiping(true);
     await new Promise((r) => setTimeout(r, 1500));
-    wipeAllData();
+    await wipeAllData();
+    await signOut();
     setIsWiping(false);
     setShowWipeModal(false);
     setWipeMessage('All personal data has been wiped for this session.');
@@ -111,7 +114,7 @@ const PrivacyAccessControl: React.FC = () => {
               </p>
             )}
             <p className="text-xs text-slate-400 dark:text-[var(--dm-text-muted)]">
-              Wipe applies to this session only; a full page reload restores data.
+              Wipe removes the locally stored monitoring records and Gmail connection for this browser.
             </p>
           </div>
         </div>
@@ -120,8 +123,8 @@ const PrivacyAccessControl: React.FC = () => {
       <Modal isOpen={showWipeModal} onClose={() => setShowWipeModal(false)} title="Wipe All Stored Monitoring Data">
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-[var(--dm-text-secondary)]">
-            This clears monitoring data and the incidents desk view for this browser session only.
-            Refreshing or reopening the app restores the original demo data. Nothing is written to permanent storage.
+            This removes locally stored monitoring records, the encrypted Gmail connection token, and the incidents desk view.
+            To monitor again, connect Gmail and sync the inbox again.
           </p>
           <div className="flex justify-end gap-3">
             <button onClick={() => setShowWipeModal(false)}
