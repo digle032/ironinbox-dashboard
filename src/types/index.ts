@@ -1,5 +1,44 @@
 export type EmailSourceProvider = 'gmail' | 'outlook' | 'slack';
 
+export type EmailDisposition = 'flagged' | 'safe';
+
+export type EmailAuthResults = {
+  spf: string;
+  dkim: string;
+  dmarc: string;
+}
+
+export type EmailLink = {
+  href: string;
+  text: string;
+  host: string;
+}
+
+export type EmailAttachment = {
+  filename: string;
+  mimeType: string;
+  size: number;
+}
+
+export type EmailReview = {
+  disposition: EmailDisposition;
+  by?: string;
+  at?: string;
+}
+
+export type SignalDetector =
+  | 'user-keyword'
+  | 'phrase'
+  | 'auth'
+  | 'lookalike-domain'
+  | 'display-name'
+  | 'reply-to'
+  | 'link-mismatch'
+  | 'link-ip'
+  | 'attachment'
+  | 'provider-spam'
+  | 'llm';
+
 export type FlaggedEmail = {
   id: string;
   received: string;
@@ -10,6 +49,17 @@ export type FlaggedEmail = {
   riskScore: number;
   sourceProvider: EmailSourceProvider;
   content: string;
+  receivedAt?: string;
+  threadId?: string;
+  senderEmail?: string;
+  senderDomain?: string;
+  snippet?: string;
+  labelIds?: string[];
+  auth?: EmailAuthResults;
+  links?: EmailLink[];
+  attachments?: EmailAttachment[];
+  disposition?: EmailDisposition;
+  review?: EmailReview;
 }
 
 export type ReleasedEmail = {
@@ -26,6 +76,8 @@ export type Signal = {
   value: string;
   description: string;
   source?: 'server';
+  detector?: SignalDetector;
+  weight?: number;
 }
 
 export type Keyword = {

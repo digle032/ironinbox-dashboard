@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { SCHEMA_VERSION, normalizeGmailMessage, presentStoredEmail } from './classifier.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 loadEnv(resolve(root, '.env'));
@@ -123,68 +124,49 @@ async function gmail(path, token) {
   return result;
 }
 
-function header(headers, name) {
-  return headers?.find((item) => item.name?.toLowerCase() === name.toLowerCase())?.value || '';
+function gradingSettings(source = {}) {
+  return {
+    keywords: Array.isArray(source.keywords) ? source.keywords.filter((item) => typeof item === 'string') : [],
+    options: source.options && typeof source.options === 'object' ? source.options : {},
+    threshold: Number.isFinite(Number(source.threshold)) ? Number(source.threshold) : 50,
+  };
 }
 
-function decodeBase64Url(value = '') {
-  return Buffer.from(value.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+function clientMessages(records, settings) {
+  return Object.values(records || {})
+    .filter((record) => record?.schemaVersion === SCHEMA_VERSION && record.email)
+    .map((record) => presentStoredEmail(record, settings))
+    .sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
 }
 
-function bodyFromPayload(payload) {
-  if (payload.body?.data) return decodeBase64Url(payload.body.data);
-  const parts = payload.parts || [];
-  const plain = parts.find((part) => part.mimeType === 'text/plain');
-  const html = parts.find((part) => part.mimeType === 'text/html');
-  const nested = parts.map(bodyFromPayload).find(Boolean);
-  return plain?.body?.data ? decodeBase64Url(plain.body.data) : html?.body?.data ? decodeBase64Url(html.body.data).replace(/<[^>]+>/g, ' ') : nested || '';
+function isCurrentRecord(record) {
+  return record?.schemaVersion === SCHEMA_VERSION && record.email;
 }
 
-function riskLevel(score) {
-  if (score >= 75) return 'Critical';
-  if (score >= 55) return 'High';
-  if (score >= 30) return 'Medium';
-  return 'Low';
-}
-
-function classify({ id, payload, internalDate }) {
-  const sender = header(payload.headers, 'From') || 'Unknown sender';
-  const subject = header(payload.headers, 'Subject') || '(no subject)';
-  const content = bodyFromPayload(payload).slice(0, 60_000);
-  const text = `${subject} ${content}`.toLowerCase();
-  const signals = [];
-  let score = 0;
-  const terms = ['verify', 'password', 'credential', 'login', 'sign in', 'urgent', 'immediately', 'suspended', 'wire transfer', 'gift card'];
-  for (const term of terms) {
-    if (text.includes(term)) { signals.push({ type: 'keyword', value: term, description: `Risk phrase detected: ${term}`, source: 'server' }); score += 10; }
-  }
-  const urls = content.match(/https?:\/\/[^\s"'<>]+/gi) || [];
-  if (urls.length) { signals.push({ type: 'typo', value: urls[0].slice(0, 80), description: 'Message contains a link; verify its destination before opening.', source: 'server' }); score += 12; }
-  const domain = sender.match(/@([^>\s]+)/)?.[1]?.toLowerCase() || '';
-  if (/[0-9]/.test(domain) || /(paypa1|g00gle|micr0soft|amaz0n)/.test(domain)) { signals.push({ type: 'typo', value: domain, description: 'Sender domain contains a likely impersonation pattern.', source: 'server' }); score += 35; }
-  if (/reply[- ]?to|account.{0,20}(suspend|disable)|click.{0,20}(verify|login|sign)/.test(text)) score += 18;
-  score = Math.min(100, score);
-  return { id, received: new Date(Number(internalDate || Date.now())).toLocaleString(), sender, subject, content, signals, riskScore: score, riskLevel: riskLevel(score), sourceProvider: 'gmail', disposition: score >= 30 ? 'flagged' : 'safe' };
-}
-
-async function sync(ownerId) {
+async function sync(ownerId, incoming = {}) {
   const store = await loadStore();
   const connection = store.connections[ownerId];
   if (!connection) throw new Error('No Gmail account is connected for this browser.');
+  const settings = gradingSettings(incoming);
+  connection.settings = settings;
   const token = await accessToken(connection);
   const listed = await gmail('messages?labelIds=INBOX&maxResults=50', token);
   const existing = store.messages[ownerId] || {};
   let added = 0;
   for (const message of listed.messages || []) {
-    if (existing[message.id]) continue;
+    if (isCurrentRecord(existing[message.id])) continue;
     const full = await gmail(`messages/${message.id}?format=full`, token);
-    existing[message.id] = classify(full);
+    existing[message.id] = {
+      schemaVersion: SCHEMA_VERSION,
+      email: normalizeGmailMessage(full),
+      review: existing[message.id]?.review || null,
+    };
     added += 1;
   }
   store.messages[ownerId] = existing;
   connection.lastSyncedAt = new Date().toISOString();
   await saveStore(store);
-  return { added, messages: Object.values(existing).sort((a, b) => new Date(b.received) - new Date(a.received)), lastSyncedAt: connection.lastSyncedAt };
+  return { added, messages: clientMessages(existing, settings), lastSyncedAt: connection.lastSyncedAt };
 }
 
 createServer(async (request, response) => {
@@ -217,11 +199,31 @@ createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/gmail/sync') {
       const body = JSON.parse(await readBody(request));
-      return sendJson(response, 200, await sync(body.ownerId));
+      return sendJson(response, 200, await sync(body.ownerId, body));
     }
     if (request.method === 'GET' && url.pathname === '/api/emails') {
-      const store = await loadStore(); const messages = Object.values(store.messages[url.searchParams.get('ownerId')] || {});
-      return sendJson(response, 200, { messages: messages.sort((a, b) => new Date(b.received) - new Date(a.received)) });
+      const store = await loadStore();
+      const ownerId = url.searchParams.get('ownerId');
+      const connection = store.connections[ownerId];
+      return sendJson(response, 200, { messages: clientMessages(store.messages[ownerId], gradingSettings(connection?.settings)) });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/emails/disposition') {
+      const body = JSON.parse(await readBody(request));
+      if (!body.ownerId || !Array.isArray(body.ids) || !['flagged', 'safe'].includes(body.disposition)) {
+        return sendJson(response, 400, { error: 'ownerId, ids[], and disposition (flagged|safe) are required.' });
+      }
+      const store = await loadStore();
+      const records = store.messages[body.ownerId] || {};
+      const review = { disposition: body.disposition, by: typeof body.by === 'string' && body.by ? body.by : 'analyst', at: new Date().toISOString() };
+      let updated = 0;
+      for (const id of body.ids) {
+        if (!isCurrentRecord(records[id])) continue;
+        records[id] = { ...records[id], review };
+        updated += 1;
+      }
+      store.messages[body.ownerId] = records;
+      await saveStore(store);
+      return sendJson(response, 200, { updated });
     }
     if (request.method === 'POST' && url.pathname === '/api/data/wipe') {
       const body = JSON.parse(await readBody(request));
