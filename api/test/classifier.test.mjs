@@ -7,7 +7,7 @@ import {
   lookalikeBrand,
   gradeEmail,
   toClientEmail,
-} from './classifier.mjs';
+} from '../src/classify.mjs';
 
 const b64 = (value) => Buffer.from(value, 'utf8').toString('base64url');
 

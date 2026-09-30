@@ -33,7 +33,6 @@ function AppShell() {
 }
 
 function App() {
-  try {
     return (
       <ThemeProvider>
         <SettingsProvider>
@@ -54,7 +53,7 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/inbox" element={<Inbox />} />
                     <Route path="/flagged-emails" element={<FlaggedEmails />} />
-                    <Route path="/incidents" element={<Incidents totalIncidents={0} />} />
+                    <Route path="/incidents" element={<Incidents />} />
                     <Route path="/keyword-monitoring" element={<KeywordMonitoring />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/privacy-access-control" element={<PrivacyAccessControl />} />
@@ -70,15 +69,6 @@ function App() {
       </ThemeProvider>
 
     );
-  } catch (error) {
-    console.error('App Error:', error);
-    return (
-      <div style={{ padding: '20px', color: 'red' }}>
-        <h1>Error Loading App</h1>
-        <pre>{String(error)}</pre>
-      </div>
-    );
-  }
 }
 
 export default App;

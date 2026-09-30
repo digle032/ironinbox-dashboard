@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../contexts/useApp';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
 import EmailDetailModal from '../components/dashboard/EmailDetailModal';
@@ -47,7 +47,7 @@ const FlaggedEmails: React.FC = () => {
 
   const filteredEmails = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    let filtered = visibleFlaggedEmails.filter(email => {
+    const filtered = visibleFlaggedEmails.filter(email => {
       const signals = getVisibleSignals(email, keywords);
       if (!query) {
         if (filterType === 'All') return true;
@@ -121,10 +121,10 @@ const FlaggedEmails: React.FC = () => {
 
           {/* Stat cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title="Total Flagged"  value={stats.totalFlagged}  icon={<RiAlertLine />}    iconColor="text-red-600"    trend="+12%" trendUp={false} />
-            <StatCard title="High/Critical"  value={stats.highCritical}  icon={<RiFireLine />}     iconColor="text-orange-600" trend="+5%"  trendUp={false} />
-            <StatCard title="Keyword Hits"   value={stats.keywordHits}   icon={<RiKeyLine />}      iconColor="text-yellow-600" trend="-2%"  trendUp={true} />
-            <StatCard title="Typo Hits"      value={stats.typoHits}      icon={<BiEnvelope />}     iconColor="text-blue-600"   trend="+0%"  trendUp={true} />
+            <StatCard title="Total Flagged"  value={stats.totalFlagged}  icon={<RiAlertLine />}    iconColor="text-red-600"    />
+            <StatCard title="High/Critical"  value={stats.highCritical}  icon={<RiFireLine />}     iconColor="text-orange-600" />
+            <StatCard title="Keyword Hits"   value={stats.keywordHits}   icon={<RiKeyLine />}      iconColor="text-yellow-600" />
+            <StatCard title="Typo Hits"      value={stats.typoHits}      icon={<BiEnvelope />}     iconColor="text-blue-600"   />
           </div>
 
           {/* Main table card */}

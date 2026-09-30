@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect } from 'react';
+import { useAuth } from '../contexts/useAuth';
 
 export const ENGAGEMENT_LOG_KEY = 'ironinbox_engagement_log';
 export const ENGAGEMENT_LOG_UPDATED_EVENT = 'ironinbox_engagement_updated';
@@ -39,14 +39,12 @@ function writeLog(entries: EngagementLogEntry[]) {
 
 export function useEngagementTracker(pageName: string) {
   const { user } = useAuth();
-  const pageRef = useRef(pageName);
-  pageRef.current = pageName;
 
   useEffect(() => {
     const uid = user?.uid;
     if (!uid) return;
 
-    const page = pageRef.current;
+    const page = pageName;
     const now = new Date();
     const dateStr = todayKey(now);
     const compositeKey = `${uid}_${page}_${dateStr}`;

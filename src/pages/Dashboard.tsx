@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../contexts/useApp';
 import { filterVisibleFlaggedEmails } from '../utils/keywordSignals';
-import { useSettings } from '../contexts/SettingsContext';
+import { useSettings } from '../contexts/useSettings';
 import { useRole } from '../utils/useRole';
 import Header from '../components/layout/Header';
 import StatCard from '../components/common/StatCard';
@@ -140,8 +140,8 @@ const Dashboard: React.FC = () => {
         {role === 'viewer' ? (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <StatCard title="Total Processed"  value={stats.totalProcessed}  icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
-              <StatCard title="Emails Released"  value={stats.totalReleased}   icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
+              <StatCard title="Total Processed"  value={stats.totalProcessed}  icon={<RiMailLine />}        iconColor="text-blue-600"    />
+              <StatCard title="Emails Released"  value={stats.totalReleased}   icon={<RiShieldCheckLine />} iconColor="text-emerald-600" />
             </div>
 
             <div className={`${card} p-6`}>
@@ -224,7 +224,7 @@ const Dashboard: React.FC = () => {
 
         {/* Hero Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Total Processed"    value={stats.totalProcessed}    icon={<RiMailLine />}        iconColor="text-blue-600"    trend="+8.2%" trendUp={true} />
+          <StatCard title="Total Processed"    value={stats.totalProcessed}    icon={<RiMailLine />}        iconColor="text-blue-600"    />
           <div
             className={
               alertBehavior.highlightFlaggedInbox && stats.totalFlagged > 0
@@ -232,10 +232,10 @@ const Dashboard: React.FC = () => {
                 : undefined
             }
           >
-            <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     trend="+12%"  trendUp={false} />
+            <StatCard title="Currently Flagged"  value={stats.totalFlagged}      icon={<RiAlertLine />}       iconColor="text-red-600"     />
           </div>
-          <StatCard title="Emails Released"    value={stats.totalReleased}     icon={<RiShieldCheckLine />} iconColor="text-emerald-600" trend="+5.4%" trendUp={true} />
-          <StatCard title="Active Keywords"    value={stats.activeKeywords}    icon={<RiSpamLine />}        iconColor="text-purple-600"  trend="+2"    trendUp={true} />
+          <StatCard title="Emails Released"    value={stats.totalReleased}     icon={<RiShieldCheckLine />} iconColor="text-emerald-600" />
+          <StatCard title="Active Keywords"    value={stats.activeKeywords}    icon={<RiSpamLine />}        iconColor="text-purple-600"  />
         </div>
 
         <RoleGate permission="canViewFlaggedEmails">

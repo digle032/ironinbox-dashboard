@@ -5,8 +5,6 @@ interface StatCardProps {
   value: number;
   icon: React.ReactNode;
   iconColor: string;
-  trend?: string;
-  trendUp?: boolean;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -14,8 +12,6 @@ const StatCard: React.FC<StatCardProps> = ({
   value,
   icon,
   iconColor,
-  trend = '+2.4%',
-  trendUp = true,
 }) => {
   const borderAccent =
     iconColor.includes('red')     ? 'dark:border-l-red-500/60'     :
@@ -53,16 +49,6 @@ const StatCard: React.FC<StatCardProps> = ({
               {value.toLocaleString()}
             </h3>
 
-            {/* Trend */}
-            <div className="flex items-center mt-3 space-x-2">
-              <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded
-                               ${trendUp
-                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'
-                                 : 'bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400'}`}>
-                {trendUp ? '↑' : '↓'} {trend}
-              </span>
-              <span className="text-[10px] text-slate-400 dark:text-[var(--dm-text-muted)]">vs last week</span>
-            </div>
           </div>
 
           <div className={`p-2.5 rounded-lg ml-3 flex-shrink-0 border border-slate-200 dark:border-[var(--dm-border)] ${iconColor.includes('red') ? 'bg-red-50 text-red-500' : iconColor.includes('orange') ? 'bg-orange-50 text-orange-500' : iconColor.includes('yellow') ? 'bg-amber-50 text-amber-500' : iconColor.includes('emerald') ? 'bg-emerald-50 text-emerald-500' : iconColor.includes('purple') ? 'bg-purple-50 text-purple-500' : 'bg-blue-50 text-blue-500'} ${iconBg}`}>

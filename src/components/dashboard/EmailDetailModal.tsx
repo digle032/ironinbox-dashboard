@@ -1,8 +1,8 @@
 import React from 'react';
 import Modal from '../common/Modal';
 import { FlaggedEmail, Signal } from '../../types';
-import { useApp } from '../../contexts/AppContext';
-import { useSettings } from '../../contexts/SettingsContext';
+import { useApp } from '../../contexts/useApp';
+import { useSettings } from '../../contexts/useSettings';
 import { getVisibleSignals } from '../../utils/keywordSignals';
 import { RiAlertLine, RiKeyLine, RiShieldCheckLine, RiTimeLine, RiUser3Line } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
@@ -207,7 +207,7 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
         {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[var(--dm-border)]">
           <p className="text-[10px] font-mono text-slate-400 dark:text-[var(--dm-text-muted)]">
-            Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}
+            Message ID: {email.id}
           </p>
           <div className="flex gap-2">
             <button onClick={() => setShowCreateIncidentPanel(prev => !prev)}

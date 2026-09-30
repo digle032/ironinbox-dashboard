@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useMemo, useEffect, useRef, ReactNode } from 'react';
+import { AppContext } from './useApp';
+import React, { useState, useMemo, useEffect, useRef, ReactNode } from 'react';
 import {
   FlaggedEmail,
   ReleasedEmail,
@@ -8,9 +9,9 @@ import {
   EmailDisposition,
   EmailSourceProvider
 } from '../types';
-import { mockKeywords } from '../data/mockData';
-import { useSettings } from './SettingsContext';
-import { useAuth } from './AuthContext';
+import { defaultKeywords } from '../data/defaultKeywords';
+import { useSettings } from './useSettings';
+import { useAuth } from './useAuth';
 
 const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
 const EMPTY_KEYWORDS: Keyword[] = [];
@@ -31,7 +32,7 @@ export type AppIncident = {
   sourceEmailId?: string;
 };
 
-interface AppContextType {
+export interface AppContextType {
   flaggedEmails: FlaggedEmail[];
   releasedEmails: ReleasedEmail[];
   keywords: Keyword[];
@@ -62,15 +63,13 @@ interface AppContextType {
   wipeAllData: () => Promise<void>;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { riskFlagThreshold } = useSettings();
   const { user, accountIntegrations } = useAuth();
   const [isWiped, setIsWiped] = useState(false);
   const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>([]);
   const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>([]);
-  const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
+  const [keywords, setKeywords] = useState<Keyword[]>(defaultKeywords);
   const [selectedEmail, setSelectedEmail] = useState<FlaggedEmail | null>(null);
   const [linkedIncidents, setLinkedIncidents] = useState<AppIncident[]>([]);
   const [detectionOptions, setDetectionOptions] = useState<DetectionOptions>({
@@ -88,7 +87,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [mailboxError, setMailboxError] = useState<string | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const gradingRef = useRef({ keywords, detectionOptions, riskFlagThreshold, user });
-  gradingRef.current = { keywords, detectionOptions, riskFlagThreshold, user };
+  useEffect(() => {
+    gradingRef.current = { keywords, detectionOptions, riskFlagThreshold, user };
+  }, [keywords, detectionOptions, riskFlagThreshold, user]);
 
   const applyMailboxMessages = (messages: Array<FlaggedEmail & { disposition?: EmailDisposition }>) => {
     setFlaggedEmails(messages.filter((message) => message.disposition === 'flagged'));
@@ -115,11 +116,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const persistDisposition = async (ids: string[], disposition: EmailDisposition) => {
     const currentUser = gradingRef.current.user;
     if (!currentUser?.uid || ids.length === 0) return;
-    await fetch('/api/emails/disposition', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ownerId: currentUser.uid, ids, disposition, by: currentUser.email }),
-    });
+    try {
+      const response = await fetch('/api/emails/disposition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, disposition }),
+      });
+      if (!response.ok) throw new Error('Review could not be saved. Sync to reload the saved mailbox state.');
+    } catch (error) {
+      setMailboxError(error instanceof Error ? error.message : 'Unable to save review.');
+    }
   };
 
   const syncMailbox = async () => {
@@ -168,12 +174,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     setFlaggedEmails([]);
     setReleasedEmails([]);
-    setKeywords(mockKeywords);
+    setKeywords(defaultKeywords);
     setSelectedEmail(null);
     setLinkedIncidents([]);
     setIsWiped(false);
     integrationSnapshot.current = null;
-  }, [user?.uid]);
+  }, [user]);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -249,7 +255,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const wipeAllData = async () => {
     if (user?.uid) {
       const response = await fetch('/api/data/wipe', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId: user.uid }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
       });
       if (!response.ok) throw new Error('Unable to wipe mailbox data. Please try again.');
     }
@@ -409,12 +415,4 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       {children}
     </AppContext.Provider>
   );
-};
-
-export const useApp = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
 };
