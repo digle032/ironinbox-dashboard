@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { User, Calendar, AlertTriangle, Clock, CheckCircle, Layers } from 'lucide-react';
 import Header from '../components/layout/Header';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../contexts/useApp';
 
 export interface Incident {
   id: string;
@@ -17,10 +17,6 @@ export interface Incident {
   assignedTo?: string;
   source?: string;
   sourceEmailId?: string;
-}
-
-interface IncidentsPageProps {
-  totalIncidents: number;
 }
 
 const INCIDENT_PAGE_SIZE = 5;
@@ -40,223 +36,17 @@ const EMPTY_INCIDENT: Omit<Incident, 'id' | 'createdTime'> = {
 const PRIORITIES = ['All', 'Critical', 'High', 'Medium', 'Low'] as const;
 const STATUSES = ['All', 'Open', 'In Progress', 'Resolved'] as const;
 
-const INITIAL_INCIDENTS: Incident[] = [
-  {
-    id: 'INC-2024-001',
-    createdTime: '10 mins ago',
-    reporter: 'System',
-    subject: 'Malware Payload Detected in Attachment',
-    priority: 'Critical',
-    status: 'Open',
-    dueDate: 'Today, 2:00 PM',
-    description:
-      'Our automated scanning system detected a malicious executable file disguised as a PDF document in an email from an unknown sender. The file has been quarantined and the email has been moved to a secure sandbox environment. Immediate investigation is required to determine if this is part of a larger attack campaign.',
-    category: 'Email Security',
-    assignedTo: 'SOC Team',
-    source: 'Mail Gateway',
-    sourceEmailId: 'eml-gw-001',
-  },
-  {
-    id: 'INC-2024-002',
-    createdTime: '1 hour ago',
-    reporter: 'Sarah Jenkins (Finance)',
-    subject: 'Suspicious Link in Invoice Email',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: 'Tomorrow, 9:00 AM',
-    description:
-      'A finance user reported an invoice email containing a suspicious hyperlink that redirects to an external domain with signs of credential harvesting behavior.',
-    category: 'Phishing',
-    assignedTo: 'Analyst 2',
-    source: 'User Report',
-    sourceEmailId: 'eml-rpt-8821',
-  },
-  {
-    id: 'INC-2024-003',
-    createdTime: '3 hours ago',
-    reporter: 'System',
-    subject: 'Unusual Volume of Outbound Traffic',
-    priority: 'Medium',
-    status: 'Open',
-    dueDate: 'Feb 10, 5:00 PM',
-    description:
-      'Network monitoring identified a spike in outbound traffic from a workstation that exceeded its normal activity baseline. Requires validation for potential exfiltration.',
-    category: 'Network',
-    assignedTo: 'Network Security',
-    source: 'SIEM',
-  },
-  {
-    id: 'INC-2024-004',
-    createdTime: 'Yesterday',
-    reporter: 'Mike Ross (IT)',
-    subject: 'Request for Phishing Simulation Report',
-    priority: 'Low',
-    status: 'Resolved',
-    dueDate: 'Feb 14, 5:00 PM',
-    description:
-      'Internal request to retrieve and review the latest phishing simulation performance report for awareness tracking.',
-    category: 'Request',
-    assignedTo: 'Awareness Team',
-    source: 'Internal Ticket',
-  },
-  {
-    id: 'INC-2024-005',
-    createdTime: '2 days ago',
-    reporter: 'System',
-    subject: 'Failed Login Attempts - Admin Account',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: 'Feb 8, 12:00 PM',
-    description:
-      'Multiple failed login attempts were detected against an administrative account from an unfamiliar IP range. Account is under review pending access verification.',
-    category: 'Identity',
-    assignedTo: 'IAM Team',
-    source: 'Identity Provider',
-  },
-  {
-    id: 'INC-2024-006',
-    createdTime: '2 days ago',
-    reporter: 'System',
-    subject: 'Endpoint Detected Suspicious PowerShell Activity',
-    priority: 'Critical',
-    status: 'Open',
-    dueDate: 'Today, 6:00 PM',
-    description: 'PowerShell script execution flagged by EDR.',
-    category: 'Endpoint',
-    assignedTo: 'SOC Team',
-    source: 'EDR',
-  },
-  {
-    id: 'INC-2024-007',
-    createdTime: '3 days ago',
-    reporter: 'John Smith (HR)',
-    subject: 'Unauthorized Access to Shared Drive',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: 'Tomorrow, 3:00 PM',
-    description: 'User reported unknown file access.',
-    category: 'Access Control',
-    assignedTo: 'IT Security',
-    source: 'User Report',
-  },
-  {
-    id: 'INC-2024-008',
-    createdTime: '3 days ago',
-    reporter: 'System',
-    subject: 'VPN Login from Unusual Location',
-    priority: 'Medium',
-    status: 'Open',
-    dueDate: 'Feb 12, 1:00 PM',
-    description: 'Login detected from foreign IP.',
-    category: 'Network',
-    assignedTo: 'IAM Team',
-    source: 'VPN Logs',
-  },
-  {
-    id: 'INC-2024-009',
-    createdTime: '4 days ago',
-    reporter: 'System',
-    subject: 'Multiple Password Reset Requests',
-    priority: 'Medium',
-    status: 'Resolved',
-    dueDate: 'Feb 11, 10:00 AM',
-    description: 'Spike in password reset requests detected.',
-    category: 'Identity',
-    assignedTo: 'Help Desk',
-    source: 'Auth System',
-  },
-  {
-    id: 'INC-2024-010',
-    createdTime: '5 days ago',
-    reporter: 'Emily Clark (Marketing)',
-    subject: 'Suspicious File Download',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: 'Feb 13, 4:00 PM',
-    description: 'Downloaded file flagged by antivirus.',
-    category: 'Endpoint',
-    assignedTo: 'SOC Team',
-    source: 'Antivirus',
-  },
-  {
-    id: 'INC-2024-011',
-    createdTime: '5 days ago',
-    reporter: 'System',
-    subject: 'Database Query Spike',
-    priority: 'Medium',
-    status: 'Open',
-    dueDate: 'Feb 15, 2:00 PM',
-    description: 'Unusual database activity detected.',
-    category: 'Database',
-    assignedTo: 'DB Admin',
-    source: 'Monitoring Tool',
-  },
-  {
-    id: 'INC-2024-012',
-    createdTime: '6 days ago',
-    reporter: 'System',
-    subject: 'Firewall Blocked Suspicious IP',
-    priority: 'Low',
-    status: 'Resolved',
-    dueDate: 'Feb 10, 9:00 AM',
-    description: 'Firewall blocked repeated access attempts.',
-    category: 'Network',
-    assignedTo: 'Network Security',
-    source: 'Firewall',
-  },
-  {
-    id: 'INC-2024-013',
-    createdTime: '1 week ago',
-    reporter: 'System',
-    subject: 'Brute Force Attack Detected',
-    priority: 'Critical',
-    status: 'Open',
-    dueDate: 'Today, 8:00 PM',
-    description: 'Brute force attack detected on login portal.',
-    category: 'Identity',
-    assignedTo: 'SOC Team',
-    source: 'SIEM',
-  },
-  {
-    id: 'INC-2024-014',
-    createdTime: '1 week ago',
-    reporter: 'Alex Brown (Sales)',
-    subject: 'Phishing Email Reported',
-    priority: 'High',
-    status: 'In Progress',
-    dueDate: 'Tomorrow, 11:00 AM',
-    description: 'User reported phishing email attempt.',
-    category: 'Phishing',
-    assignedTo: 'Analyst 1',
-    source: 'User Report',
-    sourceEmailId: 'eml-rpt-4402',
-  },
-  {
-    id: 'INC-2024-015',
-    createdTime: '1 week ago',
-    reporter: 'System',
-    subject: 'Suspicious API Activity',
-    priority: 'Medium',
-    status: 'Open',
-    dueDate: 'Feb 16, 6:00 PM',
-    description: 'API calls exceeded normal thresholds.',
-    category: 'Application',
-    assignedTo: 'App Security',
-    source: 'API Gateway',
-  },
-];
-
-const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalIncidents }) => {
+const Incidents: React.FC = () => {
   const { linkedIncidents, isWiped } = useApp();
   const filterRef = useRef<HTMLDivElement>(null);
 
-  const [incidents, setIncidents] = useState<Incident[]>(() => INITIAL_INCIDENTS.map((i) => ({ ...i })));
+  const [editedIncidents, setIncidents] = useState<Incident[]>([]);
+  const incidents = [...editedIncidents, ...linkedIncidents.filter(item => !editedIncidents.some(edited => edited.id === item.id))];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [, setSelectedIncident] = useState<Incident | null>(null);
   const [draftIncident, setDraftIncident] = useState<Incident | null>(null);
-  const [incidentPage, setIncidentPage] = useState(1);
+  const [requestedPage, setIncidentPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterPriority, setFilterPriority] = useState<string>('All');
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -271,21 +61,8 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  useEffect(() => {
-    if (linkedIncidents.length === 0) return;
-    setIncidents((prev) => {
-      const existingIds = new Set(prev.map((i) => i.id));
-      const mapped = linkedIncidents
-        .filter((i) => !existingIds.has(i.id))
-        .map((i) => ({ ...i }));
-      if (mapped.length === 0) return prev;
-      return [...mapped, ...prev];
-    });
-  }, [linkedIncidents]);
-
   const openIncidentModal = (incident: Incident) => {
     setIsCreating(false);
-    setSelectedIncident(incident);
     setDraftIncident(incident);
     setIsModalOpen(true);
   };
@@ -293,13 +70,11 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   const openCreateIncidentModal = () => {
     const nextId = `INC-${new Date().getFullYear()}-${String(incidents.length + 1).padStart(3, '0')}`;
     setIsCreating(true);
-    setSelectedIncident(null);
     setDraftIncident({ ...EMPTY_INCIDENT, id: nextId, createdTime: 'Just now' });
     setIsModalOpen(true);
   };
 
   const closeIncidentModal = () => {
-    setSelectedIncident(null);
     setDraftIncident(null);
     setIsModalOpen(false);
     setIsCreating(false);
@@ -312,24 +87,13 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
       setIncidentPage(1);
     } else {
       setIncidents((prev) =>
-        prev.map((inc) => (inc.id === draftIncident.id ? draftIncident : inc))
+        [draftIncident, ...prev.filter(inc => inc.id !== draftIncident.id)]
       );
     }
     setIsModalOpen(false);
-    setSelectedIncident(null);
     setDraftIncident(null);
     setIsCreating(false);
   };
-
-  useEffect(() => {
-    if (isWiped) {
-      setSelectedIncident(null);
-      setDraftIncident(null);
-      setIsModalOpen(false);
-      setIsCreating(false);
-      setIncidentPage(1);
-    }
-  }, [isWiped]);
 
   const baseIncidents = isWiped ? [] : incidents;
   const allIncidents = baseIncidents.filter((i) => {
@@ -339,6 +103,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   });
 
   const totalIncidentPages = Math.max(1, Math.ceil(allIncidents.length / INCIDENT_PAGE_SIZE));
+  const incidentPage = Math.min(requestedPage, totalIncidentPages);
   const displayedIncidents = allIncidents.slice(
     (incidentPage - 1) * INCIDENT_PAGE_SIZE,
     incidentPage * INCIDENT_PAGE_SIZE
@@ -352,11 +117,6 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
   const countCritical = baseIncidents.filter((i) => i.priority === 'Critical').length;
 
   const hasActiveFilter = filterPriority !== 'All' || filterStatus !== 'All';
-
-  useEffect(() => {
-    const pages = Math.max(1, Math.ceil(allIncidents.length / INCIDENT_PAGE_SIZE));
-    setIncidentPage((p) => Math.min(p, pages));
-  }, [allIncidents.length]);
 
   return (
     <>
@@ -670,7 +430,7 @@ const Incidents: React.FC<IncidentsPageProps> = ({ totalIncidents: _totalInciden
       </div>
 
       {/* Incident detail / create modal */}
-      {isModalOpen && draftIncident && (
+      {!isWiped && isModalOpen && draftIncident && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 dark:bg-black/60">
           <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white shadow-2xl dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)]">
 

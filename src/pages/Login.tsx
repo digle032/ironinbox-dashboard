@@ -1,32 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { RiMailLine, RiLockPasswordLine, RiGoogleFill } from 'react-icons/ri';
+import { useAuth } from '../contexts/useAuth';
+import { RiGoogleFill } from 'react-icons/ri';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { beginGmailSignIn, user } = useAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => new URLSearchParams(window.location.search).get('gmail') === 'error' ? 'Gmail connection failed or expired. Please try again.' : '');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) navigate('/dashboard', { replace: true });
   }, [user, navigate]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    if (!email.trim() || !password) { setError('Please enter email and password.'); return; }
-    if (mode === 'signup' && password !== confirmPassword) { setError('Passwords do not match.'); return; }
-    if (mode === 'signup' && password.length < 6) { setError('Password must be at least 6 characters.'); return; }
-    void email;
-    void password;
-    setError('Email/password sign-in is not enabled yet. Connect Gmail to start monitoring a real inbox.');
-  };
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -85,7 +70,7 @@ const Login: React.FC = () => {
           {/* Heading */}
           <div className="text-center mb-6">
             <h2 className="text-sm font-semibold text-slate-800 dark:text-[var(--dm-text-secondary)]">
-              {mode === 'signin' ? 'Sign in to your account' : 'Create an account'}
+              Sign in with Gmail
             </h2>
             <p className="text-xs text-slate-400 mt-1.5 dark:text-[var(--dm-text-muted)]">
               Connect a Gmail inbox to securely monitor and classify its messages.
@@ -105,18 +90,6 @@ const Login: React.FC = () => {
             Connect Gmail
           </button>
 
-          {/* Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-[var(--dm-border)]" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-white text-slate-400 dark:bg-[var(--dm-surface-popover)] dark:text-[var(--dm-text-muted)] dark:font-mono">
-                or with email
-              </span>
-            </div>
-          </div>
-
           {/* Error */}
           {error && (
             <div className="mb-4 px-3 py-2.5 rounded-lg text-xs
@@ -126,104 +99,6 @@ const Login: React.FC = () => {
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5 dark:text-[var(--dm-text-muted)] dark:uppercase dark:tracking-wider dark:font-mono dark:text-[10px]">
-                Email
-              </label>
-              <div className="relative">
-                <RiMailLine className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[var(--dm-text-muted)]" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com"
-                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border outline-none transition-all
-                             border-slate-200 bg-white text-slate-900 placeholder:text-slate-400
-                             focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400
-                             dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-primary)] dark:placeholder:text-[var(--dm-placeholder)]
-                             dark:focus:border-blue-500/50 dark:focus:ring-blue-500/10"
-                  autoComplete="email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1.5 dark:text-[var(--dm-text-muted)] dark:uppercase dark:tracking-wider dark:font-mono dark:text-[10px]">
-                Password
-              </label>
-              <div className="relative">
-                <RiLockPasswordLine className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[var(--dm-text-muted)]" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border outline-none transition-all
-                             border-slate-200 bg-white text-slate-900 placeholder:text-slate-400
-                             focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400
-                             dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-primary)] dark:placeholder:text-[var(--dm-placeholder)]
-                             dark:focus:border-blue-500/50 dark:focus:ring-blue-500/10"
-                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-                />
-              </div>
-            </div>
-
-            {mode === 'signup' && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5 dark:text-[var(--dm-text-muted)] dark:uppercase dark:tracking-wider dark:font-mono dark:text-[10px]">
-                  Confirm password
-                </label>
-                <div className="relative">
-                  <RiLockPasswordLine className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[var(--dm-text-muted)]" />
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border outline-none transition-all
-                               border-slate-200 bg-white text-slate-900 placeholder:text-slate-400
-                               focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400
-                               dark:bg-[var(--dm-chrome)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-primary)] dark:placeholder:text-[var(--dm-placeholder)]
-                               dark:focus:border-blue-500/50 dark:focus:ring-blue-500/10"
-                    autoComplete="new-password"
-                  />
-                </div>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 mt-1 rounded-lg text-sm font-semibold transition-all disabled:opacity-50
-                         bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-600/30
-                         dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 dark:shadow-[0_0_20px_rgba(59,130,246,0.22)]"
-            >
-              {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
-            </button>
-          </form>
-
-          {/* Toggle mode */}
-          <p className="mt-5 text-center text-xs text-slate-500 dark:text-[var(--dm-text-muted)]">
-            {mode === 'signin' ? (
-              <>
-                No account?{' '}
-                <button type="button" onClick={() => setMode('signup')}
-                  className="text-blue-600 font-semibold hover:underline dark:text-blue-400">
-                  Sign up
-                </button>
-              </>
-            ) : (
-              <>
-                Already have an account?{' '}
-                <button type="button" onClick={() => setMode('signin')}
-                  className="text-blue-600 font-semibold hover:underline dark:text-blue-400">
-                  Sign in
-                </button>
-              </>
-            )}
-          </p>
         </div>
       </div>
     </div>

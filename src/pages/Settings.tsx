@@ -1,14 +1,13 @@
 import React from 'react';
 import Header from '../components/layout/Header';
 import { RiSunLine, RiMoonLine } from 'react-icons/ri';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/useTheme';
 import { useRole } from '../utils/useRole';
 import { setDevRole } from '../utils/devRoleHelper';
 import type { UserRole } from '../types/roles';
 import EngagementLog from '../components/dashboard/EngagementLog';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
-import { useSettings } from '../contexts/SettingsContext';
-import type { DataRetentionChoice } from '../contexts/SettingsContext';
+import { useSettings } from '../contexts/useSettings';
 
 const ROLE_OPTIONS: { value: UserRole; label: string; blurb: string }[] = [
   { value: 'viewer',  label: 'Viewer',  blurb: 'Dashboard only; sensitive areas hidden.' },
@@ -23,9 +22,7 @@ const Settings: React.FC = () => {
     alertBehavior,
     updateAlertBehavior,
     riskFlagThreshold,
-    setRiskFlagThreshold,
-    dataRetention,
-    setDataRetention
+    setRiskFlagThreshold
   } = useSettings();
 
   useEngagementTracker('settings');
@@ -63,7 +60,7 @@ const Settings: React.FC = () => {
         <div className={panel}>
           <h2 className={sectionHead}>Alert Behavior</h2>
           <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
-            Dashboard options apply on the overview page. Email is mock-only.
+            Choose which alerts appear on the dashboard.
           </p>
           <ul className="space-y-4">
             {(
@@ -72,11 +69,6 @@ const Settings: React.FC = () => {
                   key: 'showDashboardAlerts' as const,
                   label: 'Show dashboard alerts',
                   hint: 'Risk score, threat breakdown, top sources on the dashboard.'
-                },
-                {
-                  key: 'emailCriticalRisk' as const,
-                  label: 'Email notifications for critical risk',
-                  hint: 'No email is actually sent in demo mode.'
                 },
                 {
                   key: 'highlightFlaggedInbox' as const,
@@ -127,37 +119,6 @@ const Settings: React.FC = () => {
             Flag emails when scores are at least:{' '}
             <span className="font-mono tabular-nums text-blue-600 dark:text-blue-400">{riskFlagThreshold}</span>
           </p>
-        </div>
-
-        {/* Data retention */}
-        <div className={panel}>
-          <h2 className={sectionHead}>Data Retention</h2>
-          <p className="text-xs text-slate-400 mb-4 dark:text-[var(--dm-text-muted)]">
-            Mock control for how long monitoring artifacts are kept in this demo.
-          </p>
-          <div className="space-y-2">
-            {(
-              [
-                { value: '7' as DataRetentionChoice, label: '7 days' },
-                { value: '30' as DataRetentionChoice, label: '30 days' },
-                { value: 'until_user_deletes' as DataRetentionChoice, label: 'Until user deletes' }
-              ] as const
-            ).map(({ value, label }) => (
-              <label
-                key={value}
-                className="flex items-center gap-3 cursor-pointer text-sm text-slate-700 dark:text-[var(--dm-text-secondary)]"
-              >
-                <input
-                  type="radio"
-                  name="data-retention"
-                  checked={dataRetention === value}
-                  onChange={() => setDataRetention(value)}
-                  className="h-4 w-4 border-slate-300 text-amber-500 focus:ring-amber-500/30 dark:border-[var(--dm-border-input)] dark:bg-[var(--dm-chrome)]"
-                />
-                {label}
-              </label>
-            ))}
-          </div>
         </div>
 
         {/* Role preview */}

@@ -1,15 +1,17 @@
-import React, { createContext, useContext, useState, useMemo, useEffect, useRef, ReactNode } from 'react';
+import { AppContext } from './useApp';
+import React, { useState, useMemo, useEffect, useRef, ReactNode } from 'react';
 import {
   FlaggedEmail,
   ReleasedEmail,
   Keyword,
   DetectionOptions,
   DetectionActions,
+  EmailDisposition,
   EmailSourceProvider
 } from '../types';
-import { mockKeywords } from '../data/mockData';
-import { useSettings } from './SettingsContext';
-import { useAuth } from './AuthContext';
+import { defaultKeywords } from '../data/defaultKeywords';
+import { useSettings } from './useSettings';
+import { useAuth } from './useAuth';
 
 const EMPTY_FLAGGED_EMAILS: FlaggedEmail[] = [];
 const EMPTY_KEYWORDS: Keyword[] = [];
@@ -30,7 +32,7 @@ export type AppIncident = {
   sourceEmailId?: string;
 };
 
-interface AppContextType {
+export interface AppContextType {
   flaggedEmails: FlaggedEmail[];
   releasedEmails: ReleasedEmail[];
   keywords: Keyword[];
@@ -61,15 +63,13 @@ interface AppContextType {
   wipeAllData: () => Promise<void>;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { riskFlagThreshold } = useSettings();
   const { user, accountIntegrations } = useAuth();
   const [isWiped, setIsWiped] = useState(false);
   const [flaggedEmails, setFlaggedEmails] = useState<FlaggedEmail[]>([]);
   const [releasedEmails, setReleasedEmails] = useState<ReleasedEmail[]>([]);
-  const [keywords, setKeywords] = useState<Keyword[]>(mockKeywords);
+  const [keywords, setKeywords] = useState<Keyword[]>(defaultKeywords);
   const [selectedEmail, setSelectedEmail] = useState<FlaggedEmail | null>(null);
   const [linkedIncidents, setLinkedIncidents] = useState<AppIncident[]>([]);
   const [detectionOptions, setDetectionOptions] = useState<DetectionOptions>({
@@ -86,31 +86,65 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [mailboxSyncing, setMailboxSyncing] = useState(false);
   const [mailboxError, setMailboxError] = useState<string | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const gradingRef = useRef({ keywords, detectionOptions, riskFlagThreshold, user });
+  useEffect(() => {
+    gradingRef.current = { keywords, detectionOptions, riskFlagThreshold, user };
+  }, [keywords, detectionOptions, riskFlagThreshold, user]);
 
-  const applyMailboxMessages = (messages: Array<FlaggedEmail & { disposition: 'flagged' | 'safe' }>) => {
+  const applyMailboxMessages = (messages: Array<FlaggedEmail & { disposition?: EmailDisposition }>) => {
     setFlaggedEmails(messages.filter((message) => message.disposition === 'flagged'));
-    setReleasedEmails(messages.filter((message) => message.disposition === 'safe').map((message) => ({
-      id: message.id,
-      originalEmail: message,
-      releasedAt: message.received,
-      releasedBy: 'Automated analysis',
-      starred: false,
-      isRead: true,
-    })));
+    setReleasedEmails((previous) => {
+      const prior = new Map<string, ReleasedEmail>();
+      for (const item of previous) {
+        prior.set(item.originalEmail.id, item);
+        prior.set(item.id, item);
+      }
+      return messages.filter((message) => message.disposition === 'safe').map((message) => {
+        const existing = prior.get(message.id);
+        return {
+          id: message.id,
+          originalEmail: message,
+          releasedAt: existing?.releasedAt || message.review?.at || message.received,
+          releasedBy: existing?.releasedBy || message.review?.by || 'Automated analysis',
+          starred: existing?.starred ?? false,
+          isRead: existing?.isRead ?? true,
+        };
+      });
+    });
+  };
+
+  const persistDisposition = async (ids: string[], disposition: EmailDisposition) => {
+    const currentUser = gradingRef.current.user;
+    if (!currentUser?.uid || ids.length === 0) return;
+    try {
+      const response = await fetch('/api/emails/disposition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, disposition }),
+      });
+      if (!response.ok) throw new Error('Review could not be saved. Sync to reload the saved mailbox state.');
+    } catch (error) {
+      setMailboxError(error instanceof Error ? error.message : 'Unable to save review.');
+    }
   };
 
   const syncMailbox = async () => {
-    if (!user?.uid) return;
+    const { user: currentUser, keywords: currentKeywords, detectionOptions: currentOptions, riskFlagThreshold: currentThreshold } = gradingRef.current;
+    if (!currentUser?.uid) return;
     setMailboxSyncing(true);
     setMailboxError(null);
     try {
-      const response = await fetch('/api/gmail/sync', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId: user.uid }),
-      });
-      const data = await response.json() as { messages?: Array<FlaggedEmail & { disposition: 'flagged' | 'safe' }>; lastSyncedAt?: string; error?: string };
-      if (!response.ok) throw new Error(data.error || 'Unable to sync Gmail.');
-      applyMailboxMessages(data.messages || []);
-      setLastSyncedAt(data.lastSyncedAt || new Date().toISOString());
+      for (let batch = 0; batch < 5; batch++) {
+        const response = await fetch('/api/gmail/sync', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keywords: currentKeywords.filter(keyword => keyword.enabled).map(keyword => keyword.value), options: currentOptions, threshold: currentThreshold }),
+        });
+        const data = await response.json() as { messages?: Array<FlaggedEmail & { disposition: 'flagged' | 'safe' }>; lastSyncedAt?: string; error?: string; hasMore?: boolean };
+        if (!response.ok) throw new Error(data.error || 'Unable to sync Gmail.');
+        applyMailboxMessages(data.messages || []);
+        setLastSyncedAt(data.lastSyncedAt || new Date().toISOString());
+        if (!data.hasMore) break;
+      }
+
     } catch (error) {
       setMailboxError(error instanceof Error ? error.message : 'Unable to sync Gmail.');
     } finally {
@@ -140,19 +174,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     setFlaggedEmails([]);
     setReleasedEmails([]);
-    setKeywords(mockKeywords);
+    setKeywords(defaultKeywords);
     setSelectedEmail(null);
     setLinkedIncidents([]);
     setIsWiped(false);
     integrationSnapshot.current = null;
-  }, [user?.uid]);
+  }, [user]);
 
   useEffect(() => {
     if (!user?.uid) return;
     void syncMailbox();
-    // syncMailbox only needs the stable authenticated owner during initial load.
+    // First load for this signed-in mailbox; settings-driven sync is debounced below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.uid]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const timer = window.setTimeout(() => { void syncMailbox(); }, 1500);
+    return () => window.clearTimeout(timer);
+    // Re-grade after keyword, option, or threshold edits. Login already syncs immediately.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keywords, detectionOptions, riskFlagThreshold]);
 
   useEffect(() => {
     if (!user || accountIntegrations.length === 0) return;
@@ -193,12 +235,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const displayedFlaggedEmails = useMemo(() => {
     const base = isWiped ? EMPTY_FLAGGED_EMAILS : flaggedEmails;
-    const byScore = base.filter((e) => e.riskScore >= riskFlagThreshold);
-    if (!user) return byScore;
+    if (!user) return base;
     if (accountIntegrations.length === 0) return [];
     if (connectedProviders.size === 0) return [];
-    return byScore.filter((e) => connectedProviders.has(e.sourceProvider));
-  }, [isWiped, flaggedEmails, riskFlagThreshold, user, accountIntegrations.length, connectedProviders]);
+    return base.filter((e) => connectedProviders.has(e.sourceProvider));
+  }, [isWiped, flaggedEmails, user, accountIntegrations.length, connectedProviders]);
 
   const displayedKeywords = isWiped ? EMPTY_KEYWORDS : keywords;
   const displayedReleasedEmails = useMemo(() => {
@@ -213,9 +254,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const wipeAllData = async () => {
     if (user?.uid) {
-      await fetch('/api/data/wipe', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId: user.uid }),
+      const response = await fetch('/api/data/wipe', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
       });
+      if (!response.ok) throw new Error('Unable to wipe mailbox data. Please try again.');
     }
     setIsWiped(true);
     setLinkedIncidents([]);
@@ -228,16 +270,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const emailToRelease = flaggedEmails.find(email => email.id === emailId);
     if (emailToRelease) {
       const releasedEmail: ReleasedEmail = {
-        id: Date.now().toString(),
-        originalEmail: emailToRelease,
+        id: emailToRelease.id,
+        originalEmail: { ...emailToRelease, disposition: 'safe' },
         releasedAt: new Date().toLocaleString(),
-        releasedBy: 'John Doe',
+        releasedBy: user?.email || 'analyst',
         starred: false,
         isRead: false
       };
 
       setReleasedEmails(prev => [releasedEmail, ...prev]);
       setFlaggedEmails(prev => prev.filter(email => email.id !== emailId));
+      void persistDisposition([emailId], 'safe');
 
       if (selectedEmail?.id === emailId) {
         setSelectedEmail(null);
@@ -301,8 +344,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const toReflag = releasedEmails.filter(r => releasedIds.includes(r.id));
     if (toReflag.length === 0) return;
 
-    setFlaggedEmails(prev => [...toReflag.map(r => r.originalEmail), ...prev]);
+    setFlaggedEmails(prev => [...toReflag.map(r => ({ ...r.originalEmail, disposition: 'flagged' as const })), ...prev]);
     setReleasedEmails(prev => prev.filter(r => !releasedIds.includes(r.id)));
+    void persistDisposition(toReflag.map((item) => item.originalEmail.id), 'flagged');
   };
 
   const updateDetectionOptions = (options: Partial<DetectionOptions>) => {
@@ -371,12 +415,4 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       {children}
     </AppContext.Provider>
   );
-};
-
-export const useApp = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
-  }
-  return context;
 };

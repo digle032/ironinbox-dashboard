@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useSettings } from '../../contexts/SettingsContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useSettings } from '../../contexts/useSettings';
+import { useAuth } from '../../contexts/useAuth';
 import { useRole } from '../../utils/useRole';
 import { ROLE_LABELS } from '../../types/roles';
 import { 
@@ -143,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="relative flex-shrink-0">
               <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm
                               dark:border-[var(--dm-border)]">
-                <img src={profile.avatar} alt="User" className="w-full h-full object-cover" />
+                <img src={profile.avatar || '/logo.png'} alt="User" className="w-full h-full object-cover" />
               </div>
               <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full dark:border-[var(--dm-bg-sidebar)]" />
             </div>

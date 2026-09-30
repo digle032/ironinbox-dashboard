@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useApp } from '../contexts/AppContext';
+import React, { useMemo, useState } from 'react';
+import { useApp } from '../contexts/useApp';
 import Header from '../components/layout/Header';
 import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
@@ -30,21 +30,12 @@ const Inbox: React.FC = () => {
   const [searchQuery, setSearchQuery]     = useState('');
   const [timeFilter, setTimeFilter]       = useState<TimeFilterType>('All');
   const [folder, setFolder]               = useState<FolderType>('All');
-  const [selectedEmail, setSelectedEmail] = useState<typeof releasedEmails[0] | null>(null);
-  const [selectedIds, setSelectedIds]     = useState<Set<string>>(new Set());
+  const [selectedEmailState, setSelectedEmail] = useState<typeof releasedEmails[0] | null>(null);
+  const [selectedIdsState, setSelectedIds]     = useState<Set<string>>(new Set());
   const [page, setPage]                   = useState(1);
 
-  useEffect(() => {
-    if (releasedEmails.length === 0) { setSelectedEmail(null); setSelectedIds(new Set()); return; }
-    if (selectedEmail && !releasedEmails.some(e => e.id === selectedEmail.id)) setSelectedEmail(null);
-    setSelectedIds(prev => {
-      const allowed = new Set(releasedEmails.map(e => e.id));
-      let changed = false;
-      const next = new Set<string>();
-      for (const id of prev) { if (allowed.has(id)) next.add(id); else changed = true; }
-      return changed ? next : prev;
-    });
-  }, [releasedEmails, selectedEmail]);
+  const selectedEmail = releasedEmails.find(email => email.id === selectedEmailState?.id) ?? null;
+  const selectedIds = new Set([...selectedIdsState].filter(id => releasedEmails.some(email => email.id === id)));
 
   const filteredEmails = useMemo(() => {
     return releasedEmails.filter(released => {
@@ -66,8 +57,8 @@ const Inbox: React.FC = () => {
   const paginated  = useMemo(() => filteredEmails.slice((page-1)*ITEMS_PER_PAGE, page*ITEMS_PER_PAGE), [filteredEmails, page]);
 
   const allVisibleSelected = paginated.length > 0 && paginated.every(e => selectedIds.has(e.id));
-  const toggleSelect = (id: string) => setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const toggleSelectAllVisible = () => setSelectedIds(prev => { const n = new Set(prev); allVisibleSelected ? paginated.forEach(e => n.delete(e.id)) : paginated.forEach(e => n.add(e.id)); return n; });
+  const toggleSelect = (id: string) => setSelectedIds(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const toggleSelectAllVisible = () => setSelectedIds(prev => { const n = new Set(prev); if (allVisibleSelected) paginated.forEach(e => n.delete(e.id)); else paginated.forEach(e => n.add(e.id)); return n; });
   const clearSelection = () => setSelectedIds(new Set());
   const bulkSetRead    = (read: boolean) => { Array.from(selectedIds).forEach(id => toggleReadReleasedEmail(id, read)); clearSelection(); };
   const bulkToggleStar = () => { Array.from(selectedIds).forEach(id => toggleStarReleasedEmail(id)); clearSelection(); };

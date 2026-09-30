@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Header from '../components/layout/Header';
 import { RiCheckLine, RiCloseLine, RiShieldLine, RiRefreshLine, RiLockLine } from 'react-icons/ri';
 import Modal from '../components/common/Modal';
-import { useApp } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useApp } from '../contexts/useApp';
+import { useAuth } from '../contexts/useAuth';
 
 const ACCESS_ITEMS = [
   { label: 'Read email subject & body', allowed: true },
@@ -17,7 +17,7 @@ const SECURITY_MEASURES = [
   'Google OAuth login (no Gmail password is shared with IronInbox)',
   'Read-only Gmail access',
   'Encrypted refresh tokens in the monitoring service',
-  'Monitoring records can be deleted from this device',
+  'This browser session’s stored monitoring records can be deleted',
 ];
 
 const PrivacyAccessControl: React.FC = () => {
@@ -29,13 +29,16 @@ const PrivacyAccessControl: React.FC = () => {
 
   const handleWipeData = async () => {
     setIsWiping(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    await wipeAllData();
-    await signOut();
-    setIsWiping(false);
-    setShowWipeModal(false);
-    setWipeMessage('All personal data has been wiped for this session.');
-    window.setTimeout(() => setWipeMessage(null), 6000);
+    try {
+      await wipeAllData();
+      await signOut();
+      setShowWipeModal(false);
+    } catch (error) {
+      setShowWipeModal(false);
+      setWipeMessage(error instanceof Error ? error.message : 'Unable to delete session data. Please retry.');
+    } finally {
+      setIsWiping(false);
+    }
   };
 
   const panel = 'bg-white border border-slate-200 rounded-xl p-5 dark:bg-[var(--dm-surface-card)] dark:border-[var(--dm-border)]';

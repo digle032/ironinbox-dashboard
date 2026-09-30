@@ -53,5 +53,6 @@ build/
 Thumbs.db
 .Spotlight-V100
 .Trashes
-data/
-.env
+/data/
+
+api/local.settings.json

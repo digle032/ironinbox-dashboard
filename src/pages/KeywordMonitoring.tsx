@@ -1,6 +1,6 @@
 import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../contexts/useApp';
 import Header from '../components/layout/Header';
 import RoleGate, { AccessRestrictedBlock } from '../components/common/RoleGate';
 import { useEngagementTracker } from '../utils/useEngagementTracker';
@@ -75,10 +75,6 @@ const KeywordMonitoring: React.FC = () => {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [openMenuId]);
-
-  useEffect(() => {
-    if (openMenuId && !keywords.some((k) => k.id === openMenuId)) setOpenMenuId(null);
-  }, [keywords, openMenuId]);
 
   const openKeyword = openMenuId ? keywords.find((k) => k.id === openMenuId) : undefined;
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import Modal from '../common/Modal';
-import { FlaggedEmail } from '../../types';
-import { useApp } from '../../contexts/AppContext';
-import { useSettings } from '../../contexts/SettingsContext';
+import { FlaggedEmail, Signal } from '../../types';
+import { useApp } from '../../contexts/useApp';
+import { useSettings } from '../../contexts/useSettings';
 import { getVisibleSignals } from '../../utils/keywordSignals';
 import { RiAlertLine, RiKeyLine, RiShieldCheckLine, RiTimeLine, RiUser3Line } from 'react-icons/ri';
 import { BiEnvelope } from 'react-icons/bi';
@@ -11,6 +11,31 @@ import { useNavigate } from 'react-router-dom';
 interface EmailDetailModalProps {
   email: FlaggedEmail | null;
   onClose: () => void;
+}
+
+const DETECTOR_LABELS: Record<string, string> = {
+  'user-keyword': 'Keyword Detected',
+  phrase: 'Pressure Language',
+  auth: 'Authentication Failed',
+  'lookalike-domain': 'Lookalike Domain',
+  'display-name': 'Display-Name Spoof',
+  'reply-to': 'Reply-To Mismatch',
+  'link-mismatch': 'Deceptive Link',
+  'link-ip': 'IP Address Link',
+  attachment: 'Risky Attachment',
+  'provider-spam': 'Provider Spam',
+  llm: 'Model Review',
+};
+
+function signalLabel(signal: Signal) {
+  if (signal.detector && DETECTOR_LABELS[signal.detector]) return DETECTOR_LABELS[signal.detector];
+  return signal.type === 'keyword' ? 'Keyword Detected' : 'Suspicious Domain';
+}
+
+function signalWeight(signal: Signal) {
+  if (typeof signal.weight !== 'number') return '';
+  const signed = signal.weight > 0 ? `+${signal.weight}` : String(signal.weight);
+  return ` · ${signed}`;
 }
 
 const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) => {
@@ -166,7 +191,7 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
                   </div>
                   <div className="flex-1">
                     <span className={`text-[10px] font-bold uppercase tracking-wide ${signal.type === 'keyword' ? 'text-amber-700 dark:text-amber-400' : 'text-indigo-700 dark:text-indigo-400'}`}>
-                      {signal.type === 'keyword' ? 'Keyword Detected' : 'Suspicious Domain'}
+                      {signalLabel(signal)}{signalWeight(signal)}
                     </span>
                     <p className="text-xs text-slate-700 font-medium mt-0.5 dark:text-[var(--dm-text-secondary)]">{signal.description}</p>
                     <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono border bg-white/70 dark:bg-[var(--dm-surface-popover)] dark:border-[var(--dm-border)] dark:text-[var(--dm-text-secondary)]">
@@ -182,7 +207,7 @@ const EmailDetailModal: React.FC<EmailDetailModalProps> = ({ email, onClose }) =
         {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-[var(--dm-border)]">
           <p className="text-[10px] font-mono text-slate-400 dark:text-[var(--dm-text-muted)]">
-            Analysis ID: #{email.id}-{Date.now().toString().slice(-6)}
+            Message ID: {email.id}
           </p>
           <div className="flex gap-2">
             <button onClick={() => setShowCreateIncidentPanel(prev => !prev)}
