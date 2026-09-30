@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => new URLSearchParams(window.location.search).get('gmail') === 'error' ? 'Gmail connection failed or expired. Please try again.' : '');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

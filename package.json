@@ -6,12 +6,13 @@
   "homepage": "https://digle032.github.io/ironinbox-dashboard",
   "scripts": {
     "dev": "vite",
-    "api": "node server/index.mjs",
+    "api": "node --env-file-if-exists=.env server/index.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "test:api": "npm --prefix api test"
   },
   "dependencies": {
     "clsx": "^2.1.1",

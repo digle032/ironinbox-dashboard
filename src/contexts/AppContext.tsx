@@ -104,13 +104,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setMailboxSyncing(true);
     setMailboxError(null);
     try {
-      const response = await fetch('/api/gmail/sync', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId: user.uid }),
-      });
-      const data = await response.json() as { messages?: Array<FlaggedEmail & { disposition: 'flagged' | 'safe' }>; lastSyncedAt?: string; error?: string };
-      if (!response.ok) throw new Error(data.error || 'Unable to sync Gmail.');
-      applyMailboxMessages(data.messages || []);
-      setLastSyncedAt(data.lastSyncedAt || new Date().toISOString());
+      for (let batch = 0; batch < 5; batch++) {
+        const response = await fetch('/api/gmail/sync', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+        });
+        const data = await response.json() as { messages?: Array<FlaggedEmail & { disposition: 'flagged' | 'safe' }>; lastSyncedAt?: string; error?: string; hasMore?: boolean };
+        if (!response.ok) throw new Error(data.error || 'Unable to sync Gmail.');
+        applyMailboxMessages(data.messages || []);
+        setLastSyncedAt(data.lastSyncedAt || new Date().toISOString());
+        if (!data.hasMore) break;
+      }
     } catch (error) {
       setMailboxError(error instanceof Error ? error.message : 'Unable to sync Gmail.');
     } finally {
@@ -213,9 +216,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const wipeAllData = async () => {
     if (user?.uid) {
-      await fetch('/api/data/wipe', {
+      const response = await fetch('/api/data/wipe', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId: user.uid }),
       });
+      if (!response.ok) throw new Error('Unable to wipe mailbox data. Please try again.');
     }
     setIsWiped(true);
     setLinkedIncidents([]);

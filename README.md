@@ -1,3 +1,7 @@
+# Current Azure / Gmail implementation
+
+The project now includes an integrated Azure Functions Gmail API, encrypted Blob Storage, and server-validated browser sessions. See [AZURE_DEPLOYMENT.md](AZURE_DEPLOYMENT.md) for deployment and local setup. The older prototype description below describes the original submission and is historical; Gmail authentication and ingestion are now implemented. Other browser-only workflows remain prototypes.
+
 # IronInbox Dashboard
 
 IronInbox Dashboard is a front-end email phishing detection dashboard built with React, TypeScript, Vite, and Tailwind CSS. The project currently functions as a demo application that simulates phishing monitoring, flagged email review, keyword-based detection management, incident escalation, role-based page visibility, theme switching, and user preference persistence in the browser. The current implementation uses mock data and browser storage for most workflows rather than a live production backend.
