@@ -19,8 +19,8 @@ Keep Static Web Apps on Free. Managed API usage is subject to Azure's allowances
    - `IRONINBOX_STORAGE_CONNECTION_STRING`: Storage account connection string. Treat it as a secret with account-level access; use an account dedicated to this prototype.
    - `IRONINBOX_STORAGE_CONTAINER`: `ironinbox`.
 4. Keep secrets out of GitHub files, frontend variables, and the built website. These are backend runtime settings, not `VITE_` build values.
-5. In the existing GitHub Actions workflow for this site, preserve its deployment token and branch, and set `app_location: "/"`, `api_location: "api"`, `output_location: "dist"`, and `app_build_command: "npm run build"` on the `Azure/static-web-apps-deploy` upload step. See `deployment/azure-workflow-settings.yml`. There is no existing GitHub workflow in this checkout, so this migration deliberately supplies settings instead of introducing a competing deployment.
-6. Ensure the workflow's frontend build uses Node 22 (Vite 7 requires a recent Node release). The managed API runtime is separately configured as `node:20` in `public/staticwebapp.config.json`, which Vite copies to `dist`.
+5. The checked-in GitHub Actions workflow deploys `main`, installs dependencies, runs lint/tests, and builds the frontend using Node 22. It uploads the prebuilt `dist` folder (`app_location: "dist"`, `skip_app_build: true`) and deploys `api_location: "api"`. Keep the existing Azure deployment-token secret configured in GitHub.
+6. The managed API runtime is configured separately as `node:20` in `public/staticwebapp.config.json`, which Vite copies to `dist`.
 7. Push/merge these changes to the branch Kenneth's site actually deploys, then run that workflow. Do not set `api_location` to the old `server` folder.
 
 ## Google setup
@@ -33,7 +33,7 @@ Enable Gmail API in the Google Cloud project. Configure a Web application OAuth 
 2. Open `/login`, connect a Google test user's Gmail account, and approve access. Callback should return to `/login` and the app should enter the dashboard.
 3. Run mailbox sync. It downloads the latest 50 inbox messages in batches of up to ten per API request, below SWA's 45-second request limit. Refresh and confirm session recovery.
 4. Disconnect and confirm `/api/emails` returns HTTP 401. A caller-supplied owner ID never authorizes access.
-5. Open a deep link such as `/dashboard` directly to verify SPA fallback. Unknown `/api/...` paths must return API errors rather than HTML.
+5. The checked-in GitHub Actions workflow deploys `main`, installs dependencies, runs lint/tests, and builds the frontend using Node 22. It uploads the prebuilt `dist` folder (`app_location: "dist"`, `skip_app_build: true`) and deploys `api_location: "api"`. Keep the existing Azure deployment-token secret configured in GitHub.
 
 ## Local development
 
