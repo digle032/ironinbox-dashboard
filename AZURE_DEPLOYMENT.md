@@ -47,7 +47,7 @@ Run `npm run test:api` and `npm run build` before deployment.
 
 Mailbox contents and Google tokens are encrypted together with AES-256-GCM in per-session blobs. Login state is browser-bound, expires, and is consumed once using conditional deletion. API mutations check Origin and content type. Conditional writes prevent concurrent syncs or disconnects from silently overwriting each other.
 
-A session lasts seven days. Sign-out, disconnect, and wipe remove that browser session's stored mailbox and tokens; signing in again creates a fresh session. They do not revoke Google's consent or erase sessions on other browsers. Google permissions can be revoked from the Google Account security page. The old local JSON data is not imported; reconnect Gmail after migration. Existing settings, incident edits, and release/reflag changes remain frontend prototype state.
+A session lasts seven days. Sign-out, disconnect, and wipe remove that browser session's stored mailbox and tokens; signing in again creates a fresh session. They do not revoke Google's consent or erase sessions on other browsers. Google permissions can be revoked from the Google Account security page. The old local JSON data is not imported; reconnect Gmail after migration. Release/reflag decisions are persisted in the encrypted mailbox session, and keyword/options/threshold settings are submitted during sync for server-side grading. Other settings and incident edits remain frontend prototype state.
 
 ## References
 

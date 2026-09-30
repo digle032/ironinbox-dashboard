@@ -20,7 +20,7 @@ function setup() {
     : url.includes('messages?') ? { messages: [{ id: 'one' }] }
     : { id: 'one', internalDate: '1700000000000', payload: { headers: [{ name: 'Subject', value: 'Urgent password verify' }], body: { data: '' } } } });
   const handler = createHandler({ env, storage, fetcher });
-  const request = (path, method = 'GET', cookie = '', origin = env.FRONTEND_URL) => handler({ url: `${env.FRONTEND_URL}${path}`, method, headers: new Headers({ cookie, origin, 'content-type': 'application/json' }) });
+  const request = (path, method = 'GET', cookie = '', origin = env.FRONTEND_URL, body = {}) => handler({ url: `${env.FRONTEND_URL}${path}`, method, headers: new Headers({ cookie, origin, 'content-type': 'application/json' }), json: async () => body });
   return { records, storage, fetcher, handler, request };
 }
 async function login(s) {
@@ -62,7 +62,7 @@ test('sync returns classified mail; disconnect invalidates access', async () => 
   const { cookie } = await login(s);
   const result = await s.request('/api/gmail/sync', 'POST', cookie);
   assert.equal(result.status, 200);
-  assert.equal(result.jsonBody.messages[0].disposition, 'flagged');
+  assert.equal(result.jsonBody.messages[0].id, 'one');
   assert.equal((await s.request('/api/gmail/disconnect', 'POST', cookie)).status, 200);
   assert.equal((await s.request('/api/emails', 'GET', cookie)).status, 401);
 });
@@ -90,4 +90,17 @@ test('concurrent mailbox changes return a retryable conflict', async () => {
   const result = await s.request('/api/gmail/sync', 'POST', cookie);
   assert.equal(result.status, 409);
   assert.match(result.jsonBody.error, /retry/);
+});
+test('classification settings and reviews survive subsequent syncs', async () => {
+  const s = setup();
+  const { cookie } = await login(s);
+  const sync = body => s.request('/api/gmail/sync', 'POST', cookie, env.FRONTEND_URL, body);
+  assert.equal((await sync({ threshold: 0 })).jsonBody.messages[0].disposition, 'flagged');
+  const released = await s.request('/api/emails/disposition', 'POST', cookie, env.FRONTEND_URL, {
+    ids: ['one'], disposition: 'safe', ownerId: 'someone-else', by: 'forged-reviewer',
+  });
+  assert.equal(released.jsonBody.updated, 1);
+  const message = (await sync({ threshold: 0 })).jsonBody.messages[0];
+  assert.equal(message.disposition, 'safe');
+  assert.equal(message.review.by, 'test@example.com');
 });

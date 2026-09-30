@@ -1,10 +1,17 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
-import { classify } from './classify.mjs';
+import { SCHEMA_VERSION, normalizeGmailMessage, presentStoredEmail } from './classify.mjs';
 
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const random = () => randomBytes(32).toString('base64url');
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const json = (status, jsonBody, cookies = []) => ({ status, jsonBody, cookies, headers: { 'Cache-Control': 'no-store' } });
+const currentRecord = record => record?.schemaVersion === SCHEMA_VERSION && record.email;
+const clientMessages = account => Object.values(account.messages).filter(currentRecord)
+  .map(record => presentStoredEmail(record, account.settings))
+  .sort((a, b) => b.receivedAt.localeCompare(a.receivedAt));
+async function readJson(request) {
+  try { return await request.json(); } catch { throw fail(400, 'A valid JSON body is required.'); }
+}
 
 export function createHandler({ env, storage, fetcher = fetch }) {
   const frontend = env.FRONTEND_URL?.replace(/\/$/, '');
@@ -85,6 +92,13 @@ export function createHandler({ env, storage, fetcher = fetch }) {
         return json(200, { disconnected: true, wiped: true }, [cookie('ironinbox_session', '', 0)]);
       }
       if (request.method === 'POST' && path === '/api/gmail/sync') {
+        const body = await readJson(request);
+        if (!body || typeof body !== 'object') throw fail(400, 'A JSON object is required.');
+        account.settings = {
+          keywords: Array.isArray(body.keywords) ? body.keywords.filter(x => typeof x === 'string').slice(0, 200) : [],
+          options: body.options && typeof body.options === 'object' ? body.options : {},
+          threshold: Number.isFinite(Number(body.threshold)) ? Math.max(0, Math.min(100, Number(body.threshold))) : 50,
+        };
         if (account.tokenExpiresAt < Date.now() + 30_000) {
           if (!account.refreshToken) throw fail(401, 'Please reconnect Gmail to renew access.');
           const token = await exchange({ grant_type: 'refresh_token', refresh_token: account.refreshToken });
@@ -96,15 +110,29 @@ export function createHandler({ env, storage, fetcher = fetch }) {
         // Bound work below SWA's 45-second request limit; retain at most 50 records.
         const listed = await gmail('messages?labelIds=INBOX&maxResults=50');
         const ids = (listed.messages || []).map(x => x.id);
-        const pending = ids.filter(id => !account.messages[id]).slice(0, 10);
+        const pending = ids.filter(id => !currentRecord(account.messages[id])).slice(0, 10);
         const messages = await Promise.all(pending.map(id => gmail(`messages/${encodeURIComponent(id)}?format=full`)));
-        for (const message of messages) account.messages[message.id] = classify(message);
+        for (const message of messages) account.messages[message.id] = {
+          schemaVersion: SCHEMA_VERSION, email: normalizeGmailMessage(message), review: account.messages[message.id]?.review || null,
+        };
         account.messages = Object.fromEntries(ids.filter(id => account.messages[id]).map(id => [id, account.messages[id]]));
         account.lastSyncedAt = new Date().toISOString();
         await storage.write(sessionKey, { encrypted: encrypt(account) }, record.etag);
-        return json(200, { added: messages.length, messages: Object.values(account.messages).sort((a,b) => b.received.localeCompare(a.received)), lastSyncedAt: account.lastSyncedAt, hasMore: ids.some(id => !account.messages[id]) });
+        return json(200, { added: messages.length, messages: clientMessages(account), lastSyncedAt: account.lastSyncedAt, hasMore: ids.some(id => !currentRecord(account.messages[id])) });
       }
-      if (request.method === 'GET' && path === '/api/emails') return json(200, { messages: Object.values(account.messages) });
+      if (request.method === 'POST' && path === '/api/emails/disposition') {
+        const body = await readJson(request);
+        if (!body || !Array.isArray(body.ids) || body.ids.some(id => typeof id !== 'string') || !['flagged', 'safe'].includes(body.disposition)) throw fail(400, 'ids[] and disposition (flagged|safe) are required.');
+        let updated = 0;
+        for (const id of new Set(body.ids)) {
+          if (!currentRecord(account.messages[id])) continue;
+          account.messages[id].review = { disposition: body.disposition, by: account.email, at: new Date().toISOString() };
+          updated++;
+        }
+        await storage.write(sessionKey, { encrypted: encrypt(account) }, record.etag);
+        return json(200, { updated });
+      }
+      if (request.method === 'GET' && path === '/api/emails') return json(200, { messages: clientMessages(account) });
       return json(404, { error: 'Not found.' });
     } catch (error) {
       const status = error.status || (error.statusCode === 412 || error.statusCode === 404 ? 409 : 500);

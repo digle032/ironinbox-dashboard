@@ -77,7 +77,7 @@ const FlaggedEmails: React.FC = () => {
         case 'Risk':     return riskOrder[a.riskLevel] - riskOrder[b.riskLevel];
         case 'Sender':   return a.sender.localeCompare(b.sender);
         case 'Subject':  return a.subject.localeCompare(b.subject);
-        case 'Received': return a.received.localeCompare(b.received);
+        case 'Received': return new Date(b.receivedAt || b.received).getTime() - new Date(a.receivedAt || a.received).getTime();
         default:         return 0;
       }
     });

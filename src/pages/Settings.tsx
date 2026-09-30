@@ -71,7 +71,7 @@ const Settings: React.FC = () => {
                 {
                   key: 'showDashboardAlerts' as const,
                   label: 'Show dashboard alerts',
-                  hint: 'Risk score, threat breakdown, top sources on the dashboard.'
+                  hint: 'Risk score, threat breakdown, top sourcesNN on the dashboard.'
                 },
                 {
                   key: 'emailCriticalRisk' as const,
